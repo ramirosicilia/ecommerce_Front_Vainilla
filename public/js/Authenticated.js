@@ -3,37 +3,74 @@
 
 export async function  authenticatenUser(){
 
-    try { 
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')); 
-       console.log(token)
-        if (token) {
-            const tokenValue = token.split('=')[1];
+    try {  
+        const obtenerToken = localStorage.getItem('token');
+        const obtenerUsuario = localStorage.getItem('dni'); 
 
-            const response = await fetch(`http://localhost:1200/ruta-protegida`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${tokenValue}`
+        console.log(obtenerUsuario, 'obtenerUsuario');
+
+        if (!obtenerToken || !obtenerUsuario) {
+            return;
+        } 
+
+        const respuesta = await fetch('http://localhost:1200/ruta-protegida', {
+            headers: {
+                'Authorization': `Bearer ${obtenerToken}`
+            } 
+        }); 
+
+        const datos = await respuesta.json(); 
+
+        console.log(datos, 'datos'); 
+        document.cookie = `token=${datos.token}`;
+        document.cookie = `usuario=${obtenerUsuario}`;
+
+        if (datos.err) {
+            Swal.fire({
+                title: datos.err,
+                showClass: {
+                    popup: `
+                        animate__animated
+                        animate__fadeInUp
+                        animate__faster
+                    `
                 },
-                credentials: "include",
+                hideClass: {
+                    popup: `
+                        animate__animated
+                        animate__fadeOutDown
+                        animate__faster
+                    `
+                }
             });
+        } else {    
+            Swal.fire({
+                title: `el usuario fue: ${datos.respuesta}`,
+                showClass: {
+                    popup: `
+                        animate__animated
+                        animate__fadeInUp
+                        animate__faster
+                    `
+                },
+                hideClass: {
+                    popup: `
+                        animate__animated
+                        animate__fadeOutDown
+                        animate__faster
+                    `
+                }   
+            }); 
 
-            if (!response.ok) {
-                const errorDatos = await response.json();
-                console.log("Error en la ruta protegida: ", errorDatos);
-                return;
-            }
+        } 
 
-            const data = await response.json();
-        
+    }
 
-            
-
-        } else {
-            console.log("No se encontró el token en las cookies");
-        }
-    } catch (err) {
+    catch (err) {
         console.log("Error en la ruta protegida", err);
     }
 
 } 
+
+
 

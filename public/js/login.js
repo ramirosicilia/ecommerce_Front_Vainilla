@@ -147,29 +147,34 @@ formularioLogin.addEventListener("submit", async (e) => {
         // Manejo de errores de la petición
         if (!peticion.ok) {
             const errorDatos = await peticion.json();
-            alert("Error " + errorDatos.err);
+            Swal.fire({
+              title: errorDatos.err,
+              showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              }
+            });
             return;
         } 
         
         // Procesamiento de la respuesta del servidor
         let datos = await peticion.json();
+   
 
 
         if(datos.err){
-          alert(datos.err)
-        } 
-
-        if (datos.token) {
-          document.cookie = `token=${datos.token}; path=/;`; 
-          await authenticatenUser();
-      }
-      
-        
-
-        if(datos){ 
-
           Swal.fire({
-            title: `el usuario fue: ${datos.respuesta}`,
+            title: datos.err,
             showClass: {
               popup: `
                 animate__animated
@@ -185,9 +190,45 @@ formularioLogin.addEventListener("submit", async (e) => {
               `
             }
           });
+        } 
+
+       if(datos.token ||datos.usuario){
+        localStorage.setItem('token',datos.token) 
+        localStorage.setItem('dni',datos.usuario)
+
+        }
+        
+
+        if(datos){  
+          await authenticatenUser()
+
+          Swal.fire({
+            title: `Fue autenticado el: ${datos.respuesta}`,
+            showClass: {
+              popup: `
+                animate__animated
+                animate__fadeInUp
+                animate__faster
+              `
+            },
+            hideClass: {
+              popup: `
+                animate__animated
+                animate__fadeOutDown
+                animate__faster
+              `
+            }
+          }); 
+
+          setTimeout(() => { 
+            window.location.href = datos.reedireccionar;
+            
+          }, 2000);
 
         
-        }
+        } 
+
+      
        
         
 
@@ -212,6 +253,8 @@ formularioLogin.addEventListener("submit", async (e) => {
    
         
 });  
+
+
 
 
 
