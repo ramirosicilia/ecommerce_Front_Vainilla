@@ -11,13 +11,7 @@ body {
 } 
 
 
- a{  
-    text-decoration: none; 
-    color:  hsla(240, 82%, 51%, 0.925); 
-    font-size: 12px;
-    letter-spacing: .5px;
-
-} 
+ 
 
 main{
     width: 100%;
@@ -32,7 +26,12 @@ main{
    
     width: 90%; 
     margin: auto; 
-    overflow:hidden;
+    overflow:hidden; 
+    display:flex;
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 } 
 
 label{
@@ -44,14 +43,14 @@ label{
 } 
 
 
-form{ 
-    margin-top: 6.5rem;
+.form__Nuevo-registro{ 
+
     display: flex;
     width: 35%;
-    height: 93%;
+    height: 30rem;
     flex-direction: column;
     justify-content: center;
-    gap: .7rem;
+    gap: 4rem;
     align-items: center;
     background-color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -93,7 +92,7 @@ label {
 }
 
 input[type="text"],
-input[type="email"],
+
 input[type="password"] {
   padding: 10px 40px; /* Aumento el padding para que se vean más grandes */
   font-size: 14px; /* Aumento el tamaño de la fuente */
@@ -104,7 +103,6 @@ input[type="password"] {
 }
 
 input[type="text"]:focus,
-input[type="email"]:focus,
 input[type="password"]:focus {
   border-color: #007bff;
   outline: none;
@@ -169,31 +167,6 @@ input[type="password"]:focus {
 } 
 
 
-.container__cookies{
-    position: absolute; 
-    z-index: 1200;
-    top: 0px;
-    left: 400px;
-    width: 40%;
-    max-height: 8rem;
-    margin-top: 1rem;
-    background-color: #fff;
-    box-shadow: inset 2px 4px 8px rgba(128, 0, 128, 0.2);
-    color: hsl(0, 0%, 0%);
-    border-radius: 10px; 
-    height: auto;
-    padding: 2rem;
-    font-size: 1rem;
-    box-shadow: inset 2px 2px 2px #303030; 
-    transform: translateY(-200%);
-
-} 
-
-.active-cookies{ 
-    transform: translateY(0%);
-
-
-} 
 
 .user_pass{
   font-size: 1.2rem;
@@ -202,14 +175,7 @@ input[type="password"]:focus {
 }
 
 
-.container__cookies h2{ 
-    color: #000;
-   font-size: 14px;
-   letter-spacing: 1px;
-   line-height: 1.5;
-   font-family: sans-serif;
 
-} 
 
 .container__button{
     margin-top: 5%;

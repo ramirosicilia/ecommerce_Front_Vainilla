@@ -8,6 +8,16 @@ const formularioLogin = document.getElementById("login");
 const containerCookies=document.getElementById('container-cookies') 
 const botonAceptar=document.getElementById('boton-si') 
 const botonRechazar=document.getElementById('boton-no') 
+let enlace = document.querySelector('a'); 
+
+enlace.style.pointerEvents = 'none';
+enlace.style.opacity = '0.6';
+
+
+
+// Muestra el enlace en la consola
+console.log(enlace);
+
 
 
 let cookiesDenegadas = true; 
@@ -22,6 +32,9 @@ setTimeout(() => {
        
            cookiesDenegadas=false
            containerCookies.classList.remove('active-cookies') 
+           enlace.style.pointerEvents = 'auto';
+           enlace.style.opacity = '1';
+
            Swal.fire({
             title: "usted acepto las cookies ahora puede enviar el formulario de logueo",
             showClass: {
