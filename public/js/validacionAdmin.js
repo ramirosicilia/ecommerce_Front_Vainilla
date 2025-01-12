@@ -1,75 +1,99 @@
 
 
 export function validarFormularioProducto() {
-    let inputNombre = document.querySelector("#nombre").value;
-    let inputPrecio = document.querySelector("#precio").value;
-    let inputCategoria = document.querySelector("#categoria").value;
-    let inputStock = document.querySelector("#stock").value;
- 
+    let errores = {
+      nombre: "",
+      precio: "",
+      categoria: "",
+      stock: "",
+      imagen: "",
+    };
+  
+    const nombre = document.getElementById("productName").value;
+    const precio = document.getElementById("productPrice").value;
+    const categoria = document.getElementById("productCategory").value;
+    const stock = document.getElementById("productStock").value;
+    const imagen = document.getElementById("productImage"); 
+
+  
+    const nombreValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-]+$/;
+    const precioValidado = /^[0-9]+(\.[0-9]{1,2})?$/;
+    const stockValidado = /^[0-9]+$/;
+  
+    // Validaciones
+    if (!nombre || !nombreValidado.test(nombre)) {
+      errores.nombre = "El nombre solo debe contener letras y espacios.";
+    }
+    if (!precio || !precioValidado.test(precio)) {
+      errores.precio = "El precio debe ser un número válido.";
+    }
+    if (!categoria) {
+      errores.categoria = "Debe seleccionar una categoría.";
+    }
+    if (!stock || !stockValidado.test(stock)) {
+      errores.stock = "El stock debe ser un número entero.";
+    }
+    if (!imagen) {
+      errores.imagen = "Debe subir una imagen.";
+    }
+  
+    // Mostrar errores
+    document.getElementById("error-nombre").textContent = errores.nombre;
+    document.getElementById("error-precio").textContent = errores.precio;
+    document.getElementById("error-categoria").textContent = errores.categoria;
+    document.getElementById("error-stock").textContent = errores.stock;
+    document.getElementById("error-imagen").textContent = errores.imagen;
+  
+    // Retornar resultado
+    return !Object.values(errores).some((error) => error !== "");
+  } 
+
+  export function validarFormularioProductoUpdate() {
+    let err = {
+      nombre: "",
+      precio: "",
+      categoria: "",
+      stock: "",
+      imagen: "",
+    };
+  
+    const nombre = document.getElementById("productName-update").value;
+    const precio = document.getElementById("productPrice-update").value;
+    const categoria = document.getElementById("productCategory-update").value;
+    const stock = document.getElementById("productStock-update").value;
+    const imagen = document.getElementById("productImage-update"); 
+
     
-    let entrada = true;
-
-    // Expresiones regulares
-    let nombreValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-]+$/; // Nombre con letras y espacios
-    let precioValidado = /^[0-9]+(\.[0-9]{1,2})?$/; // Precio, con 2 decimales opcionales
-    let stockValidado = /^[0-9]+$/; // Solo números para stock
-
-    // Contenedores de iconos de error
-    const containerIconNombre = document.getElementById('container-ingreso-1');
-    const containerIconPrecio = document.getElementById('container-ingreso-2');
-    const containerIconCategoria = document.getElementById('container-ingreso-3');
-    const containerIconStock = document.getElementById('container-ingreso-4');
-
-
-    const errorMensaje= document.querySelector('.error-message');
-
-    // Limpiar iconos antes de la validación
-    containerIconNombre.style.display = 'none';
-    containerIconPrecio.style.display = 'none';
-    containerIconCategoria.style.display = 'none';
-    containerIconStock.style.display = 'none';
- 
-
-    // Validación del nombre
-    if (!inputNombre) {
-        containerIconNombre.style.display = 'block'; // Muestra el error
-        errorMensaje.style.display = 'block'
-        entrada = false;
-    } else if (!nombreValidado.test(inputNombre)) {
-        containerIconNombre.style.display = 'flex'; // Muestra el error
-         errorMensaje.style.display = 'block'
-        entrada = false;
+    const nombreValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-]+$/;
+    const precioValidado = /^[0-9]+(\.[0-9]{1,2})?$/;
+    const stockValidado = /^[0-9]+$/;
+  
+    // Validaciones
+    if (!nombre || !nombreValidado.test(nombre)) {
+      err.nombre = "El nombre solo debe contener letras y espacios.";
     }
-
-    // Validación del precio
-    if (!inputPrecio) {
-        containerIconPrecio.style.display = 'flex'; // Muestra el error
-           errorMensaje.style.display = 'block'
-        entrada = false;
-    } else if (!precioValidado.test(inputPrecio)) {
-        containerIconPrecio.style.display = 'flex'; // Muestra el error
-        entrada = false;
+    if (!precio || !precioValidado.test(precio)) {
+      err.precio = "El precio debe ser un número válido.";
     }
-
-    // Validación de la categoría
-    if (!inputCategoria) {
-        containerIconCategoria.style.display = 'flex'; // Muestra el error
-           errorMensaje.style.display = 'block'
-        entrada = false;
+    if (!categoria) {
+      err.categoria = "Debe seleccionar una categoría.";
     }
-
-    // Validación del stock
-    if (!inputStock) {
-        containerIconStock.style.display = 'flex'; // Muestra el error
-        entrada = false;
-    } else if (!stockValidado.test(inputStock)) {
-        containerIconStock.style.display = 'flex'; // Muestra el error
-           errorMensaje.style.display = 'block'
-        entrada = false;
+    if (!stock || !stockValidado.test(stock)) {
+      err.stock = "El stock debe ser un número entero.";
     }
-
-    // Validación de la imagen
-
-
-    return entrada; // Devuelve el estado de entrada
-}
+    if (!imagen) {
+      err.imagen = "Debe subir una imagen.";
+    }
+  
+    // Mostrar errores
+    document.getElementById("error-nombre-update").textContent = err.nombre;
+    document.getElementById("error-precio-update").textContent = err.precio;
+    document.getElementById("error-categoria-update").textContent = err.categoria;
+    document.getElementById("error-stock-update").textContent = err.stock;
+    document.getElementById("error-imagen-update").textContent = err.imagen;
+  
+    // Retornar resultado
+    return !Object.values(err).some((error) => error !== "");
+  }
+  
+  

@@ -29,9 +29,6 @@ formularioIngreso.addEventListener("submit", async (e) => {
    }
 
 
-
- 
-
   try {  
 
 
@@ -58,9 +55,12 @@ formularioIngreso.addEventListener("submit", async (e) => {
     // Asegúrate de que la respuesta es correcta antes de procesar 
    
     if (!response.ok) {
-      console.log(await response.json())
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      // Si hay un error, lanza un error con el mensaje del backend
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+  } 
+
+
     console.log(response)
     let data = await response.json(); 
     console.log(data) 
@@ -77,20 +77,17 @@ formularioIngreso.addEventListener("submit", async (e) => {
 
 
     // Manejar la respuesta del servidor
-    if (data.error) {
-        Swal.fire({
-            title: '¡Error!',
-            text: data.error,
-            icon: 'error',
-            confirmButtonText: 'Intenta de nuevo'
-          });
-    }  
+   
 
-    if(data.message){
-      window.location.href="./login.html"
+    if(data.message){ 
+
+      setTimeout(() => { 
+            window.location.href="./login.html"
+        
+      }, 3000);
+  
     }
 
-  
 
       
     }
@@ -99,14 +96,15 @@ formularioIngreso.addEventListener("submit", async (e) => {
 
     
    catch (err) {
-    console.log("Error al enviar los datos:", err);
+    // Captura el error y muestra una alerta al usuario
+ 
     Swal.fire({
         title: '¡Error!',
-        text: 'Hubo un error en la conexión, ¡no te desanimes!',
+        text: err.message, // Muestra el mensaje del backend
         icon: 'error',
-        confirmButtonText: 'Intenta de nuevo'
-      });
-  }
+        confirmButtonText: 'Intenta de nuevo',
+    });
+}
 
   e.target.reset(); // Resetea el formulario después de enviar 
  

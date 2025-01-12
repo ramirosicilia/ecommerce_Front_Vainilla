@@ -25,6 +25,7 @@ formulario.addEventListener('submit', async function(event){
             headers:{
                 'Content-Type':'application/json'
             }, 
+            credentials:"include",
             body:JSON.stringify({ 
                 usuario:usuarioIngresado,
                 password:passWordIngresado,
@@ -34,27 +35,38 @@ formulario.addEventListener('submit', async function(event){
 
         }) 
 
+        if (!response.ok) {
+            // Si hay un error, lanza un error con el mensaje del backend
+            const errorData = await response.json();
+            throw new Error(errorData.error);
+        } 
+
         const data = await response.json()  
 
-        if(data.error){ 
-            alert(data.error) 
-
-        }
-
+        
         if(data.reedireccion){ 
             window.location.href = data.reedireccion
 
-        } 
+        }  
 
-       
+     }  
+
      
-      
-     } 
 
-     catch(error){
-        console.log('no se pudo logear el usuario',error)
-     }
 
+
+
+     catch (err) {
+        // Captura el error y muestra una alerta al usuario
+     
+        Swal.fire({
+            title: '¡Error!',
+            text: err.message, // Muestra el mensaje del backend
+            icon: 'error',
+            confirmButtonText: 'Intenta de nuevo',
+        });
+    }
+    
 
 
     this.reset()

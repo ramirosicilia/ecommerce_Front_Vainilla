@@ -1,25 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="./styles/dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Admin Dashboard - Empresa Internacional</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Global Styles */
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .sidebar {
+      height: 100vh;
+      width: 240px;
+      background: #2c3e50;
+      color: #fff;
+      position: fixed;
+      padding: 1rem;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar h4 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #ecf0f1;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #bdc3c7;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background: #34495e;
+      color: #fff;
+    }
+
+    .content {
+      margin-left: 260px;
+      padding: 2rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      color: #fff;
+      padding: 1rem;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .table img {
+      border-radius: 8px;
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+
+    /* Footer Style */
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 2rem;
+      color: #95a5a6;
+    }
+
+    /* Floating Button */
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      animation: float 3s infinite;
+    }
+
+    .floating-btn button {
+      background: linear-gradient(45deg, #f12711, #f5af19);
+      border: none;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+  </style>
 </head>
-<body>   
+<body>
 
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h4>Admin Dashboard</h4>
+    <a href="#" target="_blank"><i class="fa fa-home"></i> Dashboard</a>
+    <a href="./productosAdmin.html" target="_blank"><i class="fa fa-box"></i> Productos</a>
+    <a href="./categorias.html" target="_blank"><i class="fa fa-box"></i> Categorias</a>
+    <a href="./ventas.html" target="_blank"><i class="fa fa-chart-bar"></i> Ventas</a>
+    <a href="./configuracion.html" target="_blank"><i class="fa fa-cogs"></i> Configuración</a>
+    
 
-    <div class="contenedor"> 
+  </div>
 
-
-        
-        <h1>Panel administrador</h1>
-
-
-
-
+  <!-- Main Content -->
+  <div class="content">
+    <div class="header">
+      <h1>Panel de Administración</h1>
+      <button class="btn btn-primary"><i class="fa fa-plus"></i> Agregar Producto</button>
     </div>
 
-    
+    <!-- Cards -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Ventas Totales</div>
+          <div class="card-body">
+            <h3>$12,500</h3>
+            <p>Comparado con el mes pasado</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Clientes Activos</div>
+          <div class="card-body">
+            <h3>320</h3>
+            <p>Clientes nuevos este mes</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Productos Vendidos</div>
+          <div class="card-body">
+            <h3>7,800</h3>
+            <p>Total de ventas este mes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="card mt-4">
+      <div class="card-header">Rendimiento de Ventas</div>
+      <div class="card-body">
+        <canvas id="salesChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Admin Dashboard - Empresa Internacional</p>
+  </footer>
+
+  <!-- Script for Chart.js -->
+  <script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+        datasets: [{
+          label: 'Ventas Mensuales',
+          data: [5000, 8000, 10000, 12000, 15000, 20000],
+          borderColor: '#6a11cb',
+          backgroundColor: 'rgba(106, 17, 203, 0.1)',
+          borderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        }
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

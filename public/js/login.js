@@ -125,7 +125,7 @@ formularioLogin.addEventListener("submit", async (e) => {
           setTimeout(() => {
             window.location.reload()
             
-        }, 2000);
+        }, 1000);
     }
    
 
@@ -158,10 +158,12 @@ formularioLogin.addEventListener("submit", async (e) => {
   
 
         // Manejo de errores de la petición
-        if (!peticion.ok) {
+        if (!peticion.ok) { 
+        
+          
             const errorDatos = await peticion.json();
             Swal.fire({
-              title: errorDatos.err,
+              title: errorDatos.error,
               showClass: {
                 popup: `
                   animate__animated
@@ -177,7 +179,7 @@ formularioLogin.addEventListener("submit", async (e) => {
                 `
               }
             });
-            return;
+            throw new Error(errorDatos.error);
         } 
         
         // Procesamiento de la respuesta del servidor
@@ -185,26 +187,7 @@ formularioLogin.addEventListener("submit", async (e) => {
    
 
 
-        if(datos.err){
-          Swal.fire({
-            title: datos.err,
-            showClass: {
-              popup: `
-                animate__animated
-                animate__fadeInUp
-                animate__faster
-              `
-            },
-            hideClass: {
-              popup: `
-                animate__animated
-                animate__fadeOutDown
-                animate__faster
-              `
-            }
-          });
-        } 
-
+        
        if(datos.token ||datos.usuario){
         localStorage.setItem('token',datos.token) 
         localStorage.setItem('dni',datos.usuario)
@@ -236,7 +219,7 @@ formularioLogin.addEventListener("submit", async (e) => {
           setTimeout(() => { 
             window.location.href = datos.reedireccionar;
             
-          }, 2000);
+          }, 2500);
 
         
         } 
@@ -257,19 +240,18 @@ formularioLogin.addEventListener("submit", async (e) => {
        
          
     } catch (err) {
-        console.error("Error al ingresar los datos:", err);
-    }  
-
+      // Captura el error y muestra una alerta al usuario
+   
+      Swal.fire({
+          title: '¡Error!',
+          text: err.message, // Muestra el mensaje del backend
+          icon: 'error',
+          confirmButtonText: 'Intenta de nuevo',
+      });
+  }
  
 
         e.target.reset
    
         
 });  
-
-
-
-
-
-
-

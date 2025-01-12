@@ -39,30 +39,22 @@ formulario.addEventListener('submit',async(e)=>{
             headers:{
                 "content-type":"application/json"
             },
+            credentials: "include", 
             body:JSON.stringify({email})
-        }) 
+        })  
+
+        if (!peticion.ok) {
+          // Si hay un error, lanza un error con el mensaje del backend
+          const errorData = await peticion.json();
+          throw new Error(errorData.error);
+      } 
+    
+
+
 
         const response=await peticion.json() 
        
-        if(response.error){
-          Swal.fire({
-            title: response.error,
-            showClass: {
-              popup: `
-                animate__animated
-                animate__fadeInUp
-                animate__faster
-              `
-            },
-            hideClass: {
-              popup: `
-                animate__animated
-                animate__fadeOutDown
-                animate__faster
-              `
-            }
-          });
-        } 
+        
 
         if(response.ok){ 
 
@@ -85,15 +77,22 @@ formulario.addEventListener('submit',async(e)=>{
           // Redirigir al usuario al home del correo
           window.location.href = redirectUrl;
 
-        }
+        } 
 
+      
 
+    
       } 
-
-      catch(error){
-
-        console.log('no se pudo enviar el mail')
-      }
+      catch (err) {
+        // Captura el error y muestra una alerta al usuario
+     
+        Swal.fire({
+            title: '¡Error!',
+            text: err.message, // Muestra el mensaje del backend
+            icon: 'error',
+            confirmButtonText: 'Intenta de nuevo',
+        });
+    }
     
      setTimeout(() => { 
       e.target.reset()

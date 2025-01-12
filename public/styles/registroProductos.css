@@ -1,0 +1,75 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background:#FAFAF5;
+  margin: 0;
+
+}  
+
+
+  .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .table img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+  } 
+  /* Estilo para la tabla */
+ .table-striped tbody tr {
+  margin-bottom: 10px; /* Espaciado entre filas */
+}
+
+/* Estilo para la columna del producto */
+#cuerpo-productos td img {
+  width: 50px; /* Ajusta el tamaño de la imagen */
+  height: 50px;
+  margin-right: 10px; /* Espacio entre la imagen y el nombre */
+  border-radius: 5px; /* Opcional: bordes redondeados */
+  vertical-align: middle; /* Alineación con el texto */
+}
+
+/* Espaciado entre las filas */
+#cuerpo-productos tr {
+  padding: 10px 0; /* Espaciado interno de las filas */
+  border-bottom: 1px solid #ddd; /* Línea opcional entre filas */
+}
+
+.card-title {
+  margin-bottom: 20px; /* Más separación debajo del título */
+}
+
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  } 
+
+
+
+
