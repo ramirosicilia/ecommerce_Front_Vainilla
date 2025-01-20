@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Categorías</title>
+  <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   <style>
@@ -21,6 +22,13 @@
       gap: 10px;
       align-items: center;
       margin-bottom: 20px;
+    } 
+
+    .imagenes-categoria{
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
     }
 
     /* Estilo para el input de búsqueda */
@@ -79,7 +87,7 @@
   <!-- Buscador de Categorías -->
   <div class="search-container">
     <input type="text" class="form-control" id="searchCategory" placeholder="Buscar Categoría">
-    <button class="btn" id="searchButton"><i class="fas fa-search"></i> Buscar</button>
+    <button class="btn" type="submit" id="searchButton"><i class="fas fa-search"></i> Buscar</button>
     <button class="btn" id="clearButton"><i class="fas fa-times"></i> Limpiar</button>
   </div>
 
@@ -95,26 +103,27 @@
       <table class="table table-striped" id="tabla-categorias">
         <thead>
           <tr>
-            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+            <th>Inhabilitar</th>
             <th>Categoría</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="cuerpo-categorias">
           <!-- Aquí se agregarán las categorías dinámicamente -->
-          <tr>
+          <!--<tr>
             <td><input type="checkbox" class="form-check-input select-category"></td>
             <td>Ejemplo Categoría</td>
             <td>
               <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal"><i class="fas fa-edit"></i> Editar</button>
               <button class="btn btn-danger btn-sm"  data-bs-toggle="modal" data-bs-target="#deleteCategoryModal"><i class="fas fa-trash"></i> Eliminar</button>
             </td>
-          </tr>
+          </tr>-->
         </tbody>
       </table>
     </div>
   </div>
-</div>
+</div> 
+
 
 <!-- Modal Agregar Categoría -->
 <!-- Modal para Agregar Categoría -->
@@ -126,10 +135,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="formulario-categoria">
+        <form  id="formulario-categoria-ingreso" method="post" action="http://localhost:1200/agregar-categorias">
           <div class="mb-3">
             <label for="categoryName" class="form-label">Nombre de la Categoría</label>
-            <input type="text" class="form-control" name="nombre_categoria" id="categoryName" placeholder="Ingrese el nombre de la categoría" required>
+            <input type="text" class="form-control" name="category" id="categoryName_new" placeholder="Ingrese el nombre de la categoría" required>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Guardar Categoría</button>
@@ -141,29 +150,7 @@
   </div>
 </div>
 
-<!-- Modal para Eliminar Categoría -->
-<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteCategoryModalLabel">Eliminar Categoría</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="formulario-categoria-delete">
-          <div class="mb-3">
-            <label for="categoryName-delete" class="form-label">Nombre de la Categoría</label>
-            <input type="text" class="form-control" name="nombre_categoria_delete" id="categoryName-delete" placeholder="Ingrese la categoría a eliminar" required>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-danger">Eliminar Categoría</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
 <!-- Modal Editar Categoría -->
@@ -176,16 +163,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="formulario-categoria-update">
+        <form id="formulario-categoria-update" action="http://localhost:1200/actualizar-categoria" method="put">
           <!-- Campo para mostrar el valor actual -->
-          <div class="mb-3">
-            <label for="currentCategoryName" class="form-label">Categoría Actual</label>
-            <input type="text" class="form-control" id="currentCategoryName" name="categoria_actual" readonly>
-          </div>
           <!-- Campo para ingresar el nuevo valor -->
           <div class="mb-3">
             <label for="newCategoryName" class="form-label">Nueva Categoría</label>
-            <input type="text" class="form-control" id="newCategoryName" name="nueva_categoria" required>
+            <input type="text" class="form-control" id="newCategoryName" name="nuevoNombre" required>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Actualizar Categoría</button>
@@ -203,9 +186,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="./js/Categorias.js">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script type="module" src="./js/agregarCategorias.js"></script>
+<script type="module" src="./js/Categorias.js"></script>
+
+
  
-</script>
+
 
 </body>
 </html>

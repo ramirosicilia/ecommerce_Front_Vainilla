@@ -16,13 +16,32 @@
   <div class="container-fluid">
     <div class="header">
       <h1>Gestión de Productos</h1>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal"><i class="fas fa-plus"></i> Agregar Producto</button>
+      <button class="btn btn-primary" id="btn-inactivar" data-bs-toggle="modal" data-bs-target="#addProductModal"><i class="fas fa-plus"></i> Agregar Producto</button>
     </div>
 
     <!-- Tabla de productos -->
     <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Lista de Productos</h5>
+      <div class="card-body"> 
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <h5 class="card-title mb-0">Lista de Productos</h5>
+            <!-- Select de Categorías -->
+            <select class="form-select ms-3" id="categoria-select-products" style="width: auto;">
+              <option value="tapados">Tapados</option>
+              <option value="remeras">Remeras</option>
+              <option value="carteras">Carteras</option>
+              <option value="pantalones">Pantalones</option>
+              <option value="camperas">Camperas</option>
+              <option value="vestidos">Vestidos</option>
+            </select>
+          </div>
+          
+          <!-- Botón Mostrar Inactivos -->
+          <button class="btn btn-primary" id="mostrarInactivosBtn">Mostrar Inactivos</button>
+        </div>
+        
+      
         <table class="table table-striped" id="tabla-productos">
           <thead>
             <tr>
@@ -32,7 +51,6 @@
               <th>Categoría</th>
               <th>Stock</th>
               <th>Acciones</th>
-            
             </tr>
           </thead>
           <tbody id="cuerpo-productos">
@@ -64,20 +82,12 @@
               <div class="text-danger" id="error-precio"></div>
             </div>
             <div class="mb-3"> 
-              
               <label for="productCategory" class="form-label">Categoría</label>
-              <select class="form-select" name="categorias" id="productCategory">
-                <option value="" disabled selected>Selecciona una categoría</option>
-                <option value="remeras">Remeras</option>
-                <option value="pantalones">Pantalones</option>
-                <option value="tapados">Tapados</option>
-                <option value="camperas">Camperas</option>
-                <option value="carteras">Carteras</option>
+              <select class="form-select" name="categorias" id="productCategory"> 
+                <!-- contenido dinámico con JavaScript --> 
               </select>
               <div class="text-danger" id="error-categoria"></div>
-      
             </div> 
-
 
             <div class="mb-3">
               <label for="productStock" class="form-label">Stock</label>
@@ -86,7 +96,7 @@
             </div>
             <div class="mb-3">
               <label for="productImage" class="form-label">Imagen</label>
-              <input type="file" class="form-control" name="imagen" id="productImage" required >
+              <input type="file" class="form-control" name="imagen" id="productImage" required>
               <div class="text-danger" id="error-imagen"></div>
             </div>
             <div class="modal-footer">
@@ -115,15 +125,10 @@
               <input type="number" class="form-control" name="precio" id="productPrice-update">
               <div class="text-danger" id="error-precio-update"></div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3"> 
               <label for="productCategory" class="form-label">Categoría</label>
-              <select class="form-select" name="categorias" id="productCategory-update">
-                <option value="" disabled selected>Selecciona una categoría</option>
-                <option value="remeras">Remeras</option>
-                <option value="pantalones">Pantalones</option>
-                <option value="tapados">Tapados</option>
-                <option value="camperas">Camperas</option>
-                <option value="carteras">Carteras</option>
+              <select class="form-select" name="categorias" id="productCategory-update"> 
+                <!-- contenido dinámico con JavaScript -->  
               </select>
               <div class="text-danger" id="error-categoria-update"></div>
             </div>
@@ -145,22 +150,57 @@
         </div>
       </div>
     </div>
-  </div> 
+  </div>  
 
- 
-  
+  <!-- Modal Confirmación -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p>¿Estás seguro de que deseas eliminar este registro?</p>
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="boton-confirmacion">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Floating Button -->
-  <div class="floating-btn">
-    <button class="btn btn-danger rounded-circle"><i class="fas fa-cogs"></i></button>
+  <!-- Floating Button con íconos de sol y luna -->
+  <div class="floating-btn" onclick="toggleDarkMode()">
+    <img id="themeIcon" src="https://img.icons8.com/ios/50/000000/sun.png" alt="Sol">
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script> 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="./js/registroProductos.js"></script>
+  <script type="module" src="./js/productosInactivos.js"></script> 
 
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.getElementById('themeIcon');
+      if (document.body.classList.contains('dark-mode')) {
+        icon.src = 'https://img.icons8.com/ios/50/000000/moon.png'; // Luna
+      } else {
+        icon.src = 'https://img.icons8.com/ios/50/000000/sun.png'; // Sol
+      }
+    }
+
+    // Estilo para el modo oscuro
+    document.body.classList.add('light-mode'); 
+
+    
+  </script>
 </body>
+
+
 
 
 
