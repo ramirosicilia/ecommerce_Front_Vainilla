@@ -1,5 +1,4 @@
 
-
 let btnEditar=[] 
 let btnEliminar=[] 
 let categoriasUnicas
@@ -20,6 +19,10 @@ function eliminar(fila) {
     fila.remove(); // Elimina solo la fila específica
 }
  
+document.addEventListener("DOMContentLoaded", () => {
+    restaurarEstados();
+});
+
 btnBuscar.addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -35,35 +38,21 @@ btnBuscar.addEventListener("click", async (e) => {
         dataCategory = await response.json();
         console.log(dataCategory);
 
-        // Recuperar categorías locales
         let categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
         console.log("Categorías locales:", categoriasLocales);
 
-        // Crear un Set para mantener categorías únicas
         categoriasUnicas = new Set();
+        dataCategory.forEach((category) => categoriasUnicas.add(category.categorias.nombre_categoria));
+        categoriasLocales.forEach((categoria) => categoriasUnicas.add(categoria.categoria));
 
-        // Agregar categorías de la base de datos al Set
-        dataCategory.forEach((category) => {
-            categoriasUnicas.add(category.categorias.nombre_categoria);
-        });
-
-        // Agregar categorías del localStorage al Set
-        categoriasLocales.forEach((categoria) => {
-            categoriasUnicas.add(categoria.categoria);
-        });
-
-        // Limpia el contenido previo del cuerpo de la tabla
         cuerpocategoria.innerHTML = "";
 
-        // Indicador para verificar si hubo coincidencias
         let hayCoincidencias = false;
 
-        // Verificar coincidencias con el valor del input y mostrar resultados únicos
         categoriasUnicas.forEach((categoriaNombre) => {
             if (categoriaNombre === valorInputID.toLowerCase()) {
                 hayCoincidencias = true;
 
-                // Crear una fila para agregarla al cuerpo de la tabla
                 const fila = document.createElement("tr");
 
                 fila.innerHTML = `
@@ -79,14 +68,11 @@ btnBuscar.addEventListener("click", async (e) => {
                     </td>
                 `;
 
-                
-                // Añadir la fila al cuerpo de la tabla
                 cuerpocategoria.appendChild(fila);
 
-                // Agregar eventos al checkbox
                 const checkbox = fila.querySelector(".select-category");
                 checkbox.addEventListener("change", () => {
-                    funcionChequeado(checkbox, categoriaNombre,fila);
+                    funcionChequeado(checkbox, categoriaNombre, fila);
                 });
 
                 btnEditar = [...document.querySelectorAll(".btn__editar")];
@@ -94,10 +80,12 @@ btnBuscar.addEventListener("click", async (e) => {
 
                 updateCategoria(categoriaNombre);
                 eliminarCategoria(btnEliminar, categoriaNombre, fila);
+
+                // Restaurar estado del checkbox y fila
+                restaurarEstado(categoriaNombre, checkbox, fila);
             }
         });
 
-        // Si no hay coincidencias, muestra un mensaje de alerta
         if (!hayCoincidencias) {
             Swal.fire({
                 title: "¡La Categoria no Existe!",
@@ -110,10 +98,41 @@ btnBuscar.addEventListener("click", async (e) => {
     }
 });
 
-async function funcionChequeado(check, categoriaNombre,fila) {
-    const activo = check.checked;
+function guardarEstado(categoriaNombre, check, fila) {
+    const estado = {
+        checked: check.checked,
+        tieneClase: fila.classList.contains("table-danger")
+    };
+    localStorage.setItem(categoriaNombre, JSON.stringify(estado));
+}
 
-    console.log(`Estado del checkbox para ${categoriaNombre}: ${activo ? false : true}`);
+function restaurarEstados() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][data-id]');
+
+    checkboxes.forEach((checkbox) => {
+        const categoriaNombre = checkbox.getAttribute("data-id");
+        const fila = checkbox.closest("tr");
+        restaurarEstado(categoriaNombre, checkbox, fila);
+    });
+}
+
+function restaurarEstado(categoriaNombre, check, fila) {
+    const estadoGuardado = JSON.parse(localStorage.getItem(categoriaNombre));
+
+    if (estadoGuardado) {
+        check.checked = estadoGuardado.checked;
+        if (estadoGuardado.tieneClase) {
+            fila.classList.add("table-danger");
+            fila.style.opacity = "0.4";
+        } else {
+            fila.classList.remove("table-danger");
+            fila.style.opacity = "1";
+        }
+    }
+}
+
+async function funcionChequeado(check, categoriaNombre, fila) {
+    const activo = check.checked;
 
     try {
         const response = await fetch("http://localhost:1200/desactivar-categoria", {
@@ -131,24 +150,19 @@ async function funcionChequeado(check, categoriaNombre,fila) {
             throw new Error("Error al actualizar la categoría");
         }
 
-        const result = await response.json(); 
+        const result = await response.json();
 
+        if (result.desactivar === false) {
+            fila.style.opacity = ".4";
+            fila.classList.add("table-danger");
+            check.checked = true;
+        } else {
+            fila.style.opacity = "1";
+            fila.classList.remove("table-danger");
+            check.checked = false;
+        }
 
-         if(result.desactivar===false){ 
-            fila.style.opacity=".4"
-            check.checked=true
-
-         } 
-
-         
-         if(result.desactivar===true){ 
-            fila.style.opacity="1"
-            check.checked=false
-
-         }
-   
-   
-
+        guardarEstado(categoriaNombre, check, fila);
 
         Swal.fire({
             title: activo
@@ -159,24 +173,10 @@ async function funcionChequeado(check, categoriaNombre,fila) {
         });
     } catch (error) {
         console.error("Error al realizar la actualización:", error);
-
-        Swal.fire({
-            title: "Error al actualizar la categoría",
-            text: "Inténtalo de nuevo más tarde.",
-            icon: "error",
-            confirmButtonText: "Entendido",
-        });
-
-        // Restaurar el estado del checkbox si ocurrió un error
-        check.checked= !activo;
+        check.checked = !activo; // Revertir el estado en caso de error
+        guardarEstado(categoriaNombre, check, fila);
     }
 }
-
-
-
-
-
-
 
     function updateCategoria(name){   
 
@@ -223,7 +223,13 @@ async function funcionChequeado(check, categoriaNombre,fila) {
                     activo: true 
                 });
             }
-             localStorage.setItem("category", JSON.stringify(categoriasLocales));
+             localStorage.setItem("category", JSON.stringify(categoriasLocales)); 
+
+             setTimeout(() => {
+                window.location.reload();
+                
+            }, 1000);
+            
 
            } 
 
@@ -233,7 +239,8 @@ async function funcionChequeado(check, categoriaNombre,fila) {
             console.log(message.err)
            }
 
-        })
+        }) 
+
         
 
    

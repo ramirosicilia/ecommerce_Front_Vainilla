@@ -28,12 +28,12 @@
             <h5 class="card-title mb-0">Lista de Productos</h5>
             <!-- Select de Categorías -->
             <select class="form-select ms-3" id="categoria-select-products" style="width: auto;">
-              <option value="tapados">Tapados</option>
-              <option value="remeras">Remeras</option>
-              <option value="carteras">Carteras</option>
-              <option value="pantalones">Pantalones</option>
-              <option value="camperas">Camperas</option>
-              <option value="vestidos">Vestidos</option>
+              <option value="" disabled selected>Seleccione una categoría</option>
+
+              
+             
+              <!-- contenido dinámico con JavaScript --> 
+           
             </select>
           </div>
           
@@ -181,6 +181,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="./js/registroProductos.js"></script>
   <script type="module" src="./js/productosInactivos.js"></script> 
+  <script type="module" src="./js/filtradoProductosAdmin.js"></script>
 
   <script>
     function toggleDarkMode() {

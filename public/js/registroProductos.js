@@ -17,7 +17,8 @@ import { validarFormularioProducto, validarFormularioProductoUpdate } from "./va
     } 
 
     else{
-      const productosData= await response.json() 
+      const productosData= await response.json()  
+      console.log(productosData)
       
 
       mostrarProductosAdmin(productosData) 
@@ -45,7 +46,7 @@ import { validarFormularioProducto, validarFormularioProductoUpdate } from "./va
 pedirProductos()  
 
 
-
+let categoriasUnicas = [];
 
 function mostrarProductosAdmin(productos) {
   const tbody = document.getElementById("cuerpo-productos");
@@ -62,10 +63,12 @@ function mostrarProductosAdmin(productos) {
   console.log("Categorías desde localStorage:", categoriasLocales);
 
   // Crear un array para almacenar las categorías únicas y activas
-  let categoriasUnicas = [];
+ 
    console.log(productos[0].activacion)
   // Filtrar productos con categorías activas
-  let productosActivos = productos.filter(producto => producto.categorias.activo === true);
+  let productosActivos = productos.filter(producto => producto.categorias?.activo === true);
+
+  console.log("Productos activos:", productosActivos);
 
   // Agregar categorías activas de los productos
   productosActivos.forEach(producto => {
@@ -191,7 +194,7 @@ formulario.addEventListener("submit", async (event) => {
  
 }); 
 
-   function activarBotones(botonesEdit,botonesElim){ 
+  export function activarBotones(botonesEdit,botonesElim){ 
 
     botonesEdit.forEach((boton,index)=>{ 
 
@@ -215,7 +218,7 @@ formulario.addEventListener("submit", async (event) => {
 
         const productos= await pedirProductos() 
 
-        const productoID=productos[index].producto_id 
+        const productoID=productos[index]?.producto_id 
 
         eliminarProductoSinVentas(productoID)
 
@@ -264,7 +267,8 @@ formulario.addEventListener("submit", async (event) => {
           if (desactivado) {
             filaProducto.classList.add("desactivado");
             celdasContenido.forEach((celda) => (celda.style.opacity = "0.4"));
-            botonesAccion.forEach((boton) => (boton.style.opacity = "1")); // Botones sin opacidad
+            botonesAccion.forEach((boton) => (boton.style.opacity = desactivado ? "0.4" : "1"));
+
             estadosGuardados[dataID] = "desactivado";
           } else {
             filaProducto.classList.remove("desactivado");
@@ -302,6 +306,16 @@ formulario.addEventListener("submit", async (event) => {
     
 
  function actualizarEnvioUpdate(id){ 
+ 
+
+  const selectCategorias = document.getElementById("productCategory-update");
+
+       categoriasUnicas.forEach((categoria) => { 
+     
+           selectCategorias.innerHTML += `<option value="${categoria}">${categoria}</option>`;
+       });
+       console.log(categoriasUnicas)
+
 
   formularioUpdate.addEventListener("submit", async (e) => {
     e.preventDefault(); 
@@ -341,7 +355,9 @@ formulario.addEventListener("submit", async (event) => {
 
   
        const datos=response.json() 
-       console.log(datos.data)
+       console.log(datos.data) 
+
+       
 
       formulario.reset(); 
       setTimeout(() => { 
