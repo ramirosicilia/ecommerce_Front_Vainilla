@@ -130,7 +130,7 @@ btnBuscar.addEventListener("click", async (e) => {
 });
 
 
-export function guardarEstado(categoriaNombre, check, fila) {
+ function guardarEstado(categoriaNombre, check, fila) {
     const estado = {
         checked: check.checked,
         tieneClase: fila.classList.contains("table-danger")
@@ -138,7 +138,7 @@ export function guardarEstado(categoriaNombre, check, fila) {
     localStorage.setItem(categoriaNombre, JSON.stringify(estado));
 }
 
-export function restaurarEstados() {
+ function restaurarEstados() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"][data-id]');
 
     checkboxes.forEach((checkbox) => {
@@ -255,7 +255,8 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
                     activo: true 
                 });
             }
-             localStorage.setItem("category", JSON.stringify(categoriasLocales)); 
+             localStorage.setItem("category", JSON.stringify(categoriasLocales));  
+               
 
              setTimeout(() => {
                 window.location.reload();

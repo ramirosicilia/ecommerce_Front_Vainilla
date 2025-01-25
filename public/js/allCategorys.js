@@ -1,4 +1,4 @@
-import{eliminarCategoria,updateCategoria } from "./Categorias.js" 
+import{eliminarCategoria,updateCategoria,funcionChequeado,restaurarEstado } from "./Categorias.js" 
 
 
 
@@ -64,6 +64,14 @@ botonTodas.addEventListener("click",async()=>{
             `;
 
             cuerpocategoria.appendChild(fila); 
+
+             const checkbox = fila.querySelector(".select-category");
+                                 checkbox.addEventListener("change", () => {
+                                     funcionChequeado(checkbox, categoria.nombre, fila);
+                                 });
+             
+
+
             const btnEliminar = fila.querySelector(".btn-eliminar");
             btnEliminar.addEventListener("click", () => {
                 eliminarCategoria(categoria.id, categoria.nombre, fila);
@@ -72,7 +80,7 @@ botonTodas.addEventListener("click",async()=>{
             btnEditar.addEventListener("click", () => {
                 updateCategoria( categoria.nombre);
             }); 
-
+             restaurarEstado(categoria.nombre, checkbox, fila);
              
         }) 
           
