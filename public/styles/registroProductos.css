@@ -86,7 +86,9 @@ tr.desactivado .btn-eliminar {
   pointer-events: auto; /* Permite que sean clicables */
 }
 
-
+.form-select{
+  overflow: scroll;
+}
 
 
 /* Estilos para la tabla */

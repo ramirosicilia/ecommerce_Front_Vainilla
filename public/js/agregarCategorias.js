@@ -30,7 +30,7 @@ formularioCategoria.addEventListener("submit", async (e) => {
 
         // Asegurarse de que la categoría no esté ya en el localStorage
         if (!categorias.some(c => c.nombre === data[0].nombre_categoria)) {
-            categorias.push({ categoria: data[0].nombre_categoria ,activo:data[0].activo});
+            categorias.push({ categoria: data[0].nombre_categoria ,activo:data[0].activo,id:data[0].categoria_id});
             console.log("Categorías actualizadas:", categorias);
             localStorage.setItem('category', JSON.stringify(categorias));
         } else {

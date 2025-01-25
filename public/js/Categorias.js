@@ -1,6 +1,6 @@
 
 let btnEditar=[] 
-let btnEliminar=[] 
+
 let categoriasUnicas
 let dataCategory=[] 
 let checkbox
@@ -21,7 +21,8 @@ function eliminar(fila) {
  
 document.addEventListener("DOMContentLoaded", () => {
     restaurarEstados();
-});
+}); 
+
 
 btnBuscar.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -35,57 +36,87 @@ btnBuscar.addEventListener("click", async (e) => {
             throw new Error("No se obtuvo la data");
         }
 
-        dataCategory = await response.json();
+        const dataCategory = await response.json();
         console.log(dataCategory);
 
-        let categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
+        // Obtener categorías locales desde localStorage
+        const categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
         console.log("Categorías locales:", categoriasLocales);
 
-        categoriasUnicas = new Set();
-        dataCategory.forEach((category) => categoriasUnicas.add(category.categorias.nombre_categoria));
-        categoriasLocales.forEach((categoria) => categoriasUnicas.add(categoria.categoria));
+        // Conjunto para almacenar nombres únicos de categorías
+        const categoriasUnicas = new Set();
 
-        cuerpocategoria.innerHTML = "";
-
-        let hayCoincidencias = false;
-
-        categoriasUnicas.forEach((categoriaNombre) => {
-            if (categoriaNombre === valorInputID.toLowerCase()) {
-                hayCoincidencias = true;
-
-                const fila = document.createElement("tr");
-
-                fila.innerHTML = `
-                    <td><input type="checkbox" class="form-check-input select-category" data-id="${categoriaNombre}"></td>
-                    <td>${categoriaNombre}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm btn__editar" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-danger btn-sm btn-eliminar btn__borrar">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </td>
-                `;
-
-                cuerpocategoria.appendChild(fila);
-
-                const checkbox = fila.querySelector(".select-category");
-                checkbox.addEventListener("change", () => {
-                    funcionChequeado(checkbox, categoriaNombre, fila);
-                });
-
-                btnEditar = [...document.querySelectorAll(".btn__editar")];
-                btnEliminar = [...document.querySelectorAll(".btn__borrar")];
-
-                updateCategoria(categoriaNombre);
-                eliminarCategoria(btnEliminar, categoriaNombre, fila);
-
-                // Restaurar estado del checkbox y fila
-                restaurarEstado(categoriaNombre, checkbox, fila);
+        // Agregar nombres únicos desde dataCategory
+        dataCategory.forEach((category) => {
+            if (category.categorias && category.categorias.nombre_categoria) {
+                categoriasUnicas.add(category.categorias.nombre_categoria);
             }
         });
 
+        // Agregar nombres únicos desde categoriasLocales
+        categoriasLocales.forEach((categoria) => categoriasUnicas.add(categoria.categoria));
+
+        let hayCoincidencias = false;
+
+        // Recorrer las categorías combinadas para buscar coincidencias
+        [...dataCategory, ...categoriasLocales].forEach((category) => {
+            const categoriaNombre = category.categoria?.toLowerCase() || category.categorias?.nombre_categoria?.toLowerCase();
+            const categoriaID = category.categoria_id || category.id; // Usar el ID según la fuente
+
+            if (categoriaNombre === valorInputID.toLowerCase()) {
+                hayCoincidencias = true;
+
+                // Verificar si la categoría ya está en la tabla
+                const yaExiste = [...cuerpocategoria.querySelectorAll("tr")].some(
+                    (fila) => fila.querySelector("td:nth-child(2)").innerText.toLowerCase() === categoriaNombre
+                );
+
+                if (!yaExiste) {
+                    // Crear una nueva fila para la tabla
+                    const fila = document.createElement("tr");
+
+                    fila.innerHTML = `
+                        <td><input type="checkbox" class="form-check-input select-category" data-id="${categoriaID}"></td>
+                        <td>${categoriaNombre}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn__editar" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-eliminar btn__borrar" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </td>
+                    `;
+
+                    // Agregar la fila al cuerpo de la tabla
+                    cuerpocategoria.appendChild(fila);
+
+                    // Manejar el evento del checkbox
+                    const checkbox = fila.querySelector(".select-category");
+                    checkbox.addEventListener("change", () => {
+                        funcionChequeado(checkbox, categoriaNombre, fila);
+                    });
+
+                    console.log("ID agregado:", categoriaID);
+
+                    // Actualizar botones de edición y eliminación
+                    btnEditar = [...document.querySelectorAll(".btn__editar")];
+
+                    const btnEliminar = fila.querySelector(".btn-eliminar");
+                    btnEliminar.addEventListener("click", () => {
+                        eliminarCategoria(categoriaID, categoriaNombre, fila);
+                    });
+
+                    // Llamadas a funciones adicionales
+                    updateCategoria(categoriaNombre);
+
+                    // Restaurar estado del checkbox y fila
+                    restaurarEstado(categoriaNombre, checkbox, fila);
+                }
+            }
+        });
+
+        // Mostrar alerta si no hay coincidencias
         if (!hayCoincidencias) {
             Swal.fire({
                 title: "¡La Categoria no Existe!",
@@ -94,11 +125,12 @@ btnBuscar.addEventListener("click", async (e) => {
             });
         }
     } catch (err) {
-        console.log(err.message);
+        console.log("Error:", err.message);
     }
 });
 
-function guardarEstado(categoriaNombre, check, fila) {
+
+export function guardarEstado(categoriaNombre, check, fila) {
     const estado = {
         checked: check.checked,
         tieneClase: fila.classList.contains("table-danger")
@@ -106,7 +138,7 @@ function guardarEstado(categoriaNombre, check, fila) {
     localStorage.setItem(categoriaNombre, JSON.stringify(estado));
 }
 
-function restaurarEstados() {
+export function restaurarEstados() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"][data-id]');
 
     checkboxes.forEach((checkbox) => {
@@ -116,7 +148,7 @@ function restaurarEstados() {
     });
 }
 
-function restaurarEstado(categoriaNombre, check, fila) {
+export function restaurarEstado(categoriaNombre, check, fila) {
     const estadoGuardado = JSON.parse(localStorage.getItem(categoriaNombre));
 
     if (estadoGuardado) {
@@ -131,7 +163,7 @@ function restaurarEstado(categoriaNombre, check, fila) {
     }
 }
 
-async function funcionChequeado(check, categoriaNombre, fila) {
+export async function funcionChequeado(check, categoriaNombre, fila) {
     const activo = check.checked;
 
     try {
@@ -178,7 +210,7 @@ async function funcionChequeado(check, categoriaNombre, fila) {
     }
 }
 
-    function updateCategoria(name){   
+   export function updateCategoria(name){   
 
         let formularioActualizar=document.getElementById('formulario-categoria-update') 
 
@@ -242,45 +274,54 @@ async function funcionChequeado(check, categoriaNombre, fila) {
         }) 
 
         
-
    
-    }
+    } 
 
-
-
- // Función para eliminar categoría
-function eliminarCategoria(botones, nombre, fila) {
-    botones.forEach(btn => {
-        btn.addEventListener('click', async () => {
+    
+   export function eliminarCategoria(id, nombre, fila) {
+        const botonEliminar = document.getElementById("confirmDelete");
+    
+        if (!botonEliminar) {
+            console.error("Botón de confirmación no encontrado");
+            return;
+        }
+    
+        botonEliminar.addEventListener("click", async () => {
             try {
-                const response = await fetch("http://localhost:1200/eliminar-categoria", {
+                const response = await fetch(`http://localhost:1200/eliminar-categoria/${id}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ nombre }),
                 });
-
+    
                 const data = await response.json();
-
+    
                 if (response.ok) {
-                    console.log("Categoría eliminada en el servidor:", nombre);
-
+                    console.log("Categoría eliminada en el servidor:", id);
+    
                     // Eliminar del localStorage
                     let categorias = JSON.parse(localStorage.getItem("category")) || [];
-                    categorias = categorias.filter(categoria => categoria.categoria !== nombre);
+                    categorias = categorias.filter((categoria) => categoria.id !== id);  // Usar id en lugar de nombre
                     localStorage.setItem("category", JSON.stringify(categorias));
-
+    
                     console.log("Categoría eliminada del localStorage:", nombre);
-
+    
                     // Eliminar la fila del DOM
                     fila.remove();
+    
+                    // Cerrar el modal programáticamente después de eliminar
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal'));
+                    if (modal) modal.hide();
+
+                    // Verificar si quedan categorías en la tabla
+                    
                 } else {
                     console.error("No se pudo eliminar la categoría:", data.message);
                 }
             } catch (err) {
-                console.log('No se eliminó la categoría', err);
+                console.error("Error al intentar eliminar la categoría:", err);
             }
         });
-    });
-}
+    }
+    

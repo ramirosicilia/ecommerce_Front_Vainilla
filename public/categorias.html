@@ -7,7 +7,13 @@
   <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-  <style>
+  <style> 
+    
+    body {
+      width: 97%;
+      margin: auto;
+    }
+  
     .floating-btn {
       position: fixed;
       bottom: 20px;
@@ -78,7 +84,83 @@
     .table_danger {
       background-color: #f8d7da !important;
       opacity: .6;
-    }
+    }  
+
+
+  /* Modal content */
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+/* Modal header */
+.modal-header {
+    background: rgba(255, 0, 0, 0.1);
+    border-bottom: none;
+}
+
+.modal-title {
+    font-weight: bold;
+    color: #dc3545; /* Rojo */
+}
+
+/* Texto del cuerpo */
+.modal-body p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Botones */
+.modal-content .btn {
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.modal-content .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón "Eliminar" */
+.btn-danger {
+    background-color: #ff3b3b;
+    border-color: #ff3b3b;
+}
+
+.btn-danger:hover {
+    background-color: #ff1e1e;
+    border-color: #ff1e1e;
+}
+
+/* Botón "Cancelar" */
+.btn-secondary {
+    background-color: #f1f1f1;
+    color: #333;
+    border-color: #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e2e2;
+    border-color: #ccc;
+} 
+
+#allCategoriesButton {
+    border-radius: 25px; /* Botón con bordes redondeados */
+    font-weight: bold; /* Texto más grueso */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para un efecto flotante */
+    transition: transform 0.2s, box-shadow 0.2s; /* Animación al hacer hover */
+  }
+
+  #allCategoriesButton:hover {
+    transform: scale(1.05); /* Efecto de agrandamiento */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Sombra más profunda */
+  }
+
+
+
   </style>
 </head>
 <body>
@@ -90,11 +172,21 @@
   </div>
 
   <!-- Buscador de Categorías -->
-  <div class="search-container">
-    <input type="text" class="form-control" id="searchCategory" placeholder="Buscar Categoría">
-    <button class="btn" type="submit" id="searchButton"><i class="fas fa-search"></i> Buscar</button>
-    <button class="btn" id="clearButton"><i class="fas fa-times"></i> Limpiar</button>
-  </div>
+  <div class="search-container d-flex justify-content-between align-items-center">
+    <div class="d-flex gap-2">
+        <input type="text" class="form-control" id="searchCategory" placeholder="Buscar Categoría">
+        <button class="btn btn-primary" type="submit" id="searchButton">
+            <i class="fas fa-search"></i> Buscar
+        </button>
+        <button class="btn btn-secondary" id="clearButton">
+            <i class="fas fa-times"></i> Limpiar
+        </button>
+    </div>
+    <button class="btn btn-primary btn-lg px-8"  id="allCategoriesButton">Todas</button>
+</div>
+
+
+
 
   <!-- Tabla de Categorías -->
   <div class="card mb-4">
@@ -183,7 +275,36 @@
       </div>
     </div>
   </div>
+</div> 
+
+
+
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <!-- Encabezado del modal -->
+          <div class="modal-header">
+              <h5 class="modal-title" id="deleteCategoryModalLabel">¿Eliminar Categoría?</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <!-- Cuerpo del modal -->
+          <div class="modal-body text-center">
+              <p>
+                  ¿Estás seguro de que deseas eliminar la categoría 
+                  <strong id="categoryToDelete"></strong>? 
+                  Esta acción no se puede deshacer.
+              </p>
+              <!-- Botones de acción -->
+              <div class="d-flex justify-content-center gap-3">
+                  <button type="button" class="btn btn-danger btn-borrar-confirm" id="confirmDelete">Sí, eliminar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, cancelar</button>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
+
+
 
 <!-- Floating Button -->
 <div class="floating-btn">
@@ -194,10 +315,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script type="module" src="./js/agregarCategorias.js"></script>
 <script type="module" src="./js/Categorias.js"></script>
-
-
- 
-
+<script type="module" src="./js/allCategorys.js"></script>
 
 </body>
 </html>

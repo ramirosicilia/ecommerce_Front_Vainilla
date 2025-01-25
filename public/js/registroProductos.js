@@ -138,7 +138,8 @@ function mostrarProductosAdmin(productos) {
 
 //Formulario Actualizacion 
 
-const formulario = document.getElementById("formulario-producto");
+const formulario = document.getElementById("formulario-producto"); 
+console.log(formulario)
 
 formulario.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -303,11 +304,10 @@ formulario.addEventListener("submit", async (event) => {
   const formularioUpdate = document.getElementById("formulario-producto-update"); 
  console.log(formularioUpdate) 
 
-    
-
- function actualizarEnvioUpdate(id){ 
  
+ function actualizarEnvioUpdate(id){  
 
+  
   const selectCategorias = document.getElementById("productCategory-update");
 
        categoriasUnicas.forEach((categoria) => { 
@@ -381,8 +381,9 @@ formulario.addEventListener("submit", async (event) => {
  } 
 
 
+
  async function  eliminarProductoSinVentas(id) { 
-  const botonConfirmacion=document.getElementById("boton-confirmacion")
+  const botonConfirmacion=document.getElementById("boton-confirmacion-borrar")
 
 
     
