@@ -10,58 +10,68 @@
 </head>
 <body> 
    
-    <main>  
+
 
      
-      <div class="contenedor"> 
+      <div class="contenedor">  
 
-        <div class="container__cookies" id="container-cookies">
-          <h2>¿Desea usted aceptar las cookies, todos sus datos seran guardados por la empresa?</h2> 
+        <div class="hero-section">
+          <img src="./images/mujeres_comprando.jpg" alt="Imagen principal" class="hero-image">
+          <div class="gradient-overlay"></div>
+          <div class="hero-text"> 
 
-          <div class="container__button">
-            <button id="boton-si" type="button" value="si">Si</button>
-            <button id="boton-no" type="button" value="no">No</button>
+            <div class="container__cookies" id="container-cookies">
+              <h2>¿Desea usted aceptar las cookies, todos sus datos seran guardados por la empresa?</h2> 
+    
+              <div class="container__button">
+                <button id="boton-si" type="button" value="si">Si</button>
+                <button id="boton-no" type="button" value="no">No</button>
+              </div>
+    
+            </div>
+    
+            <form class="form__login" action="http://localhost:1200/login-logeado"method="POST" id="login"> 
+                 <h1 class="user_pass">Ingrese su usuario y contraseña</h1> 
+    
+                <div class="container">
+                    <label for="">Ingrese su usuario</label> 
+                    <input type="text" name="usuario" id="usuario-ingresado"> 
+    
+                    <div class="container__icon container__one" id="container-login-1"> 
+                      <i class="bi bi-x-square icono"></i>  
+                      <p class="error">El nombre solo debe contener letras (incluyendo acentos), espacios y guiones."</p>
+                  </div>
+    
+                </div> 
+          
+                <div class="container">
+                    <label for="">Ingrese su Password</label> 
+                    <input type="password" name="password" id="usuario-password"> 
+    
+                    <div class="container__icon container__two" id="container-login-2"> 
+                      <i class="bi bi-x-square icono"></i>  
+                      <p class="error">La contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un dígito, y un carácter especial de entre: @$!%*?&_ -.</p>
+                  </div>
+    
+    
+                </div> 
+    
+                   <p><a href="./envioRecuperacion.html">no recuerdas tu usuario o contraseña! cliquea aqui!</a></p>
+                    
+                 
+                   <input type="submit" value="enviar" class="enviar"> 
+    
+            </form>
+          
+           
           </div>
-
         </div>
 
-        <form class="form__login" action="http://localhost:1200/login-logeado"method="POST" id="login"> 
-             <h1 class="user_pass">Ingrese su usuario y contraseña</h1> 
-
-            <div class="container">
-                <label for="">Ingrese su usuario</label> 
-                <input type="text" name="usuario" id="usuario-ingresado"> 
-
-                <div class="container__icon container__one" id="container-login-1"> 
-                  <i class="bi bi-x-square icono"></i>  
-                  <p class="error">El nombre solo debe contener letras (incluyendo acentos), espacios y guiones."</p>
-              </div>
-
-            </div> 
-      
-            <div class="container">
-                <label for="">Ingrese su Password</label> 
-                <input type="password" name="password" id="usuario-password"> 
-
-                <div class="container__icon container__two" id="container-login-2"> 
-                  <i class="bi bi-x-square icono"></i>  
-                  <p class="error">La contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un dígito, y un carácter especial de entre: @$!%*?&_ -.</p>
-              </div>
-
-
-            </div> 
-
-               <p><a href="./envioRecuperacion.html">no recuerdas tu usuario o contraseña! cliquea aqui!</a></p>
-                
-             
-               <input type="submit" value="enviar" class="enviar"> 
-
-        </form>
-      
+       
 
       </div>
     
-    </main>
+
   
 
 

@@ -1,10 +1,10 @@
 import{eliminarCategoria,updateCategoria,funcionChequeado,restaurarEstado } from "./Categorias.js" 
 
+ 
 
+const botonTodas=document.getElementById("allCategoriesButton")  
 
-let btnEditar=[] 
-
-const botonTodas=document.getElementById("allCategoriesButton") 
+let entrada=true
 
 botonTodas.addEventListener("click",async()=>{    
 
@@ -43,10 +43,11 @@ botonTodas.addEventListener("click",async()=>{
     console.log(categoriasCombinadas); 
 
 
-    const cuerpocategoria = document.getElementById("cuerpo-categorias");
+    const cuerpocategoria = document.getElementById("cuerpo-categorias"); 
+    cuerpocategoria.innerHTML = "";
 
 
-    if(categoriasCombinadas.length>0){
+    if(categoriasCombinadas.length>0 && entrada){
         categoriasCombinadas.forEach(categoria=>{  
             const fila = document.createElement("tr");
 
@@ -86,8 +87,13 @@ botonTodas.addEventListener("click",async()=>{
           
 
           
-    }   
-   
+    }  
+    
+    else{  
+        let entrada=false
+        cuerpocategoria.innerHTML = ""
+           
+    }
 
        
 
@@ -95,6 +101,8 @@ botonTodas.addEventListener("click",async()=>{
 
    catch(error){
     console.log(error)
-   }
+   } 
+
+   entrada=!entrada
 
 } )

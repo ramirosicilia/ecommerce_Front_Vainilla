@@ -11,6 +11,8 @@ document.getElementById("clearButton").addEventListener("click", () => {
     inputID.value = "";
 });
 
+
+
 const btnBuscar = document.getElementById("searchButton");
 const cuerpocategoria = document.getElementById("cuerpo-categorias");
 
@@ -256,12 +258,13 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
                 });
             }
              localStorage.setItem("category", JSON.stringify(categoriasLocales));  
-               
-
+             const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
+             modal.hide();
+                 
              setTimeout(() => {
                 window.location.reload();
                 
-            }, 1000);
+             }, 1000);
             
 
            } 

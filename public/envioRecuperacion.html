@@ -11,25 +11,33 @@
 <body> 
 
     <div class="contenedor"> 
+        <div class="hero-section">
+            <img src="./images/mujeres_comprando.jpg" alt="Imagen principal" class="hero-image">
+            <div class="gradient-overlay"></div>
+            <form class="form__recuperacion" action="http://localhost:1200/recuperacion-cuenta"method="POST" id="form-recuperacion"> 
+                <h1 class="user_email">Ingrese su email</h1> 
+   
+                 <div class="container">
+                   <label for="email">Email</label>
+                   <input class="email__user" type="email" placeholder="Ingresa tu email" name="email"> 
+   
+                     <div class="container__icon" id="container-ingreso">
+                         <i class="bi bi-x-square icono"></i>
+                         <p class="error">Por favor, introduce un correo electrónico válido.</p>
+                     </div>
+                 </div>
+   
+                        
+                 <input type="submit" value="enviar" class="enviar"> 
+       
+           </form>
+
+           
+        </div>
+      
 
        
-        <form class="form__recuperacion" action="http://localhost:1200/recuperacion-cuenta"method="POST" id="form-recuperacion"> 
-             <h1 class="user_email">Ingrese su email</h1> 
-
-              <div class="container">
-                <label for="email">Email</label>
-                <input class="email__user" type="email" placeholder="Ingresa tu email" name="email"> 
-
-                  <div class="container__icon" id="container-ingreso">
-                      <i class="bi bi-x-square icono"></i>
-                      <p class="error">Por favor, introduce un correo electrónico válido.</p>
-                  </div>
-              </div>
-
-                     
-              <input type="submit" value="enviar" class="enviar"> 
-    
-        </form>
+       
       
 
     </div>

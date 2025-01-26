@@ -1,13 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos</title>
-</head>
-<body> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Usuario</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-    <h1>ingreso de Productos</h1>
-    
+  <!-- CSS Personalizado -->
+  <link rel="stylesheet" href="./styles/paginaProductos.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="#">MiTienda</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#categorias">Categorías</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#productos">Productos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contacto">Contacto</a>
+          </li>
+        </ul>
+        <div class="cart-icon ms-3 position-relative">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Selector de Categorías -->
+  <section id="categorias" class="py-4 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-4 text-primary">Categorías</h2>
+      <select id="categorySelector" class="form-select">
+        <option value="all">Todas las categorías</option>
+        <option value="tapados">Tapados</option>
+        <option value="remeras">Remeras</option>
+        <option value="camperas">Camperas</option>
+        <option value="vestidos">Vestidos</option>
+        <option value="carteras">Carteras</option>
+        <option value="pantalones">Pantalones</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Productos -->
+  <section id="productos" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4 text-primary">Productos</h2>
+      <div class="row g-4">
+        <!-- Producto 1 -->
+<div class="col-md-3 product-card" data-category="tapados">
+    <div class="card">
+      <img src="./images/imagen mujer tapado_Negro.png" class="card-img-top" alt="Tapado 1">
+      <div class="card-body">
+        <h5 class="card-title">Tapado Clásico</h5>
+        <p class="card-text">$120.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 2 -->
+  <div class="col-md-3 product-card" data-category="remeras">
+    <div class="card">
+      <img src="./images/chica-musculosa-naranja.jpeg" class="card-img-top" alt="Remera 1">
+      <div class="card-body">
+        <h5 class="card-title">Remera Casual</h5>
+        <p class="card-text">$40.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 3 -->
+  <div class="col-md-3 product-card" data-category="camperas">
+    <div class="card">
+      <img src="./images/chica_campera-negra.jpeg" class="card-img-top" alt="Campera 1">
+      <div class="card-body">
+        <h5 class="card-title">Campera Deportiva</h5>
+        <p class="card-text">$85.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 4 -->
+  <div class="col-md-3 product-card" data-category="vestidos">
+    <div class="card">
+      <img src="./images/chica-vestido-azul.jpeg" class="card-img-top" alt="Vestido 1">
+      <div class="card-body">
+        <h5 class="card-title">Vestido de Noche</h5>
+        <p class="card-text">$150.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 5 -->
+  <div class="col-md-3 product-card" data-category="carteras">
+    <div class="card">
+      <img src="./images/cartera-hermes.jpeg" class="card-img-top" alt="Cartera 1">
+      <div class="card-body">
+        <h5 class="card-title">Cartera Elegante</h5>
+        <p class="card-text">$75.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 6 -->
+  <div class="col-md-3 product-card" data-category="pantalones">
+    <div class="card">
+      <img src="./images/chica-pantalon-rosa.jpeg" class="card-img-top" alt="Pantalón 1">
+      <div class="card-body">
+        <h5 class="card-title">Pantalón Rosa</h5>
+        <p class="card-text">$65.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 7 -->
+  <div class="col-md-3 product-card" data-category="tapados">
+    <div class="card">
+      <img src="./images/imagen mujer tapado_Marron.png" class="card-img-top" alt="Tapado 2">
+      <div class="card-body">
+        <h5 class="card-title">Tapado Moderno</h5>
+        <p class="card-text">$140.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 8 -->
+  <div class="col-md-3 product-card" data-category="remeras">
+    <div class="card">
+      <img src="./images/chica-remera-lila.jpeg" class="card-img-top" alt="Remera 2">
+      <div class="card-body">
+        <h5 class="card-title">Remera Lila</h5>
+        <p class="card-text">$45.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 9 -->
+  <div class="col-md-3 product-card" data-category="camperas">
+    <div class="card">
+      <img src="./images/chica-campera-marron.jpeg" class="card-img-top" alt="Campera 2">
+      <div class="card-body">
+        <h5 class="card-title">Campera de Invierno</h5>
+        <p class="card-text">$95.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 10 -->
+  <div class="col-md-3 product-card" data-category="vestidos">
+    <div class="card">
+      <img src="./images/chica-vestido-cuadros.jpeg" class="card-img-top" alt="Vestido 2">
+      <div class="card-body">
+        <h5 class="card-title">Vestido Veraniego</h5>
+        <p class="card-text">$130.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 11 -->
+  <div class="col-md-3 product-card" data-category="carteras">
+    <div class="card">
+      <img src="./images/chica-cartera-louis-button.jpeg" class="card-img-top" alt="Cartera 2">
+      <div class="card-body">
+        <h5 class="card-title">Cartera Casual</h5>
+        <p class="card-text">$60.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 12 -->
+  <div class="col-md-3 product-card" data-category="pantalones">
+    <div class="card">
+      <img src="./images/chica-pantalon-blanco.jpeg" class="card-img-top" alt="Pantalón 2">
+      <div class="card-body">
+        <h5 class="card-title">Pantalón Blanco</h5>
+        <p class="card-text">$50.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 13 -->
+  <div class="col-md-3 product-card" data-category="pantalones">
+    <div class="card">
+      <img src="./images/pantalon-fashion.jpeg" class="card-img-top" alt="Pantalón 3">
+      <div class="card-body">
+        <h5 class="card-title">Zapato Formal</h5>
+        <p class="card-text">$100.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 14 -->
+  <div class="col-md-3 product-card" data-category="vestidos">
+    <div class="card">
+      <img src="./images/chica-vestido-Amarillo.jpeg" class="card-img-top" alt="Zapato 2">
+      <div class="card-body">
+        <h5 class="card-title">Zapato Deportivo</h5>
+        <p class="card-text">$90.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 15 -->
+  <div class="col-md-3 product-card" data-category="pantalones">
+    <div class="card">
+      <img src="./images/chica-pantalon-verde.jpeg" class="card-img-top" alt="Accesorio 1">
+      <div class="card-body">
+        <h5 class="card-title">Pantalon rosa</h5>
+        <p class="card-text">$35.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <!-- Producto 16 -->
+  <div class="col-md-3 product-card" data-category="accesorios">
+    <div class="card">
+      <img src="./images/remerita-rosa.jpeg" class="card-img-top" alt="Accesorio 2">
+      <div class="card-body">
+        <h5 class="card-title">Remera rosa</h5>
+        <p class="card-text">$250.00</p>
+        <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  
+      </div>
+    </div>
+  </section>
+
+ <!-- Footer -->
+<footer class="footer bg-primary text-white py-4" id="contacto">
+    <div class="container">
+      <div class="footer-content text-center">
+        <p>© 2025 MiTienda - Todos los derechos reservados.</p>
+        <div class="contact-info"> 
+            
+          <a href="https://wa.me/1138778373" target="_blank" class="whatsapp-link">
+            <i class="bi bi-whatsapp"></i>
+            <span class="phone-number">+54 11 3877-8373</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- JS Personalizado -->
+  <script src="scripts.js"></script>
 </body>
 </html>
