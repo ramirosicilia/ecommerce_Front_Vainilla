@@ -23,6 +23,11 @@ body {
   
   .nav-link:hover {
     color: #007bff;
+  } 
+  .card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   
   .cart-icon {
@@ -59,6 +64,7 @@ body {
   
   .add-to-cart {
     transition: background-color 0.3s;
+    
   }
   
   .add-to-cart:hover {
