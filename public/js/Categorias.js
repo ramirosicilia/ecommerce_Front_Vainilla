@@ -1,9 +1,7 @@
 
 let btnEditar=[] 
 
-let categoriasUnicas
-let dataCategory=[] 
-let checkbox
+
 
 document.getElementById("clearButton").addEventListener("click", () => {
     const inputID = document.getElementById("searchCategory");
@@ -113,7 +111,7 @@ btnBuscar.addEventListener("click", async (e) => {
                     updateCategoria(categoriaNombre);
 
                     // Restaurar estado del checkbox y fila
-                    restaurarEstado(categoriaNombre, checkbox, fila);
+                    restaurarEstado(categoriaNombre, checkbox, fila,);
                 }
             }
         });
@@ -132,12 +130,15 @@ btnBuscar.addEventListener("click", async (e) => {
 });
 
 
- function guardarEstado(categoriaNombre, check, fila) {
+
+ function guardarEstado(categoriaNombre, check, fila,activo) {
     const estado = {
         checked: check.checked,
-        tieneClase: fila.classList.contains("table-danger")
+        tieneClase: fila.classList.contains("table-danger"),
+        activo:activo
     };
-    localStorage.setItem(categoriaNombre, JSON.stringify(estado));
+    localStorage.setItem(categoriaNombre, JSON.stringify(estado)); 
+    
 }
 
  function restaurarEstados() {
@@ -195,8 +196,20 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
             fila.classList.remove("table-danger");
             check.checked = false;
         }
-
-        guardarEstado(categoriaNombre, check, fila);
+        let categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
+        const categoriaExistente = categoriasLocales.find(c => c.categoria === categoriaNombre);
+        
+        if (categoriaExistente) {
+            categoriaExistente.activo = !activo;  // Cambia el estado de 'activo'
+        } else {
+            // Si no se encuentra la categoría, puedes agregarla
+            categoriasLocales.push({ categoria: categoriaNombre, activo: !activo });
+        }
+        
+        // Guardar el array actualizado en localStorage
+        localStorage.setItem('category', JSON.stringify(categoriasLocales));
+        
+        guardarEstado(categoriaNombre, check, fila, activo);
 
         Swal.fire({
             title: activo

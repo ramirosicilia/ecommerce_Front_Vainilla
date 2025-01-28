@@ -24,7 +24,9 @@ botonTodas.addEventListener("click",async()=>{
     // Mapea categorías locales al formato uniforme
     const mapeadaCategoriaStorage = categoriasLocales.map(categoria => ({
         nombre: categoria.categoria, // Ajusta según la propiedad correcta
-        id: categoria.id || null // Si no hay `id`, asigna null
+        id: categoria.id || null ,// Si no hay `id`, asigna null
+        activo: categoria.activo || null // Si no hay `activo`, asigna null
+
     }));
 
     // Mapea categorías del servidor al formato uniforme
