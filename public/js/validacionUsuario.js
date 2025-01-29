@@ -17,7 +17,7 @@ export function validarFormularioIngreso() {
     let apellidoValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-]+$/
     let emailValidar = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     let usuariolValidar = /^[a-zA-Z0-9_-]{3,16}$/;
-    let validarContraseña =/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_ -])[A-Za-z\d@$!%*?&_ -]{8,15}$/; 
+    let validarContraseña =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,16}$/;
     let dniValidar = /^[0-9]{6,12}$/;
 
      

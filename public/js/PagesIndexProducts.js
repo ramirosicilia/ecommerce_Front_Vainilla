@@ -48,13 +48,20 @@ async function obtenerProductosVenta() {
                     <div class="card-body">
                       <h5 class="card-title">${producto.nombre_producto}</h5>
                       <p class="card-text">$${producto.precio}</p>
-                      <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+                      <button class="btn btn-agregar btn-primary add-to-cart">Agregar al carrito</button>
                     </div>
                   </div>
                 </div>
 
             ` 
-         });
+         });  
+
+         let botonesAgregarCarrito=[...document.querySelectorAll(".btn-agregar")]
+        
+      
+         agregarBotonesAlCarrito(botonesAgregarCarrito)
+
+         
     
      } 
 
@@ -118,62 +125,132 @@ async function obtenerProductosVenta() {
     selectorCategorys()
 
 
-   selector.addEventListener("change", async (e) => {
-    const listaProductos=document.getElementById("product-list") 
-    const categoriaSelector = e.target.value; 
+    selector.addEventListener("change", async (e) => {
+      const listaProductos=document.getElementById("product-list") 
+      const categoriaSelector = e.target.value; 
 
-         listaProductos.innerHTML=""
+           listaProductos.innerHTML=""
 
-        if(categoriaSelector!="todas"){ 
+          if(categoriaSelector!="todas"){ 
 
-            productosFiltrados.forEach(producto=>{
+              productosFiltrados.forEach(producto=>{
 
-                if(producto.categorias.nombre_categoria===categoriaSelector){    
-                    console.log(producto)
-                    console.log(categoriaSelector)
-                 
-                          console.log(producto)
-                        listaProductos.innerHTML+=` 
-                        <div class="col-md-3 product-card" data-category="tapados">
-                              <div class="card">
-                                <img src="${producto.imagenes}" class="card-img-top" alt="${producto.categorias.nombre_categoria}">
-                                <div class="card-body">
-                                  <h5 class="card-title">${producto.nombre_producto}</h5>
-                                  <p class="card-text">$${producto.precio}</p>
-                                  <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+                  if(producto.categorias.nombre_categoria===categoriaSelector){    
+                      console.log(producto)
+                      console.log(categoriaSelector)
+                  
+                            console.log(producto)
+                          listaProductos.innerHTML+=` 
+                          <div class="col-md-3 product-card" data-category="tapados">
+                                <div class="card">
+                                  <img src="${producto.imagenes}" class="card-img-top" alt="${producto.categorias.nombre_categoria}">
+                                  <div class="card-body">
+                                    <h5 class="card-title">${producto.nombre_producto}</h5>
+                                    <p class="card-text">$${producto.precio}</p>
+                                    <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
+                  
+                          ` 
+                  }
+              })
             
-                        ` 
-                }
-            })
-    
-        
 
-        } 
 
-        else{ 
+          } 
 
-            productosFiltrados.forEach(producto => {  
+          else{ 
 
-                listaProductos.innerHTML+=` 
-                <div class="col-md-3 product-card" data-category="tapados">
-                      <div class="card">
-                        <img src="${producto.imagenes}" class="card-img-top" alt="${producto.categorias.nombre_categoria}">
-                        <div class="card-body">
-                          <h5 class="card-title">${producto.nombre_producto}</h5>
-                          <p class="card-text">$${producto.precio}</p>
-                          <button class="btn btn-primary add-to-cart">Agregar al carrito</button>
+              productosFiltrados.forEach(producto => {  
+
+                  listaProductos.innerHTML+=` 
+                  <div class="col-md-3 product-card" data-category="tapados">
+                        <div class="card">
+                          <img src="${producto.imagenes}" class="card-img-top" alt="${producto.categorias.nombre_categoria}">
+                          <div class="card-body">
+                            <h5 class="card-title">${producto.nombre_producto}</h5>
+                            <p class="card-text">$${producto.precio}</p>
+                            <button class="btn btn-agregar btn-primary add-to-cart">Agregar al carrito</button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-    
-                ` 
-             });
+              
+                  ` 
+               });
 
-        }
+          }
+        
+
+      // Aquí puedes continuar con el código para mostrar las categorías activas
+    });  
+
+    
+  
+
+
+ function agregarBotonesAlCarrito(botones){ 
  
 
-    // Aquí puedes continuar con el código para mostrar las categorías activas
-});
+  botones.forEach((btn,index)=>{
+    btn.addEventListener('click',async()=>{ 
+
+      const productos= await obtenerProductosVenta() 
+
+      let botonId=productos[index].producto_id 
+      agregarProducto(botonId)
+
+
+    })
+  })
+
+ } 
+
+ let carritoStorage=localStorage.getItem('productos') 
+ 
+ let carritoCompras=carritoStorage?JSON.parse(carritoStorage):[]
+
+
+ async function agregarProducto(btnID){ 
+
+  const productos= await obtenerProductosVenta() 
+
+    
+    let primerProducto=productos.find(id=>id.producto_id===btnID) 
+    let primerProductoStorage=carritoCompras.find(id=>id.producto_id===btnID) 
+
+     if(primerProductoStorage){
+      primerProductoStorage.cantidad++
+     }
+
+     else{
+      primerProducto.cantidad=1 
+      primerProductoStorage=primerProducto
+  
+      carritoCompras.push({...primerProductoStorage})
+     } 
+
+     console.log('el carrito de compras',carritoCompras) 
+     sumarCarrito(carritoCompras)
+
+     localStorage.setItem('productos',JSON.stringify(carritoCompras))
+ 
+
+ } 
+
+ function sumarCarrito(carrito){
+
+
+  let iconCart=document.getElementById("cart-count") 
+  iconCart.innerHTML=carrito.reduce((acc,produc)=>acc+produc.cantidad,0) 
+
+
+ } 
+
+
+
+
+
+
+
+ 

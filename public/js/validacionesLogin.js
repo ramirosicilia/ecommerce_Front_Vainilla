@@ -9,7 +9,7 @@ export function ValidacionformularioLogin(){
   
     const usuarioIngresadoValidado = /^[a-zA-Z0-9_-]{3,16}$/; 
 
-    const usuarioIngresadoPassword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_ -])[A-Za-z\d@$!%*?&_ -]{8,15}$/;
+    const usuarioIngresadoPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,16}$/;
 
 
 
