@@ -74,9 +74,6 @@ body {
 } 
 
 
-
-
-
 .dark-mode .add-to-cart:hover {
   background-color: #555555;
 }
@@ -225,6 +222,30 @@ span{
 
 .dark-mode .derechos-reservados { 
   color: #000000;
+}
+
+.agotado::after {
+    content: "AGOTADO";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.8), rgba(255, 100, 100, 0.6));
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+
+}
+
+.agotado {
+    position: relative; /* Necesario para que ::after funcione bien */
+    filter: grayscale(80%); /* Opcional: desaturar imagen */
+    opacity: 0.7; /* Opcional: dar efecto de desactivado */
 }
 
 

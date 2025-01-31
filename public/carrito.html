@@ -4,28 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras - Moda</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+  
     <link rel="stylesheet" href="./styles/carrito.css">
 </head>
 <body>
     <header>
-        <div class="logo">Fashion <span>Store</span></div>
-        <nav>
-            <ul>
-                <li>Ropa</li> 
-                <li>Carteras</li>
-                <li>Camperas</li>
-                <li>Pantalones</li>
-                <li>Remeras</li>   
-                <li>Vestidos</li>
-                <li>Accesorios</li>
-            </ul>
-        </nav>
-        <div class="icons">
-            <span class="search">🔍</span>
-            <span class="cart">🛒</span>
+        <div class="nav-container">
+            <div class="logo">Fashion <span>Store</span></div>
+            <nav>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a class="volver" href="./paginaProductos.html">volver a ver los Productos</a>
+                       
+                        <a href="#" class="cart-link">
+                            <i class="bi bi-cart-fill icono" id="icono"></i>
+                            <span class="cart-count" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </header>
-
+    
     <main>
         <h2>Tu carrito</h2>
         <div class="cart-container">
@@ -43,10 +49,18 @@
                 <p>Total <span class="total-price">$ 246.250</span></p>
                 <button class="checkout">Continuar compra</button>
                 <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
+                <a class="boton_vaciar" id="boton-vaciar">Vaciar Carrito</a>
             </aside>
         </div>
     </main> 
-
-    <script src="./js/carrito.js"></script>
+  
+  
+ 
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script type="module" src="./js/carrito.js"></script>
+   
+   
 </body>
 </html>
