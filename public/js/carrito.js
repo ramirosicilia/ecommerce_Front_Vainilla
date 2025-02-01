@@ -66,25 +66,25 @@ function activarBotonAgregar(botones) {
     });
 }  
 
- function checkout(){ 
-           let id=document.querySelector("[data-id]")
-           let cantidadTotal=productosEncarrito.reduce((acc,prod)=> acc + prod.cantidad,0) 
-          let total=productosEncarrito.reduce((acc,prod)=> acc + (prod.cantidad*prod.precio),0) 
-          /*productosEncarrito.reduce((acc,prod)=>acc+ (prod.precio *prod.cantidad),0)*/
-         
+function checkout() { 
 
-         summary.innerHTML=` 
-         <h3>Resumen de compra</h3>
-                <p>Productos (${cantidadTotal}) <span>$ ${total.toFixed(2)}</span></p>
-                <p class="shipping">Calcular costo de envío</p>
-                <hr>
-                <p>Total <span class="total-price">$${total}</span></p>
-                <button class="checkout">Continuar compra</button>
-                <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
-                <a class="boton_vaciar" id="boton-vaciar">Vaciar Carrito</a>
-         `
+  
+  let cantidadTotal = productosEncarrito.length; // Contar productos únicos
+  let total = productosEncarrito.reduce((acc, prod) => acc + (prod.cantidad * prod.precio), 0);
+  let tieneRepetidos = productosEncarrito.some(prod => prod.cantidad > 1);
 
- } 
+  summary.innerHTML = ` 
+      <h3>Resumen de compra</h3>
+      <p>Productos totales (${cantidadTotal}) ${tieneRepetidos ? "" : ""} <span>$ ${total.toFixed(2)}</span></p>
+      <p class="shipping">Calcular costo de envío</p>
+      <hr>
+      <p>Total <span class="total-price">$${total.toFixed(2)}</span></p>
+      <button class="checkout">Continuar compra</button>
+      <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
+      <a class="boton_vaciar" id="boton-vaciar">Vaciar Carrito</a>
+  `;
+}
+
 
 
 
