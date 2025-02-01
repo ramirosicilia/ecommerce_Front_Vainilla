@@ -83,6 +83,7 @@
     function stockAgotado(stock, idAgotado) { 
       let producto = document.querySelector(`[data-productos="${idAgotado}"]`);
       
+      
       if (stock === 0 && producto) { 
           producto.classList.add("agotado");
   
@@ -102,27 +103,11 @@
 
       
   } 
-  function aplicarEstilosAgotados() {
-    let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
-
-    productosAgotados.forEach(id => {
-        let producto = document.querySelector(`[data-productos="${id}"]`);
-        if (producto) {
-            producto.classList.add("agotado");
-
-            // Asegurar que el botón "Agregar al carrito" se elimine
-            let botonAgregar = producto.querySelector(".btn-agregar");
-            if (botonAgregar) {
-                botonAgregar.remove();
-            }
-        }
-    });
-}
-
-// Llamar a la función al cargar la página
-document.addEventListener("DOMContentLoaded", aplicarEstilosAgotados);
 
   
+// Llamar a la función al cargar la página
+document.addEventListener("DOMContentLoaded",stockAgotado);
+
   
 
 async function selectorCategorys() { 

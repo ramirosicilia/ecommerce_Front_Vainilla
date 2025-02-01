@@ -46,8 +46,6 @@ botonVaciar.addEventListener('click', () => {
 
 
 
-
-
   function mostrarProductosCarrito() { 
     let carritoItem = document.getElementById("carrito-items"); 
     carritoItem.innerHTML = "";
@@ -81,6 +79,8 @@ botonVaciar.addEventListener('click', () => {
         console.log(botonesAgregar, botonesEliminar); 
 
         activarBotonAgregar(botonesAgregar);
+
+        activarBotonEliminar(botonesEliminar)   
     } 
 } 
 
@@ -115,4 +115,44 @@ function agregarProductoAlCarrito(e) {
         iconoProductosSumados()
     }
 }
-  iconoProductosSumados()
+  iconoProductosSumados() 
+
+
+  function activarBotonEliminar(boton){ 
+
+    boton.forEach(boton=>{
+      boton.addEventListener("click",()=>{
+        let botonEliminado=boton.dataset.id 
+
+        eliminarDelCarrito(botonEliminado)
+      })
+    })
+
+  } 
+
+  function eliminarDelCarrito(botonID) { 
+    let primerProducto = productosEncarrito.find(producto => producto.producto_id === botonID);
+
+    if (primerProducto.cantidad > 0) { 
+        primerProducto.cantidad--; 
+
+        localStorage.setItem("productos", JSON.stringify(productosEncarrito)); 
+
+        let cantidadActualizada = document.querySelector(`.cantidad[data-id="${botonID}"]`);
+        let cantidadTextoActualizada = document.querySelector(`.cantidad-texto[data-id="${botonID}"]`);
+
+        if (cantidadActualizada) cantidadActualizada.innerHTML = primerProducto.cantidad;
+        if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`; 
+
+        console.log(primerProducto);
+
+        if (primerProducto.cantidad === 0) {
+            productosEncarrito = productosEncarrito.filter(producto => producto.producto_id != botonID);
+            localStorage.setItem("productos", JSON.stringify(productosEncarrito)); 
+            mostrarProductosCarrito()
+          
+        }
+
+        iconoProductosSumados();
+    }
+}
