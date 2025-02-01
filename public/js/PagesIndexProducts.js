@@ -185,14 +185,15 @@ selector.addEventListener("change", async (e) => {
                       </div>
                   </div>
               </section>
-          `;
+          `; 
+          stockAgotado(producto.stock,producto.producto_id)
       });
 
       let botonesAgregarCarrito = [...document.querySelectorAll(".btn-agregar")];
       agregarBotonesAlCarrito(botonesAgregarCarrito); 
 
     
-        aplicarEstilosAgotados();
+  
   } else {
       listaProductos.innerHTML = `<p>No hay productos en esta categoría.</p>`;
   }
@@ -228,7 +229,6 @@ selector.addEventListener("change", async (e) => {
   
   if (primerProducto.stock === 0) {  
     
-    aplicarEstilosAgotados()
     return; // Sale de la función si el producto no tiene stock
   }
 
@@ -273,7 +273,9 @@ selector.addEventListener("change", async (e) => {
   }
 }
 
-function sumarCarrito(carrito) {
+function sumarCarrito(carrito) { 
+ 
+
   let iconCart = document.getElementById("cart-count");
   iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0);
 }
