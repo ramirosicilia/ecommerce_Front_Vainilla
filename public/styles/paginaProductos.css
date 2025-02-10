@@ -246,7 +246,10 @@ span{
     position: relative; /* Necesario para que ::after funcione bien */
     filter: grayscale(80%); /* Opcional: desaturar imagen */
     opacity: 0.7; /* Opcional: dar efecto de desactivado */
-}
+} 
+
+
+
 
 
 

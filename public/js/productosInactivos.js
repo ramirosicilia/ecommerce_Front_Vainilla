@@ -1,4 +1,5 @@
 import { pedirProductos,desactivadoLogicoProductos } from "./registroProductos.js"; 
+import { obtenerCategorys } from "./api/productos.js";
 
 const btnInactivar=document.getElementById("mostrarInactivosBtn") 
 let entrada=true
@@ -10,10 +11,15 @@ btnInactivar.addEventListener('click',productosInactivos)
 
 async function productosInactivos() { 
 
-    const tBody=document.getElementById("cuerpo-productos") 
+    const tBody=document.getElementById("productos") 
     
 
     const recibirProductos=await pedirProductos() 
+
+    const recibirCategorias=await obtenerCategorys() 
+
+    const categoriasActivas=recibirCategorias.filter(category=>category.activo===true) 
+
 
 
      
@@ -27,10 +33,13 @@ async function productosInactivos() {
         btnInactivar.textContent="Mostrar activos"
         let productosInactivos=recibirProductos.filter(activo=>activo.activacion!=true) 
 
-        if(productosInactivos.length>0){ 
+        if(productosInactivos.length>0){  
+
+    
             console.log(productosInactivos)
             productosInactivos.forEach(producto => { 
-              
+                const nombreCategoria=categoriasActivas.find(category=>category.categoria_id===producto.categoria_id)?.nombre_categoria
+                 
                 tBody.innerHTML += `
                     <tr>    
                         <td>
@@ -38,7 +47,7 @@ async function productosInactivos() {
                         </td>
                         <td><div class="contenido-celda"><img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto}</div></td>
                         <td><div class="contenido-celda">${producto.precio}</div></td>
-                        <td><div class="contenido-celda">${producto.categorias.nombre_categoria}</div></td>
+                    <td><div class="contenido-celda">${nombreCategoria}</div></td>
                         <td><div class="contenido-celda">${producto.stock}</div></td>
                         <td class="celda-botones">
                             <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
@@ -77,7 +86,7 @@ async function productosInactivos() {
        
           tBody.innerHTML="" 
          
-         
+           
          
            btnInactivar.textContent="Mostrar Inactivos"
 
@@ -85,7 +94,8 @@ async function productosInactivos() {
         console.log(productosActivos)
 
         
-            productosActivos.forEach(producto => {
+            productosActivos.forEach(producto => { 
+                const nombreCategoria=categoriasActivas.find(category=>category.categoria_id===producto.categoria_id)?.nombre_categoria
                 tBody.innerHTML += `
                     <tr>    
                         <td>
@@ -93,7 +103,7 @@ async function productosInactivos() {
                         </td>
                         <td><div class="contenido-celda"><img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto}</div></td>
                         <td><div class="contenido-celda">${producto.precio}</div></td>
-                        <td><div class="contenido-celda">${producto.categorias.nombre_categoria}</div></td>
+                        <td><div class="contenido-celda">${nombreCategoria}</div></td>
                         <td><div class="contenido-celda">${producto.stock}</div></td>
                         <td class="celda-botones">
                             <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>

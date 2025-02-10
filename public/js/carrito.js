@@ -6,7 +6,8 @@ let summary=document.getElementById("sumary")
   function mostrarProductosCarrito() { 
     let carritoItem = document.getElementById("carrito-items"); 
     carritoItem.innerHTML = "";
-    summary.innerHTML=""
+    summary.innerHTML="" 
+    let cantidad=0
 
     if (productosEncarrito.length > 0) { 
         productosEncarrito.forEach(producto => { 
@@ -46,10 +47,10 @@ let summary=document.getElementById("sumary")
     else{ 
       summary.innerHTML=` 
       <h3>Resumen de compra</h3>
-             <p>Productos (0) <span>$ 00.00</span></p>
+             <p>Productos (${cantidad}) <span>$${cantidad.toFixed(2)}</span></p>
              <p class="shipping">Calcular costo de envío</p>
              <hr>
-             <p>Total <span class="total-price">$0.0</span></p>
+             <p>Total <span class="total-price">${cantidad.toFixed(2)}</span></p>
              <button class="checkout">Continuar compra</button>
              <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
              <a class="boton_vaciar" id="boton-vaciar">Vaciar Carrito</a>

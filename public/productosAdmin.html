@@ -28,8 +28,9 @@
             <h5 class="card-title mb-0">Lista de Productos</h5>
             <!-- Select de Categorías -->
             <select class="form-select ms-3" id="categoria-select-products" style="width: auto;"> 
+              
 
-              <option value="" disabled selected>Seleccione una categoría</option>  
+       
               
               <!-- contenido dinámico con JavaScript --> 
            
@@ -52,7 +53,7 @@
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody id="cuerpo-productos">
+          <tbody id="productos" class="cuerpo-producto">
             <!-- Aquí puedes agregar más productos de manera dinámica -->
           </tbody>
         </table>
@@ -181,6 +182,7 @@
   <script type="module" src="./js/registroProductos.js"></script>
   <script type="module" src="./js/productosInactivos.js"></script> 
   <script type="module" src="./js/filtradoProductosAdmin.js"></script>
+ 
 
 
   <script>

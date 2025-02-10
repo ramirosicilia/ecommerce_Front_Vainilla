@@ -26,16 +26,7 @@ formularioCategoria.addEventListener("submit", async (e) => {
         console.log("Respuesta del servidor:", data);
 
         // Recargar categorías desde localStorage
-        let categorias = JSON.parse(localStorage.getItem("category")) || [];
-
-        // Asegurarse de que la categoría no esté ya en el localStorage
-        if (!categorias.some(c => c.nombre === data[0].nombre_categoria)) {
-            categorias.push({ categoria: data[0].nombre_categoria ,activo:data[0].activo,id:data[0].categoria_id});
-            console.log("Categorías actualizadas:", categorias);
-            localStorage.setItem('category', JSON.stringify(categorias));
-        } else {
-            console.log("La categoría ya existe en localStorage.");
-        }
+      
 
     } catch (err) {
         Swal.fire({

@@ -1,61 +1,34 @@
+import { obtenerCategorys } from "./api/productos.js"
 import{eliminarCategoria,updateCategoria,funcionChequeado,restaurarEstado } from "./Categorias.js" 
 
  
 
 const botonTodas=document.getElementById("allCategoriesButton")  
 
-let entrada=true
+let entrada=true 
+
+
 
 botonTodas.addEventListener("click",async()=>{    
 
    try{ 
 
-       
-    const response = await fetch("http://localhost:1200/allCategories")  
-    
-    console.log(response)
- 
-    const data = await response.json()  
+    const data = await  obtenerCategorys()
     console.log(data) 
-    let categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
-
-    const categoriasUnicas = new Set();
-
-    // Mapea categorías locales al formato uniforme
-    const mapeadaCategoriaStorage = categoriasLocales.map(categoria => ({
-        nombre: categoria.categoria, // Ajusta según la propiedad correcta
-        id: categoria.id || null ,// Si no hay `id`, asigna null
-        activo: categoria.activo || null // Si no hay `activo`, asigna null
-
-    }));
-
-    // Mapea categorías del servidor al formato uniforme
-    const mapeadaCategoria = data.map(categoria => ({
-        nombre: categoria.nombre_categoria,
-        id: categoria.categoria_id
-    }));
-
-    // Combina ambos arrays y elimina duplicados
-    const categoriasCombinadas = [
-        ...new Map(
-            [...mapeadaCategoriaStorage, ...mapeadaCategoria].map(categoria => [categoria.nombre, categoria])
-        ).values()
-    ];
-
-    console.log(categoriasCombinadas); 
-
+       
 
     const cuerpocategoria = document.getElementById("cuerpo-categorias"); 
     cuerpocategoria.innerHTML = "";
 
 
-    if(categoriasCombinadas.length>0 && entrada){
-        categoriasCombinadas.forEach(categoria=>{  
+    if(data.length>0 && entrada){
+  
+          data.forEach(data => { 
             const fila = document.createElement("tr");
 
             fila.innerHTML = `
-                <td><input type="checkbox" class="form-check-input select-category" data-id="${categoria.id}"></td>
-                <td>${categoria.nombre}</td>
+                <td><input type="checkbox" class="form-check-input select-category" data-id="${data.categoria_id}"></td>
+                <td>${data.nombre_categoria}</td>
                 <td>
                     <button class="btn btn-warning btn-sm btn__editar" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
                         <i class="fas fa-edit"></i> Editar
@@ -67,25 +40,35 @@ botonTodas.addEventListener("click",async()=>{
             `;
 
             cuerpocategoria.appendChild(fila); 
-
-             const checkbox = fila.querySelector(".select-category");
-                                 checkbox.addEventListener("change", () => {
-                                     funcionChequeado(checkbox, categoria.nombre, fila);
-                                 });
-             
-
+          
+            const checkbox = fila.querySelector(".select-category");
+            checkbox.addEventListener("change", () => {
+                funcionChequeado(checkbox, data.nombre_categoria, fila);
+            }); 
 
             const btnEliminar = fila.querySelector(".btn-eliminar");
             btnEliminar.addEventListener("click", () => {
-                eliminarCategoria(categoria.id, categoria.nombre, fila);
+                eliminarCategoria(data.id, data.nombre_categoria, fila);
             }); 
             const btnEditar = fila.querySelector(".btn__editar");
             btnEditar.addEventListener("click", () => {
-                updateCategoria( categoria.nombre);
+                updateCategoria( data.nombre_categoria);
             }); 
-             restaurarEstado(categoria.nombre, checkbox, fila);
+             restaurarEstado(data.nombre_categoria, checkbox, fila);
              
-        }) 
+  
+          }); 
+
+
+          
+
+            
+        
+
+            
+
+            
+        
           
 
           

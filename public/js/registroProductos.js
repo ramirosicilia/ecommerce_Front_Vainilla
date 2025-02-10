@@ -1,145 +1,102 @@
 import { validarFormularioProducto, validarFormularioProductoUpdate } from "./validacionAdmin.js"; 
-
+import { obtenerCategorys } from "./api/productos.js";
+import { obtenerProductos } from "./api/productos.js";
 
  
- export const pedirProductos=async()=>{ 
-
-  try{ 
-
-    const response= await fetch("http://localhost:1200/obtener-productos") 
-    console.log(response)
-
-    if(!response.ok){ 
-
-      const dataErrror= await response.json() 
-      throw new Error(dataErrror.error)
-
-    } 
-
-    else{
-      const productosData= await response.json()  
-      console.log(productosData)
-      
-
-      mostrarProductosAdmin(productosData) 
-      return productosData
-    } 
-
-  } 
-
-
-  catch(err){ 
-
-    Swal.fire({
-      title: '¡Error!',
-      text: err.message, // Muestra el mensaje del backend
-      icon: 'error',
-      confirmButtonText: 'Intenta de nuevo',
-  });
-
-  }
+ 
 
 
 
+async function mostrarProductosAdmin() { 
+
+  let productos= await obtenerProductos()
+
+  const selectCategorias = document.getElementById("categoria-select-products") 
+  const tbody = document.querySelector("#productos");
+
+  console.log(selectCategorias); // Verifica si el elemento existe en la consola
+  
+
+
+  let productosActivos = productos.filter(producto => producto?.activacion === true); 
+  
+
+
+
+  let categorias = await obtenerCategorys(); 
+
+
+  let categoriasFiltradas=categorias.filter(categorys=>categorys?.activo===true) 
+
+  let productosActivosFiltrados = productosActivos.filter(producto =>
+    categoriasFiltradas.some(categoria => categoria.categoria_id === producto.categoria_id)
+);
+
+  // Limpiar y agregar solo una vez la lista de categorías
+  if (selectCategorias.options.length <= 1) {  
+    selectCategorias.innerHTML = `<option value="">Selecciona una categoría</option>`;  
+    categoriasFiltradas.forEach(categoria => {  
+        let option = document.createElement("option");  
+        option.value = categoria.nombre_categoria;  
+        option.textContent = categoria.nombre_categoria;  
+        selectCategorias.appendChild(option);  
+    });  
 }
-
-pedirProductos()  
-
-
-let categoriasUnicas = [];
-
-function mostrarProductosAdmin(productos) {
-  const tbody = document.getElementById("cuerpo-productos");
-  const selectCategorias = document.getElementById("productCategory");
-
-  // Limpiar contenido previo
-  tbody.innerHTML = "";
-  selectCategorias.innerHTML = "";
-
-  console.log("Productos cargados:");
-
-  // Recuperar categorías nuevas desde localStorage
-  let categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
-  console.log("Categorías desde localStorage:", categoriasLocales);
-
-  // Crear un array para almacenar las categorías únicas y activas
- 
-   console.log(productos[0].activacion)
-  // Filtrar productos con categorías activas
-  let productosActivos = productos.filter(producto => producto.categorias?.activo === true);
-
-  console.log("Productos activos:", productosActivos);
-
-  // Agregar categorías activas de los productos
-  productosActivos.forEach(producto => {
-      if (!categoriasUnicas.includes(producto.categorias.nombre_categoria)) {
-          categoriasUnicas.push(producto.categorias.nombre_categoria);
-      }
-  });
-
-  // Filtrar y agregar categorías activas desde localStorage
-  categoriasLocales.forEach(categoriaNueva => {
-      if (categoriaNueva.activo === true && !categoriasUnicas.includes(categoriaNueva.categoria)) {
-          categoriasUnicas.push(categoriaNueva.categoria);
-      }
-  });
-
-  console.log("Categorías activas:", categoriasUnicas); 
+     
 
 
+  if (productosActivosFiltrados.length > 0 ) {
+      productosActivosFiltrados.forEach((producto) => {
+          let categoriaProducto = categoriasFiltradas.find(c => c.categoria_id === producto.categoria_id)?.nombre_categoria ;
+   
+       
+          tbody.innerHTML += `
+              <tr>    
+                  <td>
+                      <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
+                  </td>
+                  <td><div class="contenido-celda"><img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto}</div></td>
+                  <td><div class="contenido-celda">${producto.precio}</div></td>
+                  <td><div class="contenido-celda">${categoriaProducto}</div></td>
+                  <td><div class="contenido-celda">${producto.stock}</div></td>
+                  <td class="celda-botones">
+                      <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
+                      <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-bs-toggle="modal" data-bs-target="#confirmModal"><i class="fas fa-trash"></i> Eliminar</button>
+                  </td>
+              </tr>
+          `;
+      });
 
-  // Agregar las categorías activas al selector
-  selectCategorias.innerHTML += `<option value="">Selecciona una categoría</option>`;
-  categoriasUnicas.forEach(categoria => {
-      selectCategorias.innerHTML += `<option value="${categoria}">${categoria}</option>`;
-  });
-
-  // Mostrar productos activos en la tabla
-  if (productosActivos.length > 0) {
-    productosActivos.forEach(producto => {
-      tbody.innerHTML += `
-          <tr>    
-              <td>
-                  <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
-              </td>
-              <td><div class="contenido-celda"><img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto}</div></td>
-              <td><div class="contenido-celda">${producto.precio}</div></td>
-              <td><div class="contenido-celda">${producto.categorias.nombre_categoria}</div></td>
-              <td><div class="contenido-celda">${producto.stock}</div></td>
-              <td class="celda-botones">
-                  <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
-                  <button class="btn btn-danger btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#confirmModal"><i class="fas fa-trash"></i> Eliminar</button>
-              </td>
-          </tr>
-      `;
-  });
-  
-  
-
-
-      // Actualizar botones de editar y eliminar
       const botonesEditar = [...document.querySelectorAll(".btn-editar")];
       const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")]; 
-      const checkBox=[...document.querySelectorAll(".check")] 
+      const checkBox = [...document.querySelectorAll(".check")];
 
+      activarBotones(botonesEditar, botonesEliminar);
+      desactivadoLogicoProductos(checkBox); 
 
-
-      activarBotones(botonesEditar,botonesEliminar);  
-
-      desactivadoLogicoProductos(checkBox)
-  
-
+      return
   } else {
       console.log("No hay productos activos para mostrar.");
   }
-}
+} 
+
+mostrarProductosAdmin()
+
 
 
 
 //Formulario Actualizacion 
 
 const formulario = document.getElementById("formulario-producto"); 
-console.log(formulario)
+console.log(formulario) 
+
+
+
+
+const selector = document.getElementById("productCategory");
+console.log(selector); // Verifica si el elemento existe
+
+
 
 formulario.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -197,14 +154,11 @@ formulario.addEventListener("submit", async (event) => {
 
   export function activarBotones(botonesEdit,botonesElim){ 
 
-    botonesEdit.forEach((boton,index)=>{ 
+    botonesEdit.forEach((boton)=>{ 
 
       boton.addEventListener('click',async()=>{  
 
-        const productos= await pedirProductos() 
-
-        const productoID=productos[index].producto_id 
-
+       const productoID=boton.getAttribute("data-id")
          actualizarEnvioUpdate(productoID)
 
 
@@ -213,14 +167,12 @@ formulario.addEventListener("submit", async (event) => {
     })  
 
 
-    botonesElim.forEach((boton,index)=>{ 
+    botonesElim.forEach((boton)=>{ 
 
       boton.addEventListener('click',async()=>{  
 
-        const productos= await pedirProductos() 
-
-        const productoID=productos[index]?.producto_id 
-
+      
+        const productoID=boton.getAttribute("data-id")
         eliminarProductoSinVentas(productoID)
 
 
@@ -237,9 +189,13 @@ formulario.addEventListener("submit", async (event) => {
   
     check.forEach((ck) => {
       const dataID = ck.getAttribute("data-id");
+      
       const filaProducto = ck.closest("tr");
-      const celdasContenido = filaProducto.querySelectorAll(".contenido-celda");
-      const botonesAccion = filaProducto.querySelectorAll(".btn-editar, .btn-eliminar");
+    
+
+      const celdasContenido = filaProducto?.querySelectorAll(".contenido-celda") || [];
+     const botonesAccion = filaProducto?.querySelectorAll(".btn-editar, .btn-eliminar") || [];
+
   
       // Restaurar estado desde localStorage
       if (estadosGuardados[dataID] === "desactivado") {
@@ -304,47 +260,39 @@ formulario.addEventListener("submit", async (event) => {
   const formularioUpdate = document.getElementById("formulario-producto-update"); 
  console.log(formularioUpdate) 
 
+
  
- function actualizarEnvioUpdate(id){  
-
+ async function actualizarEnvioUpdate(id) {  
+  const selectCategorias = document.getElementById("productCategory-update"); 
   
-  const selectCategorias = document.getElementById("productCategory-update");
+  // Limpia el contenido antes de agregar nuevas opciones
+  selectCategorias.innerHTML = `<option value="">Selecciona una categoría</option>`;
 
-       categoriasUnicas.forEach((categoria) => { 
-     
-           selectCategorias.innerHTML += `<option value="${categoria}">${categoria}</option>`;
-       });
-       console.log(categoriasUnicas)
+  let categorias = await obtenerCategorys(); 
 
+  categorias.forEach((categoria) => { 
+    selectCategorias.innerHTML += `<option value="${categoria.nombre_categoria}">${categoria.nombre_categoria}</option>`;
+  });
 
   formularioUpdate.addEventListener("submit", async (e) => {
     e.preventDefault(); 
   
-      
-  
     const formData = new FormData(formularioUpdate); 
-  
 
-    console.log(validarFormularioProductoUpdate())
-  
     if (!validarFormularioProductoUpdate()) {
       return; // Detener si hay errores
     }
    
     try {  
-
-
       const response = await fetch(`http://localhost:1200/actualizar-productos/${id}`, {
         method: "PUT",
         body: formData,
       }); 
-  
-      console.log(response)
-  
+
       if (!response.ok) {
         throw new Error("Error al enviar los datos");
       }
-  
+
       Swal.fire({
         title: "Éxito",
         text: "Producto actualizado correctamente",
@@ -352,18 +300,8 @@ formulario.addEventListener("submit", async (event) => {
         confirmButtonText: "OK",
       });
 
-
-  
-       const datos=response.json() 
-       console.log(datos.data) 
-
-       
-
-      formulario.reset(); 
-      setTimeout(() => { 
-        window.location.reload()
-        
-      }, 2000);
+      formularioUpdate.reset(); 
+      setTimeout(() => window.location.reload(), 2000);
 
     } catch (err) {
       Swal.fire({
@@ -372,21 +310,14 @@ formulario.addEventListener("submit", async (event) => {
         icon: "error",
         confirmButtonText: "Intenta de nuevo",
       });
-    }  
-  
-   
-   
+    }
   });
-
- } 
-
+}
 
 
  async function  eliminarProductoSinVentas(id) { 
   const botonConfirmacion=document.getElementById("boton-confirmacion-borrar")
 
-
-    
       botonConfirmacion.addEventListener('click',async()=>{ 
 
         console.log('se confirmooo el:', id)  

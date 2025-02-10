@@ -1,120 +1,128 @@
-import { pedirProductos ,desactivadoLogicoProductos,activarBotones} from "./registroProductos.js";
+import {desactivadoLogicoProductos,activarBotones,pedirProductos} from "./registroProductos.js";
+import { obtenerCategorys } from "./api/productos.js";
 
 
 
 const selector=document.getElementById("categoria-select-products"); 
-const cuerpo=document.getElementById("cuerpo-productos");
+const cuerpo=document.getElementById("cuerpo-productos"); 
+let productosFiltrados=[]
 
+console.log(selector)
 
 async function filtrarProductos(){ 
 
-    const productos= await pedirProductos() 
-    console.log(productos)
-    
-  
-    let categoriasStorage=JSON.parse(localStorage.getItem("category")) || [];  
+    selector.innerHTML=''
 
-    let categoriasUnicas = productos.reduce((resultado, producto) => {
-        if (producto.categorias && typeof producto.categorias === "object") {
-            const categoria = producto.categorias.nombre_categoria; // Extrae el nombre de la categoría
-            const activo = producto.categorias.activo; // Extrae el estado activo
-    
-            // Verifica si ya existe en el resultado antes de agregarlo
-            if (!resultado.some(cat => cat.categoria === categoria)) {
-                resultado.push({ categoria, activo });
-            }
-        }
-        return resultado;
-    }, []);
-    
-    console.log(categoriasUnicas);
-    
-    
+    const categorias= await obtenerCategorys()
+    console.log(categorias) 
 
- 
-    let categoriasDB=categoriasStorage.map(categoria=>({
-        categoria:categoria.categoria,
-        activo:categoria.activo
-    }))  
+    selector.innerHTML=`<option value="" selected>Todas</option>  ` 
 
-    
+    let categoryFiltradas=categorias.filter(dataCategory=>dataCategory.activo===true)
 
-    let categoriasCombinadas=[...categoriasUnicas,...categoriasDB] 
-    console.log(categoriasCombinadas)
-    
-    
-
-  
-     if(categoriasCombinadas.length>0 ){
-        categoriasCombinadas.forEach(categoria=>{ 
-            if(categoria.activo===true){ 
-                selector.innerHTML+=`<option value="${categoria.categoria}">${categoria.categoria}</option>`
-            }
-          
+    if(categoryFiltradas.length>0){
+        categoryFiltradas.forEach(categoria=>{
+            selector.innerHTML+= `<option value="${categoria.nombre_categoria}">${categoria.nombre_categoria}</option>`
         })
-     }
+    } 
+
+    const productos = await pedirProductos();
+     productosFiltrados = productos.filter(product => product.activacion === true);
+    console.log(productosFiltrados);
 
 
- 
+
+}  
+
+filtrarProductos() 
+
+
+
+
+selector.addEventListener("change", async (e) => {    
+
+    let entrada=false
+    const categoriaSeleccionada = e.target.value;
+    cuerpo.innerHTML = "";
+
+    const categorias = await obtenerCategorys();
+    console.log(categorias);
     
-    selector.addEventListener("change",(e)=>{  
-
-        const categoria=e.target.value 
-       cuerpo.innerHTML=""
+    let categoriasFiltradas = categorias.filter(dataCategory => dataCategory.activo === true);
     
-        let filtradoProductos=productos.filter(producto=>producto.categorias.nombre_categoria===categoria) 
-        console.log(filtradoProductos)
-        let filtradoCategorias=categoriasStorage.filter(categoria=>categoria.categoria===categoria)
-        
-     
-            if(filtradoProductos.length>0 || filtradoCategorias.length>0){ 
-                cuerpo.innerHTML="" 
-                filtradoProductos.forEach(producto=>{ 
-                    cuerpo.innerHTML+=`
+    // Buscar la categoría seleccionada
+    const categoriaFiltrada = categoriasFiltradas.find(categoria => categoria.nombre_categoria === categoriaSeleccionada);
+    
+    if (categoriaFiltrada && !entrada) {
+        productosFiltrados.forEach(producto => {
+            if (producto.categoria_id === categoriaFiltrada.categoria_id) {
+                cuerpo.innerHTML += `
                     <tr>    
-                            <td>
-                                <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
-                            </td>
-                            <td><div class="contenido-celda"><img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto}</div></td>
-                            <td><div class="contenido-celda">${producto.precio}</div></td>
-                            <td><div class="contenido-celda">${producto.categorias.nombre_categoria}</div></td>
-                            <td><div class="contenido-celda">${producto.stock}</div></td>
-                            <td class="celda-botones">
-                                <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
-                                <button class="btn btn-danger btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#confirmModal"><i class="fas fa-trash"></i> Eliminar</button>
-                            </td>
+                        <td>
+                            <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
+                        </td>
+                        <td>
+                            <div class="contenido-celda">
+                                <img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> 
+                                ${producto.nombre_producto}
+                            </div>
+                        </td>
+                        <td><div class="contenido-celda">${producto.precio}</div></td>
+                        <td><div class="contenido-celda">${categoriaFiltrada.nombre_categoria}</div></td>
+                        <td><div class="contenido-celda">${producto.stock}</div></td>
+                        <td class="celda-botones">
+                            <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </td>
                     </tr>
-                    
-                    
-                    `
-                  
-                }) 
-
-                      const botonesEditar = [...document.querySelectorAll(".btn-editar")];
-                      const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")]; 
-                      const checkBox=[...document.querySelectorAll(".check")] 
-                
-                
-                
-                      activarBotones(botonesEditar,botonesEliminar);  
-                
-                      desactivadoLogicoProductos(checkBox)
-                  
-
+                `;
             }
-     
-     
-     }); 
-     
+        });
+    } else {  
+        productosFiltrados.forEach(producto => {  
+            // Buscar la categoría en `categoriasFiltradas` en lugar de `productosFiltrados`
+            const categoriaEncontrada = categoriasFiltradas.find(cat => cat.categoria_id === producto.categoria_id);
+            const nombreFiltrado = categoriaEncontrada ? categoriaEncontrada.nombre_categoria : "Categoría desconocida";
 
-} 
+            cuerpo.innerHTML += `
+                <tr>    
+                    <td>
+                        <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
+                    </td>
+                    <td>
+                        <div class="contenido-celda">
+                            <img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> 
+                            ${producto.nombre_producto}
+                        </div>
+                    </td>
+                    <td><div class="contenido-celda">${producto.precio}</div></td>
+                    <td><div class="contenido-celda">${nombreFiltrado}</div></td>
+                    <td><div class="contenido-celda">${producto.stock}</div></td>
+                    <td class="celda-botones">
+                        <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
 
-filtrarProductos()
+        entrada = false;
+    }
 
+    const botonesEditar = [...document.querySelectorAll(".btn-editar")];
+    const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")]; 
+    const checkBox = [...document.querySelectorAll(".check")];
 
+    activarBotones(botonesEditar, botonesEliminar);  
+    desactivadoLogicoProductos(checkBox); 
 
-
-
-
-
-   
+    entrada = !entrada;
+});

@@ -1,147 +1,104 @@
-
-let btnEditar=[] 
-
+import { obtenerCategorys } from "./api/productos.js";
 
 
-document.getElementById("clearButton").addEventListener("click", () => {
+
+let btnEditar = [];
+
+
+
+
+document.getElementById("clearButton")?.addEventListener("click", () => {
     const inputID = document.getElementById("searchCategory");
-    console.log(inputID);
     inputID.value = "";
 });
-
-
 
 const btnBuscar = document.getElementById("searchButton");
 const cuerpocategoria = document.getElementById("cuerpo-categorias");
 
-// Función para eliminar una fila específica
 function eliminar(fila) {
-    fila.remove(); // Elimina solo la fila específica
+    fila.remove(); 
 }
- 
+
 document.addEventListener("DOMContentLoaded", () => {
     restaurarEstados();
-}); 
-
-
-btnBuscar.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const valorInputID = document.getElementById("searchCategory").value.trim();
-
-    try {
-        const response = await fetch("http://localhost:1200/obtener-categorias");
-
-        if (!response.ok) {
-            throw new Error("No se obtuvo la data");
-        }
-
-        const dataCategory = await response.json();
-        console.log(dataCategory);
-
-        // Obtener categorías locales desde localStorage
-        const categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
-        console.log("Categorías locales:", categoriasLocales);
-
-        // Conjunto para almacenar nombres únicos de categorías
-        const categoriasUnicas = new Set();
-
-        // Agregar nombres únicos desde dataCategory
-        dataCategory.forEach((category) => {
-            if (category.categorias && category.categorias.nombre_categoria) {
-                categoriasUnicas.add(category.categorias.nombre_categoria);
-            }
-        });
-
-        // Agregar nombres únicos desde categoriasLocales
-        categoriasLocales.forEach((categoria) => categoriasUnicas.add(categoria.categoria));
-
-        let hayCoincidencias = false;
-
-        // Recorrer las categorías combinadas para buscar coincidencias
-        [...dataCategory, ...categoriasLocales].forEach((category) => {
-            const categoriaNombre = category.categoria?.toLowerCase() || category.categorias?.nombre_categoria?.toLowerCase();
-            const categoriaID = category.categoria_id || category.id; // Usar el ID según la fuente
-
-            if (categoriaNombre === valorInputID.toLowerCase()) {
-                hayCoincidencias = true;
-
-                // Verificar si la categoría ya está en la tabla
-                const yaExiste = [...cuerpocategoria.querySelectorAll("tr")].some(
-                    (fila) => fila.querySelector("td:nth-child(2)").innerText.toLowerCase() === categoriaNombre
-                );
-
-                if (!yaExiste) {
-                    // Crear una nueva fila para la tabla
-                    const fila = document.createElement("tr");
-
-                    fila.innerHTML = `
-                        <td><input type="checkbox" class="form-check-input select-category" data-id="${categoriaID}"></td>
-                        <td>${categoriaNombre}</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm btn__editar" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>
-                            <button class="btn btn-danger btn-sm btn-eliminar btn__borrar" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">
-                                <i class="fas fa-trash"></i> Eliminar
-                            </button>
-                        </td>
-                    `;
-
-                    // Agregar la fila al cuerpo de la tabla
-                    cuerpocategoria.appendChild(fila);
-
-                    // Manejar el evento del checkbox
-                    const checkbox = fila.querySelector(".select-category");
-                    checkbox.addEventListener("change", () => {
-                        funcionChequeado(checkbox, categoriaNombre, fila);
-                    });
-
-                    console.log("ID agregado:", categoriaID);
-
-                    // Actualizar botones de edición y eliminación
-                    btnEditar = [...document.querySelectorAll(".btn__editar")];
-
-                    const btnEliminar = fila.querySelector(".btn-eliminar");
-                    btnEliminar.addEventListener("click", () => {
-                        eliminarCategoria(categoriaID, categoriaNombre, fila);
-                    });
-
-                    // Llamadas a funciones adicionales
-                    updateCategoria(categoriaNombre);
-
-                    // Restaurar estado del checkbox y fila
-                    restaurarEstado(categoriaNombre, checkbox, fila,);
-                }
-            }
-        });
-
-        // Mostrar alerta si no hay coincidencias
-        if (!hayCoincidencias) {
-            Swal.fire({
-                title: "¡La Categoria no Existe!",
-                icon: "error",
-                confirmButtonText: "Intenta de nuevo",
-            });
-        }
-    } catch (err) {
-        console.log("Error:", err.message);
-    }
 });
 
 
 
- function guardarEstado(categoriaNombre, check, fila,activo) {
+btnBuscar && cuerpocategoria 
+    ? btnBuscar?.addEventListener("click", async() => {
+      await recibirCategorys()
+    }) 
+    : console.warn("Uno o más elementos no encontrados");
+
+async function recibirCategorys() {
+    const categorys = await obtenerCategorys();
+    console.log('categorias:', categorys);
+
+    const valorInputID = document.getElementById("searchCategory").value.trim();
+
+   let hayCoincidencias = false;
+
+    if (categorys.length > 0) {
+        categorys.forEach(categoria => {
+            if (categoria.nombre_categoria === valorInputID) {
+                hayCoincidencias = true; 
+
+                const fila = document.createElement("tr");
+
+                fila.innerHTML = `
+                    <td><input type="checkbox" class="form-check-input select-category" data-id="${categoria.categoria_id}"></td>
+                    <td>${categoria.nombre_categoria}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btn__editar" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-eliminar btn__borrar" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+
+                cuerpocategoria.appendChild(fila);
+
+                const checkbox = fila.querySelector(".select-category");
+                checkbox.addEventListener("change", () => {
+                    funcionChequeado(checkbox, categoria.nombre_categoria, fila);
+                });
+
+                btnEditar = [...document.querySelectorAll(".btn__editar")];
+
+                const btnEliminar = fila.querySelector(".btn-eliminar");
+                btnEliminar.addEventListener("click", () => {
+                    eliminarCategoria(categoria.categoria_id, categoria.nombre_categoria, fila);
+                });
+
+                updateCategoria(categoria.nombre_categoria);
+
+                restaurarEstado(categoria.nombre_categoria, checkbox, fila);
+            }
+        });
+    }
+
+    if (!hayCoincidencias && valorInputID !== '') {
+        Swal.fire({
+            title: "¡La Categoria no Existe!",
+            icon: "error",
+            confirmButtonText: "Intenta de nuevo",
+        });
+    }
+}
+
+function guardarEstado(categoriaNombre, check, fila, activo) {
     const estado = {
         checked: check.checked,
         tieneClase: fila.classList.contains("table-danger"),
-        activo:activo
+        activo: activo
     };
-    localStorage.setItem(categoriaNombre, JSON.stringify(estado)); 
-    
+    localStorage.setItem(categoriaNombre, JSON.stringify(estado));
 }
 
- function restaurarEstados() {
+function restaurarEstados() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"][data-id]');
 
     checkboxes.forEach((checkbox) => {
@@ -198,17 +155,15 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
         }
         let categoriasLocales = JSON.parse(localStorage.getItem("category")) || [];
         const categoriaExistente = categoriasLocales.find(c => c.categoria === categoriaNombre);
-        
+
         if (categoriaExistente) {
-            categoriaExistente.activo = !activo;  // Cambia el estado de 'activo'
+            categoriaExistente.activo = !activo;
         } else {
-            // Si no se encuentra la categoría, puedes agregarla
             categoriasLocales.push({ categoria: categoriaNombre, activo: !activo });
         }
-        
-        // Guardar el array actualizado en localStorage
+
         localStorage.setItem('category', JSON.stringify(categoriasLocales));
-        
+
         guardarEstado(categoriaNombre, check, fila, activo);
 
         Swal.fire({
@@ -220,125 +175,83 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
         });
     } catch (error) {
         console.error("Error al realizar la actualización:", error);
-        check.checked = !activo; // Revertir el estado en caso de error
+        check.checked = !activo;
         guardarEstado(categoriaNombre, check, fila);
     }
 }
 
-   export function updateCategoria(name){   
+export function updateCategoria(name) {
+    async function actualizarCategoria(nuevoNombre) {
+        try {
+            const response = await fetch(`http://localhost:1200/actualizar-categoria/${name}`, {
+                method: "put",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ nuevoNombre })
+            });
 
-        let formularioActualizar=document.getElementById('formulario-categoria-update') 
+            const data = await response.json();
 
-        formularioActualizar.addEventListener("submit",async(e)=>{ 
-            e.preventDefault() 
+            if (response.ok) {
+               
 
-            let nuevoNombre=document.getElementById("newCategoryName").value
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
+                modal.hide();
 
-           try{ 
-
-            const response= await fetch(`http://localhost:1200/actualizar-categoria/${name}`,{
-                method:"put",
-                headers:{
-                    "Content-Type":"application/json"
-                } ,
-                body:JSON.stringify({nuevoNombre})
-            }) 
-
-             console.log(response) 
-
-             const data= await response.json() 
-             console.log(data) 
-
-             let categoriasLocales = JSON.parse(localStorage.getItem("category")) || []; 
-             console.log(categoriasLocales) 
-
-             const categoriaExistente = categoriasLocales.find(category => category.categoria === name);
-
-             if (categoriaExistente) {
-                // Remover la categoría antigua
-                categoriasLocales = categoriasLocales.filter(category => category.categoria !== name);
-
-                // Agregar la categoría actualizada con el nuevo nombre y conservar el estado de `activo`
-                categoriasLocales.push({ 
-                    categoria: nuevoNombre, 
-                    activo: categoriaExistente.activo || true // Conservar el valor de `activo` o asignar `true` si no existe
-                }); 
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                // Si no existía en `localStorage`, agregarla con el nuevo nombre y `activo: true`
-                categoriasLocales.push({ 
-                    categoria: nuevoNombre, 
-                    activo: true 
-                });
+                console.error("No se pudo actualizar la categoría");
             }
-             localStorage.setItem("category", JSON.stringify(categoriasLocales));  
-             const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
-             modal.hide();
-                 
-             setTimeout(() => {
-                window.location.reload();
-                
-             }, 1000);
-            
 
-           } 
-
-           
-
-           catch(err){
-            console.log(message.err)
-           }
-
-        }) 
-
-        
-   
-    } 
-
-    
-   export function eliminarCategoria(id, nombre, fila) {
-        const botonEliminar = document.getElementById("confirmDelete");
-    
-        if (!botonEliminar) {
-            console.error("Botón de confirmación no encontrado");
-            return;
+        } catch (err) {
+            console.log(err.message);
         }
-    
-        botonEliminar.addEventListener("click", async () => {
-            try {
-                const response = await fetch(`http://localhost:1200/eliminar-categoria/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-    
-                const data = await response.json();
-    
-                if (response.ok) {
-                    console.log("Categoría eliminada en el servidor:", id);
-    
-                    // Eliminar del localStorage
-                    let categorias = JSON.parse(localStorage.getItem("category")) || [];
-                    categorias = categorias.filter((categoria) => categoria.id !== id);  // Usar id en lugar de nombre
-                    localStorage.setItem("category", JSON.stringify(categorias));
-    
-                    console.log("Categoría eliminada del localStorage:", nombre);
-    
-                    // Eliminar la fila del DOM
-                    fila.remove();
-    
-                    // Cerrar el modal programáticamente después de eliminar
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal'));
-                    if (modal) modal.hide();
-
-                    // Verificar si quedan categorías en la tabla
-                    
-                } else {
-                    console.error("No se pudo eliminar la categoría:", data.message);
-                }
-            } catch (err) {
-                console.error("Error al intentar eliminar la categoría:", err);
-            }
-        });
     }
-    
+
+    document.getElementById('formulario-categoria-update').addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nuevoNombre = document.getElementById("newCategoryName").value;
+        actualizarCategoria(nuevoNombre);
+    });
+}
+
+export function eliminarCategoria(id, nombre, fila) {
+    const botonEliminar = document.getElementById("confirmDelete");
+
+    if (!botonEliminar) {
+        console.error("Botón de confirmación no encontrado");
+        return;
+    }
+
+    botonEliminar.addEventListener("click", async () => {
+        try {
+            const response = await fetch(`http://localhost:1200/eliminar-categoria/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+               
+              localStorage.clear()
+
+                fila.remove();
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal'));
+                if (modal) modal.hide();
+
+            } else {
+                console.error("No se pudo eliminar la categoría:", data.message);
+            }
+        } catch (err) {
+            console.error("Error al intentar eliminar la categoría:", err);
+        }
+    });
+}
