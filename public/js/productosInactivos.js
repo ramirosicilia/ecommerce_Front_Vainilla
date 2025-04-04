@@ -1,4 +1,5 @@
-import { pedirProductos,desactivadoLogicoProductos } from "./registroProductos.js"; 
+import { desactivadoLogicoProductos } from "./registroProductos.js"; 
+import { obtenerProductos } from "./api/productos.js";
 import { obtenerCategorys } from "./api/productos.js";
 
 const btnInactivar=document.getElementById("mostrarInactivosBtn") 
@@ -11,10 +12,10 @@ btnInactivar.addEventListener('click',productosInactivos)
 
 async function productosInactivos() { 
 
-    const tBody=document.getElementById("productos") 
+    const tBody=document.getElementById("cuerpo-productos") 
     
 
-    const recibirProductos=await pedirProductos() 
+    const recibirProductos=await obtenerProductos() 
 
     const recibirCategorias=await obtenerCategorys() 
 

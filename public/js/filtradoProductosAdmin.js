@@ -1,4 +1,6 @@
-import {desactivadoLogicoProductos,activarBotones,pedirProductos} from "./registroProductos.js";
+import {desactivadoLogicoProductos} from "./registroProductos.js";
+import { activarBotones } from "./mostrarProductosAdmin.js";
+import { obtenerProductos } from "./api/productos.js";
 import { obtenerCategorys } from "./api/productos.js";
 
 
@@ -26,9 +28,9 @@ async function filtrarProductos(){
         })
     } 
 
-    const productos = await pedirProductos();
+    const productos = await obtenerProductos();
      productosFiltrados = productos.filter(product => product.activacion === true);
-    console.log(productosFiltrados);
+    console.log(productosFiltrados)
 
 
 

@@ -89,9 +89,6 @@ function checkout() {
 
 
 
-
-
- 
 function iconoProductosSumados() {
   let iconCart = document.getElementById("cart-count"); 
   iconCart.innerHTML = productosEncarrito.reduce((acc, produc) => acc + produc.cantidad, 0);

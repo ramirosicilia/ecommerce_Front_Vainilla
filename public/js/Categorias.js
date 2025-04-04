@@ -6,7 +6,6 @@ let btnEditar = [];
 
 
 
-
 document.getElementById("clearButton")?.addEventListener("click", () => {
     const inputID = document.getElementById("searchCategory");
     inputID.value = "";
@@ -19,9 +18,6 @@ function eliminar(fila) {
     fila.remove(); 
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    restaurarEstados();
-});
 
 
 
@@ -32,6 +28,7 @@ btnBuscar && cuerpocategoria
     : console.warn("Uno o más elementos no encontrados");
 
 async function recibirCategorys() {
+    
     const categorys = await obtenerCategorys();
     console.log('categorias:', categorys);
 
@@ -40,11 +37,14 @@ async function recibirCategorys() {
    let hayCoincidencias = false;
 
     if (categorys.length > 0) {
-        categorys.forEach(categoria => {
+        categorys.forEach(categoria => { 
+            const fila = document.createElement("tr");
+
+
             if (categoria.nombre_categoria === valorInputID) {
                 hayCoincidencias = true; 
 
-                const fila = document.createElement("tr");
+             
 
                 fila.innerHTML = `
                     <td><input type="checkbox" class="form-check-input select-category" data-id="${categoria.categoria_id}"></td>
@@ -58,6 +58,8 @@ async function recibirCategorys() {
                         </button>
                     </td>
                 `;
+
+
 
                 cuerpocategoria.appendChild(fila);
 
@@ -75,6 +77,9 @@ async function recibirCategorys() {
 
                 updateCategoria(categoria.nombre_categoria);
 
+            } 
+            const checkbox = fila.querySelector(".select-category");
+            if (checkbox) { // Solo llamar restaurarEstado si el checkbox existe
                 restaurarEstado(categoria.nombre_categoria, checkbox, fila);
             }
         });
@@ -89,24 +94,7 @@ async function recibirCategorys() {
     }
 }
 
-function guardarEstado(categoriaNombre, check, fila, activo) {
-    const estado = {
-        checked: check.checked,
-        tieneClase: fila.classList.contains("table-danger"),
-        activo: activo
-    };
-    localStorage.setItem(categoriaNombre, JSON.stringify(estado));
-}
 
-function restaurarEstados() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"][data-id]');
-
-    checkboxes.forEach((checkbox) => {
-        const categoriaNombre = checkbox.getAttribute("data-id");
-        const fila = checkbox.closest("tr");
-        restaurarEstado(categoriaNombre, checkbox, fila);
-    });
-}
 
 export function restaurarEstado(categoriaNombre, check, fila) {
     const estadoGuardado = JSON.parse(localStorage.getItem(categoriaNombre));
@@ -121,7 +109,13 @@ export function restaurarEstado(categoriaNombre, check, fila) {
             fila.style.opacity = "1";
         }
     }
-}
+} 
+
+
+
+
+
+
 
 export async function funcionChequeado(check, categoriaNombre, fila) {
     const activo = check.checked;
@@ -164,7 +158,12 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
 
         localStorage.setItem('category', JSON.stringify(categoriasLocales));
 
-        guardarEstado(categoriaNombre, check, fila, activo);
+        const estado = {
+            checked: check.checked,
+            tieneClase: fila.classList.contains("table-danger"),
+            activo: activo
+        };
+        localStorage.setItem(categoriaNombre, JSON.stringify(estado)); 
 
         Swal.fire({
             title: activo
@@ -176,7 +175,12 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
     } catch (error) {
         console.error("Error al realizar la actualización:", error);
         check.checked = !activo;
-        guardarEstado(categoriaNombre, check, fila);
+        const estado = {
+            checked: check.checked,
+            tieneClase: fila.classList.contains("table-danger"),
+            activo: activo
+        };
+        localStorage.setItem(categoriaNombre, JSON.stringify(estado)); 
     }
 }
 
@@ -217,7 +221,9 @@ export function updateCategoria(name) {
         const nuevoNombre = document.getElementById("newCategoryName").value;
         actualizarCategoria(nuevoNombre);
     });
-}
+} 
+
+
 
 export function eliminarCategoria(id, nombre, fila) {
     const botonEliminar = document.getElementById("confirmDelete");

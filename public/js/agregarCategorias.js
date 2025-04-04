@@ -1,6 +1,6 @@
 
 const formularioCategoria = document.getElementById("formulario-categoria-ingreso");
-let dataCategory = JSON.parse(localStorage.getItem('category')) || []; // Cargar categorías existentes
+
 
 // Agregar nueva categoría
 formularioCategoria.addEventListener("submit", async (e) => {

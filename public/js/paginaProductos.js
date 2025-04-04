@@ -103,12 +103,12 @@ selector.addEventListener("change", async (e) => {
             listaProductos.insertAdjacentHTML("beforeend", `
                 <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
                     <div class="card">
-                        <img src="${producto.imagenes}" class="card-img-top" alt="">
+                        <img src="${producto.imagenes}" class="card-img-top imagenes" data-imagen="${producto.producto_id}">
                         <div class="card-body">
                             <h5 class="card-title">${producto.nombre_producto}</h5>
                             <p class="card-text">$${producto.precio}</p>
                             <p class="card-text">Stock: ${producto.stock}</p>
-                            <button class="btn btn-agregar btn-primary add-to-cart" data-productos="${producto.producto_id}">Agregar al carrito</button>
+                          
                         </div>
                     </div>
                 </section>
@@ -118,8 +118,8 @@ selector.addEventListener("change", async (e) => {
         });
 
         // Agregar funcionalidad a los botones después de haber insertado los productos en el DOM
-        let botonesAgregarCarrito = [...document.querySelectorAll(".btn-agregar")];
-        agregarBotonesAlCarrito(botonesAgregarCarrito);
+       
+        agregarBotonesAlCarrito();
         
     } else {
         listaProductos.innerHTML = `<p>No hay productos disponibles para mostrar.</p>`;
@@ -168,16 +168,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
- function agregarBotonesAlCarrito(botones){ 
- 
+ function agregarBotonesAlCarrito(){ 
 
-  botones.forEach((btn)=>{
-    btn.addEventListener('click',async()=>{ 
+  let imagenes=document.querySelectorAll("img[data-imagen]")
+   
 
-      const productos= await pedirProductos() 
 
-      let botonId=btn.getAttribute('data-productos')
-      agregarProducto(botonId)
+ imagenes.forEach((img)=>{
+    img.addEventListener('click',async()=>{ 
+
+
+
+      let imagenId=img.getAttribute('data-imagen')
+      agregarProducto(imagenId)
 
 
     })
@@ -190,16 +193,16 @@ document.addEventListener("DOMContentLoaded", () => {
  let carritoCompras=carritoStorage?JSON.parse(carritoStorage):[]
 
 
- async function agregarProducto(btnID) { 
-  const productos = await pedirProductos(); 
-  let primerProducto = productos.find(id => id.producto_id === btnID);
+ async function agregarProducto(imgID) { 
+  const productos = await obtenerProductos(); 
+  let primerProducto = productos.find(id => id.producto_id === imgID);
   
   if (primerProducto.stock === 0) {  
     
     return; // Sale de la función si el producto no tiene stock
   }
 
-  let primerProductoStorage = carritoCompras.find(id => id.producto_id === btnID);
+  let primerProductoStorage = carritoCompras.find(id => id.producto_id === imgID);
 
   if (primerProductoStorage) {
     primerProductoStorage.cantidad++;
