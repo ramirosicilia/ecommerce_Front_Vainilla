@@ -2,9 +2,11 @@
 import { obtenerProductos } from "./api/productos.js";
 import { obtenerCategorys} from "./api/productos.js"; 
 import {desactivadoLogicoProductos} from "./registroProductos.js";
-import { renderImages } from "./updateImages.js";
+import { renderImages } from "./gestionarImagenes.js";
 
 
+
+  
 
 
 async function mostrarProductosAdmin() { 
@@ -55,12 +57,12 @@ async function mostrarProductosAdmin() {
           let talles = producto.productos_variantes
           .map(variante => variante.talles ? variante.talles.insertar_talle : null)  // Accedemos directamente a insertar_talle si es un objeto
           .filter(Boolean)
-          .join(", ") || "N/A";
+          .join(", ") || "";
           
           let colores = producto.productos_variantes
               .map(variante => variante.colores ? variante.colores.insertar_color : null)  // Accedemos directamente a insertar_color si es un objeto
               .filter(Boolean)
-              .join(", ") || "N/A"; 
+              .join(", ") || ""; 
   
               let talleIds = producto.productos_variantes
                 .map(variante => variante.talles?.talle_id)
@@ -80,12 +82,12 @@ async function mostrarProductosAdmin() {
                   <td>
                       <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
                   </td>
-                  <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto}</div></td>
-                  <td><div class="contenido-celda">$${producto.precio}</div></td>
+                  <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto===null? "":producto.nombre_producto}</div></td>
+                  <td><div class="contenido-celda">${producto.precio===null?"":"$"+" "+producto.precio}</div></td>
                   <td><div class="contenido-celda">${categoriaProducto}</div></td>
-                  <td><div class="contenido-celda">${stockTotal}</div></td>
-                  <td><div class="contenido-celda">${talles}</div></td>
-                  <td><div class="contenido-celda">${colores}</div></td>
+                  <td><div class="contenido-celda">${stockTotal===null?"0":stockTotal}</div></td>
+                  <td><div class="contenido-celda">${talles===null?"":talles}</div></td>
+                  <td><div class="contenido-celda">${colores===null?"":colores}</div></td>
                   <td class="celda-botones">
                       <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
                       <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}"data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-trash"></i> Eliminar</button>
@@ -165,7 +167,11 @@ export function activarBotones(botonesEdit,botonesElim){
       const productoID=boton.getAttribute("data-id")
       let dataColorID=boton.getAttribute("data-color-id")
       let dataTalleID=boton.getAttribute("data-talle-id") 
-     await eliminarProductoSinVentas(productoID,dataColorID,dataTalleID)
+     await eliminarProductoSinVentas(productoID,dataColorID,dataTalleID) 
+
+     localStorage.setItem("id",JSON.stringify(productoID)) 
+     localStorage.setItem("color-id",JSON.stringify(dataColorID))
+     localStorage.setItem("talle-id",JSON.stringify(dataTalleID))
 
 
     })
@@ -176,7 +182,6 @@ export function activarBotones(botonesEdit,botonesElim){
 
 // Capturar cada input en una variable distinta
 
-const formularioUpdate = document.getElementById("formulario-update-admin");
 const actualizarNombre = document.getElementById("update-ProductName");
 const actualizarPrecio = document.getElementById("update-ProductPrice");
 const actualizarDescripcion = document.getElementById("updateDetailDescription");
@@ -188,7 +193,7 @@ const actualizarNombreDetalle = document.getElementById("update-productNameDetai
 
 
 
-  async function actualizarEnvioUpdate(){  
+  async function actualizarSelectUpdate(){  
   
   const selectCategorias = document.getElementById("productCategory-update"); 
 
@@ -204,8 +209,9 @@ const actualizarNombreDetalle = document.getElementById("update-productNameDetai
   }
   
   }    
-  actualizarEnvioUpdate()   
+  actualizarSelectUpdate()   
 
+  
 
 
   actualizarNombre?.addEventListener("click",async()=>{  
@@ -275,11 +281,7 @@ const actualizarNombreDetalle = document.getElementById("update-productNameDetai
 
        input.value="" 
 
-        setTimeout(() => { 
-          window.location.reload()
-          
-        },300); 
-
+       
       localStorage.removeItem("id");
       localStorage.removeItem("color-id");
       localStorage.removeItem("talle-id");
@@ -314,10 +316,7 @@ async function updatePrecioProducto(id) {
         let data= await response.json(); 
         input.value="" 
 
-       setTimeout(() => { 
-          window.location.reload()
-          
-        },300);  
+       
 
         localStorage.removeItem("id");
         localStorage.removeItem("color-id");
@@ -348,10 +347,7 @@ async function updateDetallesProducto(id,) {
 
         let data= await response.json(); 
         input.value="" 
-        setTimeout(() => { 
-                 window.location.reload()
-                 
-               },300); 
+      
 
         localStorage.removeItem("id");
         localStorage.removeItem("color-id");
@@ -378,10 +374,7 @@ async function updateCategoriaProducto(id,nombre_categoria) {
         let data= await response.json(); 
          select.value=nombre_categoria
 
-        setTimeout(() => { 
-                 window.location.reload()
-                 
-               },300); 
+      
 
          localStorage.removeItem("id");
          localStorage.removeItem("color-id");
@@ -415,10 +408,7 @@ async function updateDescripcionProducto(id) {
         let data= await response.json(); 
         input.value="" 
 
-        setTimeout(() => { 
-          window.location.reload()
-          
-        },300); 
+        
 
         localStorage.removeItem("id");
         localStorage.removeItem("color-id");
@@ -451,10 +441,7 @@ async function updateColorProducto(id) {
         let data= await response.json(); 
         input.value="" 
 
-        setTimeout(() => { 
-                 window.location.reload()
-                 
-               },300); 
+      
          localStorage.removeItem("id");
          localStorage.removeItem("color-id");
          localStorage.removeItem("talle-id");
@@ -487,10 +474,7 @@ async function updateTalleProducto(id,) {
         let data= await response.json(); 
         input.value="" 
 
-        setTimeout(() => { 
-                 window.location.reload()
-                 
-               },300); 
+        
          localStorage.removeItem("id");
          localStorage.removeItem("color-id");
          localStorage.removeItem("talle-id");
@@ -524,10 +508,7 @@ async function updateStockProducto(id,) {
          let data= await response.json(); 
          input.value="" 
 
-         setTimeout(() => { 
-                 window.location.reload()
-                 
-               },300); 
+        
          localStorage.removeItem("id");
          localStorage.removeItem("color-id");
          localStorage.removeItem("talle-id");
@@ -686,5 +667,279 @@ export async function  eliminarProductoSinVentas(id,color_id,talle_id) {
 
      })
 
+}   
+
+
+
+
+const botonEliminarNombre=document.querySelector(".boton__eliminar-nombre")
+console.log(botonEliminarNombre)
+const botonEliminarPrecio=document.querySelector(".boton__eliminar-precio")
+const botonEliminarDescripcion = document.querySelector(".boton__eliminar-descripcion");
+const botonEliminarStock = document.querySelector(".boton__eliminar-stock");
+const botonEliminarTalle = document.querySelector(".boton__eliminar-talle");
+const botonEliminarColor = document.querySelector(".boton__eliminar-color");
+const botonEliminarNombreDetalle = document.querySelector(".boton__eliminar-nombre-detalle"); 
+
+
+botonEliminarNombre?.addEventListener("click", async () => { 
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el nombre del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada
+
+  const id = JSON.parse(localStorage.getItem("id"));
+  await eliminarNombreProducto(id);
+
+  
+});
+
+botonEliminarPrecio?.addEventListener("click",async()=>{ 
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el precio del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+  const id = JSON.parse(localStorage.getItem("id"));
  
+ await eliminarPrecioProducto(id)  
+
+ 
+
+})
+
+
+botonEliminarDescripcion?.addEventListener("click",async()=>{ 
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar la descripcion del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+  
+  const id = JSON.parse(localStorage.getItem("id"));
+
+  await eliminarDescripcionProducto(id) 
+
+ 
+  }) 
+
+
+botonEliminarStock?.addEventListener("click",async()=>{
+   
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el stock del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+
+  const id = JSON.parse(localStorage.getItem("id"));
+  await eliminarStockProducto(id) 
+
+
+} 
+
+
+)
+
+
+botonEliminarColor?.addEventListener("click",async()=>{ 
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el color del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+
+ 
+  const colorID = JSON.parse(localStorage.getItem("color-id"));
+  await eliminarColorProducto(colorID) 
+
+  
+
+}) 
+
+
+botonEliminarTalle?.addEventListener("click",async()=>{ 
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el talle del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+
+
+  const talleID = JSON.parse(localStorage.getItem("talle-id"));
+
+  await eliminarTalleProducto(talleID) 
+
+ 
+
+})
+
+
+botonEliminarNombreDetalle?.addEventListener("click",async()=>{ 
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el detalle del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+
+  const id = JSON.parse(localStorage.getItem("id"));
+
+  await eliminarDetallesProducto(id) 
+
+ 
+})
+
+
+
+async function eliminarNombreProducto(id) { 
+
+  try {  
+  
+    const response = await fetch(`http://localhost:1200/delete-nombre-producto/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    });
+
+    let data= await response.json(); 
+
+       input.value="" 
+
+        setTimeout(() => { 
+          window.location.reload()
+          
+        },300); 
+
+      localStorage.removeItem("id");
+      localStorage.removeItem("color-id");
+      localStorage.removeItem("talle-id"); 
+  }
+  catch (error) {
+      console.error("Error al eliminar el nombre del producto:", error);
+  }
+} 
+
+async function eliminarPrecioProducto(id) { 
+  try {  
+    const response = await fetch(`http://localhost:1200/delete-precio-producto/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    }); 
+
+    let data= await response.json(); 
+    input.value="" 
+
+   
+
+    localStorage.removeItem("id");
+    localStorage.removeItem("color-id");
+    localStorage.removeItem("talle-id"); 
+} catch (error) {
+      console.error("Error al eliminar el precio del producto:", error);
+  }
 }
+async function eliminarDetallesProducto(id,) {
+  try {  
+    const response = await fetch(`http://localhost:1200/delete-producto-detalles/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    }); 
+
+    let data= await response.json(); 
+    input.value="" 
+
+  
+    localStorage.removeItem("id");
+    localStorage.removeItem("color-id");
+    localStorage.removeItem("talle-id"); 
+} catch (error) {
+      console.error("Error al eliminar los detalles del producto:", error);
+  }
+} 
+
+async function eliminarColorProducto(id) {  
+  try {  
+    const response = await fetch(`http://localhost:1200/delete-color-producto/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    }); 
+
+    let data= await response.json(); 
+    input.value="" 
+
+ 
+    localStorage.removeItem("id");
+    localStorage.removeItem("color-id");
+    localStorage.removeItem("talle-id"); 
+} catch (error) {
+      console.error("Error al eliminar el color del producto:", error);
+  }
+}
+async function eliminarTalleProducto(id,) {
+  try {  
+    const response = await fetch(`http://localhost:1200/delete-talle-producto/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    }); 
+
+    let data= await response.json(); 
+    input.value="" 
+
+   setTimeout(() => { 
+      window.location.reload()
+      
+    },300);  
+
+    localStorage.removeItem("id");
+    localStorage.removeItem("color-id");
+    localStorage.removeItem("talle-id"); 
+} catch (error) {
+      console.error("Error al eliminar el talle del producto:", error);
+  }
+} 
+
+async function eliminarDescripcionProducto(id) { 
+
+  try {  
+    const response = await fetch(`http://localhost:1200/delete-producto-descripcion/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    }); 
+
+    let data= await response.json(); 
+    input.value="" 
+
+   setTimeout(() => { 
+      window.location.reload()
+      
+    },300);  
+
+    localStorage.removeItem("id");
+    localStorage.removeItem("color-id");
+    localStorage.removeItem("talle-id"); 
+} catch (error) {
+      console.error("Error al eliminar la descripción del producto:", error);
+  }
+}
+async function eliminarStockProducto(id,) { 
+
+  try {  
+    const response = await fetch(`http://localhost:1200/delete-stock-producto/${id}`, {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+   
+    }); 
+
+    let data= await response.json(); 
+    input.value="" 
+
+   setTimeout(() => { 
+      window.location.reload()
+      
+    },300);  
+
+    localStorage.removeItem("id");
+    localStorage.removeItem("color-id");
+    localStorage.removeItem("talle-id"); 
+} catch (error) {
+      console.error("Error al eliminar el stock del producto:", error);
+  }
+} 
+
