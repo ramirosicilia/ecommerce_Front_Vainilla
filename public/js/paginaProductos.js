@@ -29,48 +29,52 @@ selectorCategorys();
 
 selector.addEventListener("change", async (e) => {
   const categoriaSeleccionada = e.target.value;
-  listaProductos.innerHTML = ""; // Limpiar la lista antes de renderizar
+  listaProductos.innerHTML = ""; // Limpiar lista
 
   let productos = await obtenerProductos();
+  let productosActivos = productos.filter(p => p.activacion === true);
 
-  // Filtrar solo productos activos
-  let productosFiltrados = productos.filter(producto => producto.activacion === true);
-
-  // Aplicar filtro de categoría si no es "todas"
   let productosMostrados = categoriaSeleccionada !== "todas"
-    ? productosFiltrados.filter(producto =>
-        categoriasFiltrada.some(categoria =>
-          categoria.nombre_categoria === categoriaSeleccionada &&
-          categoria.categoria_id === producto.categoria_id
+    ? productosActivos.filter(producto =>
+        categoriasFiltrada.some(cat =>
+          cat.nombre_categoria === categoriaSeleccionada &&
+          cat.categoria_id === producto.categoria_id
         )
       )
-    : productosFiltrados;
+    : productosActivos;
 
   if (productosMostrados.length > 0) {
-    // Usar map y join para mejorar rendimiento en manipulación del DOM
-    listaProductos.innerHTML = productosMostrados.map(producto => `
-      <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
-        <div class="card">
-          <img src="${producto.imagenes}" class="card-img-top" alt="">
-          <div class="card-body">
-            <h5 class="card-title">${producto.nombre_producto}</h5>
-            <p class="card-text">$${producto.precio}</p>
-            <button class="btn btn-agregar btn-primary add-to-cart" data-productos="${producto.producto_id}">
-              Agregar al carrito
-            </button>
-          </div>
-        </div>
-      </section>
-    `).join("");
+    listaProductos.innerHTML = productosMostrados.map(producto => {
+      const imagen = producto.imagenes?.[0]?.urls?.[0] || "img/default.png";
+      const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
 
-    // Llamar funciones adicionales
-    productosMostrados.forEach(producto => stockAgotado(producto.stock, producto.producto_id));
+      return `
+        <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
+          <div class="card">
+            <img src="${imagen}" class="card-img-top" alt="">
+            <div class="card-body">
+              <h5 class="card-title">${producto.nombre_producto || ""}</h5>
+              <p class="card-text">$${producto.precio || 0}</p>
+              <p class="card-text">Stock: ${stock}</p>
+              <button class="btn btn-agregar btn-primary add-to-cart" data-productos="${producto.producto_id}">
+                Agregar al carrito
+              </button>
+            </div>
+          </div>
+        </section>
+      `;
+    }).join("");
+
+    productosMostrados.forEach(producto => {
+      const stock = producto.productos_variantes?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
+      stockAgotado(stock, producto.producto_id);
+    });
+
     agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
   } else {
     listaProductos.innerHTML = `<p>No hay productos en esta categoría.</p>`;
   }
 });
-
 
  
 
@@ -78,59 +82,48 @@ selector.addEventListener("change", async (e) => {
   let productosFiltrados =[]
 
   
-  async function mostrarProductosVenta() { 
-    const productos = await obtenerProductos();  
-    console.log(productos, "user");
-
+  async function mostrarProductosVenta() {
+    const productos = await obtenerProductos();
     const listaProductos = document.getElementById("productos_lista");
-    console.log(listaProductos);
-
-    // Limpiar lista antes de agregar productos nuevos
     listaProductos.innerHTML = "";
-
-    // Filtrar productos activados
-    let productosFiltrados = productos.filter(producto => producto.activacion === true);
-
-    // Filtrar por categoría antes del forEach
-    let filtradoCategoryYProduct = productosFiltrados.filter(producto => 
-        categoriasFiltrada.some(category => category.categoria_id === producto.categoria_id)
+  
+    const productosFiltrados = productos.filter(p => p.activacion === true);
+  
+    const filtradoCategoryYProduct = productosFiltrados.filter(producto => 
+      categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
     );
-
-    console.log(filtradoCategoryYProduct);
-
+  
     if (filtradoCategoryYProduct.length > 0) {
-        filtradoCategoryYProduct.forEach(producto => {
-            listaProductos.insertAdjacentHTML("beforeend", `
-                <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
-                    <div class="card">
-                        <img src="${producto.imagenes}" class="card-img-top imagenes" data-imagen="${producto.producto_id}">
-                        <div class="card-body">
-                            <h5 class="card-title">${producto.nombre_producto}</h5>
-                            <p class="card-text">$${producto.precio}</p>
-                            <p class="card-text">Stock: ${producto.stock}</p>
-                          
-                        </div>
-                    </div>
-                </section>
-            `);
-
-            stockAgotado(producto.stock, producto.producto_id);
-        });
-
-        // Agregar funcionalidad a los botones después de haber insertado los productos en el DOM
-       
-        agregarBotonesAlCarrito();
-        
+      filtradoCategoryYProduct.forEach(producto => {
+        const imagen = producto.imagenes?.[0]?.urls?.[0] || "img/default.png";
+        const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+  
+        listaProductos.insertAdjacentHTML("beforeend", `
+          <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
+            <div class="card">
+              <img src="${imagen}" class="card-img-top imagenes" alt="">
+              <div class="card-body">
+                <h5 class="card-title">${producto.nombre_producto}</h5>
+                <p class="card-text">$${producto.precio}</p>
+                <p class="card-text">Stock: ${stock}</p>
+                <button class="btn btn-agregar btn-primary add-to-cart" data-productos="${producto.producto_id}">
+                  Agregar al carrito
+                </button>
+              </div>
+            </div>
+          </section>
+        `);
+  
+        stockAgotado(stock, producto.producto_id);
+      });
+  
+      agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
     } else {
-        listaProductos.innerHTML = `<p>No hay productos disponibles para mostrar.</p>`;
+      listaProductos.innerHTML = `<p>No hay productos disponibles para mostrar.</p>`;
     }
-}    
-
-mostrarProductosVenta();
-
-
-
-
+  }
+   
+   mostrarProductosVenta()
 
     function stockAgotado(stock, idAgotado) { 
       let producto = document.querySelector(`[data-productos="${idAgotado}"]`);

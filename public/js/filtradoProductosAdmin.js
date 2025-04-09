@@ -6,7 +6,7 @@ import { obtenerCategorys } from "./api/productos.js";
 
 
 const selector=document.getElementById("categoria-select-products"); 
-const cuerpo=document.getElementById("cuerpo-productos"); 
+
 let productosFiltrados=[]
 
 console.log(selector)
@@ -40,75 +40,68 @@ filtrarProductos()
 
 
 
+const tbody = document.querySelector("#cuerpo-productos");
 
-selector.addEventListener("change", async (e) => {    
 
-    let entrada=false
+selector.addEventListener("change", async (e) => {
     const categoriaSeleccionada = e.target.value;
-    cuerpo.innerHTML = "";
-
+    const productos = await obtenerProductos();
     const categorias = await obtenerCategorys();
-    console.log(categorias);
-    
-    let categoriasFiltradas = categorias.filter(dataCategory => dataCategory.activo === true);
-    
-    // Buscar la categoría seleccionada
-    const categoriaFiltrada = categoriasFiltradas.find(categoria => categoria.nombre_categoria === categoriaSeleccionada);
-    
-    if (categoriaFiltrada && !entrada) {
-        productosFiltrados.forEach(producto => {
-            if (producto.categoria_id === categoriaFiltrada.categoria_id) {
-                cuerpo.innerHTML += `
-                    <tr>    
-                        <td>
-                            <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
-                        </td>
-                        <td>
-                            <div class="contenido-celda">
-                                <img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> 
-                                ${producto.nombre_producto}
-                            </div>
-                        </td>
-                        <td><div class="contenido-celda">${producto.precio}</div></td>
-                        <td><div class="contenido-celda">${categoriaFiltrada.nombre_categoria}</div></td>
-                        <td><div class="contenido-celda">${producto.stock}</div></td>
-                        <td class="celda-botones">
-                            <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>
-                            <button class="btn btn-danger btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#confirmModal">
-                                <i class="fas fa-trash"></i> Eliminar
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }
-        });
-    } else {  
-        productosFiltrados.forEach(producto => {  
-            // Buscar la categoría en `categoriasFiltradas` en lugar de `productosFiltrados`
-            const categoriaEncontrada = categoriasFiltradas.find(cat => cat.categoria_id === producto.categoria_id);
-            const nombreFiltrado = categoriaEncontrada ? categoriaEncontrada.nombre_categoria : "Categoría desconocida";
 
-            cuerpo.innerHTML += `
+    let productosActivos = productos.filter(producto => producto?.activacion === true);
+    let categoriasActivas = categorias.filter(cat => cat?.activo === true);
+
+    let productosFiltrados = productosActivos.filter(producto =>
+        categoriasActivas.some(cat => cat.categoria_id === producto.categoria_id)
+    );
+
+    // Si no hay categoría seleccionada, mostrar todos
+    if (categoriaSeleccionada === "") {
+        tbody.innerHTML = "";
+
+        productosFiltrados.forEach(producto => {
+            const categoriaProducto = categoriasActivas.find(cat => cat.categoria_id === producto.categoria_id);
+            const nombreCategoria = categoriaProducto?.nombre_categoria || "Sin categoría";
+
+            const stockTotal = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+            const imagenUrl = producto.imagenes[0]?.urls?.[0];
+
+            const talles = producto.productos_variantes
+                .map(v => v.talles?.insertar_talle)
+                .filter(Boolean)
+                .join(", ") || "";
+
+            const colores = producto.productos_variantes
+                .map(v => v.colores?.insertar_color)
+                .filter(Boolean)
+                .join(", ") || "";
+
+            const talleIds = producto.productos_variantes
+                .map(v => v.talles?.talle_id)
+                .filter(Boolean)
+                .join(", ") || "N/A";
+
+            const colorIds = producto.productos_variantes
+                .map(v => v.colores?.color_id)
+                .filter(Boolean)
+                .join(", ") || "N/A";
+
+            tbody.innerHTML += `
                 <tr>    
                     <td>
                         <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
                     </td>
-                    <td>
-                        <div class="contenido-celda">
-                            <img src="${producto.imagenes}" alt="Producto" style="max-width: 50px;"> 
-                            ${producto.nombre_producto}
-                        </div>
-                    </td>
-                    <td><div class="contenido-celda">${producto.precio}</div></td>
-                    <td><div class="contenido-celda">${nombreFiltrado}</div></td>
-                    <td><div class="contenido-celda">${producto.stock}</div></td>
+                    <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
+                    <td><div class="contenido-celda">${producto.precio === null ? "" : "$ " + producto.precio}</div></td>
+                    <td><div class="contenido-celda">${nombreCategoria}</div></td>
+                    <td><div class="contenido-celda">${stockTotal}</div></td>
+                    <td><div class="contenido-celda">${talles}</div></td>
+                    <td><div class="contenido-celda">${colores}</div></td>
                     <td class="celda-botones">
-                        <button class="btn btn-primary btn-sm btn-editar" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                        <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn btn-danger btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                        <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </td>
@@ -116,15 +109,75 @@ selector.addEventListener("change", async (e) => {
             `;
         });
 
-        entrada = false;
+        const botonesEditar = [...document.querySelectorAll(".btn-editar")];
+        const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")];
+        const checkBox = [...document.querySelectorAll(".check")];
+
+        activarBotones(botonesEditar, botonesEliminar);
+        desactivadoLogicoProductos(checkBox);
+        return;
     }
 
-    const botonesEditar = [...document.querySelectorAll(".btn-editar")];
-    const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")]; 
-    const checkBox = [...document.querySelectorAll(".check")];
+    tbody.innerHTML = "";
 
-    activarBotones(botonesEditar, botonesEliminar);  
-    desactivadoLogicoProductos(checkBox); 
+    // Buscar categoría seleccionada
+    const categoriaObj = categoriasActivas.find(cat => cat.nombre_categoria === categoriaSeleccionada);
 
-    entrada = !entrada;
+    if (categoriaObj) {
+        let productosCategoria = productosFiltrados.filter(prod => prod.categoria_id === categoriaObj.categoria_id);
+
+        productosCategoria.forEach(producto => {
+            const stockTotal = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+            const imagenUrl = producto.imagenes[0]?.urls?.[0];
+
+            const talles = producto.productos_variantes
+                .map(v => v.talles?.insertar_talle)
+                .filter(Boolean)
+                .join(", ") || "";
+
+            const colores = producto.productos_variantes
+                .map(v => v.colores?.insertar_color)
+                .filter(Boolean)
+                .join(", ") || "";
+
+            const talleIds = producto.productos_variantes
+                .map(v => v.talles?.talle_id)
+                .filter(Boolean)
+                .join(", ") || "N/A";
+
+            const colorIds = producto.productos_variantes
+                .map(v => v.colores?.color_id)
+                .filter(Boolean)
+                .join(", ") || "N/A";
+
+            tbody.innerHTML += `
+                <tr>    
+                    <td>
+                        <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
+                    </td>
+                    <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
+                    <td><div class="contenido-celda">${producto.precio === null ? "" : "$ " + producto.precio}</div></td>
+                    <td><div class="contenido-celda">${categoriaSeleccionada}</div></td>
+                    <td><div class="contenido-celda">${stockTotal}</div></td>
+                    <td><div class="contenido-celda">${talles}</div></td>
+                    <td><div class="contenido-celda">${colores}</div></td>
+                    <td class="celda-botones">
+                        <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        const botonesEditar = [...document.querySelectorAll(".btn-editar")];
+        const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")];
+        const checkBox = [...document.querySelectorAll(".check")];
+
+        activarBotones(botonesEditar, botonesEliminar);
+        desactivadoLogicoProductos(checkBox);
+    }
 });

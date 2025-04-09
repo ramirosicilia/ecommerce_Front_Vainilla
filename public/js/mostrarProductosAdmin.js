@@ -9,7 +9,7 @@ import { renderImages } from "./gestionarImagenes.js";
   
 
 
-async function mostrarProductosAdmin() { 
+export async function mostrarProductosAdmin() { 
   let productos = await obtenerProductos();  
   let categorias = await obtenerCategorys();  
 
@@ -76,7 +76,7 @@ async function mostrarProductosAdmin() {
   
           
       
-          tbody.innerHTML += `  
+          tbody.innerHTML+= `  
              
               <tr>    
                   <td>
@@ -117,8 +117,6 @@ async function mostrarProductosAdmin() {
    }
   
 }   
-
-
 
 
 mostrarProductosAdmin();

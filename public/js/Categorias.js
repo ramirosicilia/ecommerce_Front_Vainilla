@@ -27,6 +27,9 @@ btnBuscar && cuerpocategoria
     }) 
     : console.warn("Uno o más elementos no encontrados");
 
+
+
+
 async function recibirCategorys() {
     
     const categorys = await obtenerCategorys();
@@ -113,10 +116,6 @@ export function restaurarEstado(categoriaNombre, check, fila) {
 
 
 
-
-
-
-
 export async function funcionChequeado(check, categoriaNombre, fila) {
     const activo = check.checked;
 
@@ -161,8 +160,9 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
         const estado = {
             checked: check.checked,
             tieneClase: fila.classList.contains("table-danger"),
-            activo: activo
+            desactivado: activo
         };
+        
         localStorage.setItem(categoriaNombre, JSON.stringify(estado)); 
 
         Swal.fire({
@@ -172,13 +172,14 @@ export async function funcionChequeado(check, categoriaNombre, fila) {
             icon: "success",
             confirmButtonText: "Entendido",
         });
+        
     } catch (error) {
         console.error("Error al realizar la actualización:", error);
         check.checked = !activo;
         const estado = {
             checked: check.checked,
             tieneClase: fila.classList.contains("table-danger"),
-            activo: activo
+            desactivado: activo
         };
         localStorage.setItem(categoriaNombre, JSON.stringify(estado)); 
     }
