@@ -13,7 +13,7 @@ const selectorNombre= document.getElementById("selectProduct-nombre");
 let producto_id = null; // Variable para almacenar el ID del producto seleccionado
  
   
-  
+
 
     console.log(selectorNombre); // Verifica si el elemento existe 
     let productosGuardados = JSON.parse(localStorage.getItem('productos')) || [];
@@ -40,11 +40,7 @@ let producto_id = null; // Variable para almacenar el ID del producto selecciona
     }
   
 
-   
-
-
-
-   
+  
 
    if(selectorNombre){ 
 
@@ -103,7 +99,7 @@ categoriasInsetar()
 let categoriaID=null 
 
 if(selector){ 
-  selector.addEventListener("change",async()=>{
+  selector.addEventListener("change",async()=>{ 
     const categoriaValor=selector.value
     const categorias = await obtenerCategorys(); 
     categorias.forEach((categoria) => { 
@@ -121,9 +117,13 @@ if(selector){
 
 
  async function downloadProduct(e) { 
+  
   if (!validarFormularioProducto()) {
     return;
-  }
+  } 
+
+
+  
  console.log('entro a la funcion') 
  console.log(e.target)
  console.log(categoriaID) 
@@ -230,8 +230,6 @@ if (formulario) {
     await downloadProduct(e);
   });
 } 
-
-
 
 
 let tallesSet = new Set();
@@ -376,9 +374,7 @@ async function subirCaracteristicasYStock(insertar_talle, insertar_color, stock)
             });
 
             setTimeout(() => window.location.reload(), 1500); 
-          let productosGuardados = JSON.parse(localStorage.getItem('productos')) || [];
-            productosGuardados=productosGuardados.filter(id=>id.producto_id!=producto_id) 
-            localStorage.setItem("productos",JSON.stringify(productosGuardados)) 
+          
 
         } else { 
             throw new Error("Error al insertar las características");
@@ -394,12 +390,6 @@ async function subirCaracteristicasYStock(insertar_talle, insertar_color, stock)
 }
 
 
-
-
-
-
-
- 
 
 
    // Desactivar productos lógicamente

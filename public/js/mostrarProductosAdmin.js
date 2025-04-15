@@ -49,7 +49,8 @@ export async function mostrarProductosAdmin() {
         
   
           // Calcular stock sumando todas las variantes  
-          let stockTotal = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;  
+          let stockTotal= producto.productos_variantes?.map(variante => variante.stock) || [];
+         
   
           // Obtener la primera imagen del array de imágenes  
           let imagenUrl = producto.imagenes[0]?.urls?.[0];  
@@ -64,17 +65,9 @@ export async function mostrarProductosAdmin() {
               .filter(Boolean)
               .join(", ") || ""; 
   
-              let talleIds = producto.productos_variantes
-                .map(variante => variante.talles?.talle_id)
-                .filter(Boolean)  // Filtra los valores no definidos o nulos
-                .join(", ") || "N/A";
-  
-              let colorIds = producto.productos_variantes
-                  .map(variante => variante.colores?.color_id)
-                  .filter(Boolean)
-                  .join(", ") || "N/A";
-  
-          
+              let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
+              let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A";
+              
       
           tbody.innerHTML+= `  
              
@@ -188,6 +181,8 @@ const actualizarTalle = document.getElementById("update-productSize");
 const actualizarColor = document.getElementById("update-product-Colors");
 const actualizarCategoria = document.getElementById("productCategory-update");
 const actualizarNombreDetalle = document.getElementById("update-productNameDetail"); 
+const selectorColores=document.getElementById("select-productColors-update-2")
+const selectorTalles=document.getElementById("select-productSizes-update")
 
 
 
@@ -207,9 +202,214 @@ const actualizarNombreDetalle = document.getElementById("update-productNameDetai
   }
   
   }    
+  
   actualizarSelectUpdate()   
 
+ 
+
+
+
+
+  async function seleccionarColor() {
+    const productos = await obtenerProductos();
+    const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
+
+
+    if (!selectorColores) {
+      console.error("selectorColores no está en el DOM");
+      return;
+    }
   
+    // Limpiar opciones anteriores
+    selectorColores.innerHTML = '<option value="">Seleccioná un color existente</option>';
+  
+    // Buscar el producto que coincide con el ID seleccionado
+    const productoEncontrado = productos.find(producto => producto.producto_id === productoIDSeleccionado); 
+  
+
+ 
+    if (!productoEncontrado) {
+      console.warn("No se encontró el producto con ID:", productoIDSeleccionado);
+      return;
+    }
+
+  
+    // Recorrer solo las variantes del producto encontrado
+    productoEncontrado.productos_variantes?.forEach((variante) => {
+      const color = variante.colores; // Es un objeto individual
+    
+      if (color) {
+        const nombreColor = color.insertar_color;
+        const idColor = color.color_id;
+    
+        if (nombreColor && idColor) {
+          const option = document.createElement("option");
+          option.value = nombreColor;
+          option.textContent = nombreColor;
+          selectorColores.appendChild(option);
+          console.log("Agregado color:", nombreColor);
+        } else {
+          console.warn("Color no válido:", color);
+        }
+      } else {
+        console.warn("No hay color en variante:", variante);
+      }
+    });
+    
+    
+  }
+  
+  seleccionarColor(); 
+
+
+
+ 
+ let idColorEncontrado=null
+ let idTalleEncontrado =null
+
+  
+ selectorColores?.addEventListener("change", async (e) => {
+  console.log("Evento change disparado"); 
+
+  
+  const productos = await obtenerProductos();  
+  console.log("Productos obtenidos:", productos);
+
+  const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
+  console.log("ID del producto seleccionado:", productoIDSeleccionado);
+
+  const colorNombreSeleccionado = e.target.value;
+  console.log("Nombre del color seleccionado:", colorNombreSeleccionado);
+
+  const productoEncontrado = productos.find(producto => producto.producto_id === productoIDSeleccionado);
+
+  if (!productoEncontrado) {
+    console.warn("Producto no encontrado con ID:", productoIDSeleccionado);
+    return;
+  }
+
+  console.log("Producto encontrado:", productoEncontrado);
+  console.log("Variantes del producto:", productoEncontrado.productos_variantes);
+
+  // Buscar la variante con el nombre del color seleccionado
+  const varianteEncontrada = productoEncontrado.productos_variantes.find(variante => 
+    variante.colores?.insertar_color === colorNombreSeleccionado
+  );
+
+  if (varianteEncontrada) {
+     idColorEncontrado = varianteEncontrada.colores.color_id;
+    console.log("Variante encontrada:", varianteEncontrada);
+    console.log("ID del color correspondiente:", idColorEncontrado);
+
+    // Podés guardar el ID si lo necesitás más adelante 
+  
+
+  
+  } else {
+    console.warn("No se encontró una variante con el color:", colorNombreSeleccionado);
+  }
+});  
+
+
+
+
+async function seleccionartalles() {
+  const productos = await obtenerProductos();
+  const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
+
+
+  if (!selectorTalles) {
+    console.error("selectorColores no está en el DOM");
+    return;
+  }
+
+  // Limpiar opciones anteriores
+  selectorTalles.innerHTML = '<option value="">Seleccioná un color existente</option>';
+
+  // Buscar el producto que coincide con el ID seleccionado
+  const productoEncontrado = productos.find(producto => producto.producto_id === productoIDSeleccionado); 
+
+
+
+  if (!productoEncontrado) {
+    console.warn("No se encontró el producto con ID:", productoIDSeleccionado);
+    return;
+  }
+
+
+  // Recorrer solo las variantes del producto encontrado
+  productoEncontrado.productos_variantes?.forEach((variante) => {
+    const talle = variante.talles; // Es un objeto individual
+  
+    if (talle) {
+      const nombreTalle = talle.insertar_talle;
+      const idTalle = talle.talle_id;
+  
+      if (nombreTalle && idTalle) {
+        const option = document.createElement("option");
+        option.value = nombreTalle;
+        option.textContent = nombreTalle;
+        selectorTalles.appendChild(option);
+        console.log("Agregado color:", nombreTalle);
+      } else {
+        console.warn("Color no válido:", talle);
+      }
+    } else {
+      console.warn("No hay color en variante:", variante);
+    }
+  });
+  
+  
+}
+
+seleccionartalles(); 
+
+
+selectorTalles?.addEventListener("change",async(e)=>{ 
+  console.log("Evento change disparado"); 
+
+  
+  const productos = await obtenerProductos();  
+  console.log("Productos obtenidos:", productos);
+
+  const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
+  console.log("ID del producto seleccionado:", productoIDSeleccionado);
+
+  const TalleNombreSeleccionado = e.target.value;
+  console.log("Nombre del color seleccionado:", TalleNombreSeleccionado);
+
+  const productoEncontrado = productos.find(producto => producto.producto_id === productoIDSeleccionado);
+
+  if (!productoEncontrado) {
+    console.warn("Producto no encontrado con ID:", productoIDSeleccionado);
+    return;
+  }
+
+  console.log("Producto encontrado:", productoEncontrado);
+  console.log("Variantes del producto:", productoEncontrado.productos_variantes);
+
+  // Buscar la variante con el nombre del color seleccionado
+  const varianteEncontrada = productoEncontrado.productos_variantes.find(variante => 
+    variante.talles?.insertar_talle === TalleNombreSeleccionado
+  );
+
+  if (varianteEncontrada) {
+     idTalleEncontrado = varianteEncontrada.talles.talle_id;
+    console.log("Variante encontrada:", varianteEncontrada);
+    console.log("ID del talle correspondiente:", idTalleEncontrado);
+
+    // Podés guardar el ID si lo necesitás más adelante
+    localStorage.setItem("talle-id", JSON.stringify(idTalleEncontrado));
+  } else {
+    console.warn("No se encontró una variante con el color:", TalleNombreSeleccionado);
+  }
+
+
+
+})
+
+
+
 
 
   actualizarNombre?.addEventListener("click",async()=>{  
@@ -238,14 +438,31 @@ const actualizarNombreDetalle = document.getElementById("update-productNameDetai
    
    
       actualizarColor?.addEventListener("click",async()=>{ 
-        const colorID = JSON.parse(localStorage.getItem("color-id"));
-       await updateColorProducto(colorID)
-      })  
-   
+        
+        const productoID=JSON.parse(localStorage.getItem("id"));
+      
+  
+        if (!idColorEncontrado || !productoID ) {
+          console.error("Faltan los IDs necesarios.");
+          return;
+        } 
+
+       await updateColorProducto(productoID)
+      })   
+
+
+
+
       actualizarTalle?.addEventListener("click",async()=>{ 
         const talleID = JSON.parse(localStorage.getItem("talle-id"));
-       await updateTalleProducto(talleID)
-      }) 
+             
+        const productoID=JSON.parse(localStorage.getItem("id"));
+       await updateTalleProducto(talleID,productoID)
+      })  
+
+
+
+
    
       actualizarNombreDetalle?.addEventListener("click",async()=>{ 
         const id = JSON.parse(localStorage.getItem("id"));
@@ -259,39 +476,41 @@ const actualizarNombreDetalle = document.getElementById("update-productNameDetai
    
       })
 
-  async function updateNombreProducto(id,) {
-    try {  
-       const input= document.getElementById("productName-update")
-      const nombre_producto = document.getElementById("productName-update").value.trim();
+    async function updateNombreProducto(id) {
+      try {  
+         const input= document.getElementById("productName-update")
+        const nombre_producto = document.getElementById("productName-update").value.trim();
 
-      if (nombre_producto === "" || /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-]+$/.test(nombre_producto) === false) {
-  
-        document.getElementById("error-nombre-update").textContent = 'El nombre del producto no puede contener números ni caracteres no permitidos.';
-        return;
-    }
+        if (nombre_producto === "" || /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-]+$/.test(nombre_producto) === false) {
+        
+          document.getElementById("error-nombre-update").textContent = 'El nombre del producto no puede contener números ni caracteres no permitidos.';
+          return;
+      }
 
-        const response = await fetch(`http://localhost:1200/update-nombre-producto/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre_producto })
-        });
-    let data= await response.json(); 
+          const response = await fetch(`http://localhost:1200/update-nombre-producto/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nombre_producto })
+          });
+      let data= await response.json(); 
 
-       input.value="" 
+         input.value="" 
 
-       
-      localStorage.removeItem("id");
-      localStorage.removeItem("color-id");
-      localStorage.removeItem("talle-id");
-     
-      
+        
+        localStorage.removeItem("id");
+        localStorage.removeItem("color-id");
+        localStorage.removeItem("talle-id");
+        
+        
 
-    } catch (error) {
-        console.error("Error al actualizar el nombre del producto:", error);
+      } catch (error) {
+          console.error("Error al actualizar el nombre del producto:", error);
+      } 
+
+
     } 
 
-    
-}
+
 
 async function updatePrecioProducto(id) {
     try {  
@@ -326,7 +545,7 @@ async function updatePrecioProducto(id) {
     }
 }
 
-async function updateDetallesProducto(id,) {
+async function updateDetallesProducto(id) {
     try {   
        const input=document.getElementById("detailName-update")
       const detalles =document.getElementById("detailName-update").value.trim(); 
@@ -391,7 +610,8 @@ async function updateDescripcionProducto(id) {
        const input=document.getElementById("detailDescription-update")
       const descripcion = document.getElementById("detailDescription-update").value.trim();  
 
-      if (descripcion === "" || /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s\-.,;:¡!¿?]+$/.test(descripcion) === false) {
+      if (descripcion === "" || /[\s\S]{3,}/.test(descripcion) === false) {
+
         // Mostrar el mensaje de error en lugar de un alert
         document.getElementById("error-descripcion-update").textContent = 'La descripción no puede contener números ni caracteres no permitidos.';
         return;
@@ -416,9 +636,16 @@ async function updateDescripcionProducto(id) {
     } catch (error) {
         console.error("Error al actualizar la descripción del producto:", error);
     }
-}
+} 
 
-async function updateColorProducto(id) {  
+
+
+
+async function updateColorProducto(producto_id) {  
+
+
+    console.log(producto_id)
+   
 
   const input=document.getElementById("update-productColor")
   const insertar_color=document.getElementById("update-productColor").value.trim(); 
@@ -430,10 +657,10 @@ async function updateColorProducto(id) {
         }
 
     try {
-        const response = await fetch(`http://localhost:1200/update-color-producto/${id}`, {
+        const response = await fetch(`http://localhost:1200/update-color-producto/${idColorEncontrado}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({insertar_color})
+            body: JSON.stringify({insertar_color,producto_id})
         }); 
 
         let data= await response.json(); 
@@ -449,24 +676,27 @@ async function updateColorProducto(id) {
     } catch (error) {
         console.error("Error al actualizar el color del producto:", error);
     }
+
+    
 }
 
-async function updateTalleProducto(id,) {
+async function updateTalleProducto(talle_id,producto_id) { 
+
+ 
     try {  
         
        const input=document.getElementById("update-productSizes")
        const insertar_talle=document.getElementById("update-productSizes").value.trim(); 
 
-       if (insertar_talle === "" || /^[A-Za-zÁÉÍÓÚáéíóúñÑ0-9\s\-]+$/.test(insertar_talle) === false) {
-        // Mostrar el mensaje de error en lugar de un alert
+       if (insertar_talle === "" || /^[A-Za-zÁÉÍÓÚáéíóúñÑ\d\s\/\.½¾¼-]+$/ .test(insertar_talle) === false) {
         document.getElementById("error-talle-update").textContent = 'El talle no puede estar vacío ni contener caracteres no permitidos.';
         return;
     } 
 
-        const response = await fetch(`http://localhost:1200/update-talle-producto/${id}`, {
+        const response = await fetch(`http://localhost:1200/update-talle-producto/${talle_id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ insertar_talle})
+            body: JSON.stringify({ insertar_talle,producto_id})
         }); 
 
         let data= await response.json(); 
@@ -483,7 +713,14 @@ async function updateTalleProducto(id,) {
     }
 }
 
-async function updateStockProducto(id,) { 
+
+
+
+
+
+
+
+async function updateStockProducto(id) { 
 
      const input=document.getElementById("productStock-update")
      const stockInput=document.getElementById("productStock-update").value.trim(); 

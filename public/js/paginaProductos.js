@@ -6,7 +6,8 @@ let categoriasFiltrada = [];
 const selector = document.getElementById("categorySelector");
 const listaProductos = document.getElementById("productos_lista");
 
-async function selectorCategorys() {
+async function selectorCategorys() { 
+
   let categoria = await obtenerCategorys();
   categoriasFiltrada = categoria.filter(category => category.activo === true);
 
@@ -77,10 +78,6 @@ selector.addEventListener("change", async (e) => {
 });
 
  
-
- 
-  let productosFiltrados =[]
-
   
   async function mostrarProductosVenta() {
     const productos = await obtenerProductos();

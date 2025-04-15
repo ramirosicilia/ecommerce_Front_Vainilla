@@ -20,18 +20,13 @@ export function validarFormularioProducto() {
   const detalles = document.getElementById("detailDescription").value;
 
 
-  const tamaño = document.getElementById("productSize").value;
- 
-  const nombreDetalle = document.getElementById("detailName").value;
+
+  const nombreDetalle = document.getElementById("detailName").value
 
   // Expresiones regulares para validación
   const nombreValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ0-9\s\-\']+$/;
   const precioValidado = /^\d+(\.\d{1,2})?$/;
-  const detallesValidado = /^[\s\S]{3,100}$/;
-
-
- 
-  const detalleNombreValidado = /^(\S+\s*){1,3}$/;
+  const detalleNombreValidado = /^(\S+\s*){1,10}$/;
   const categoriaValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
 
   // Validaciones
@@ -45,7 +40,7 @@ export function validarFormularioProducto() {
     errores.imagen = "Debe subir una imagen.";
   }
   
-  if (!detalles || !detallesValidado.test(detalles)) {
+  if (!detalles.trim() ) {
     errores.detalles = "Ingrese una descripción de producto válida.";
   }
  
@@ -84,8 +79,10 @@ export function validarFormularioVariantes(talle,color,stock) {
   };
 
  
-   const tallaValidada = /^[a-zA-Z0-9\s]+$/;
-   const colorValidado = /^(?!\s*$)[a-zA-Z\s]+$/;
+    const tallaValidada=/^[A-Za-zÁÉÍÓÚáéíóúñÑ\d\s\/\.½¾¼-]+$/;
+
+   
+    const colorValidado = /^(?!\s*$)[a-zA-Z\s]+$/;
     const stockValidado = /^[0-9]+$/;
 
 
