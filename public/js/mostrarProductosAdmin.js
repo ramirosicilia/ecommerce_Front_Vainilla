@@ -265,7 +265,9 @@ const selectorTalles=document.getElementById("select-productSizes-update")
 
  
  let idColorEncontrado=null
- let idTalleEncontrado =null
+ let idTalleEncontrado =null 
+ let colorNombreSeleccionado=null
+ let TalleNombreSeleccionado=null
 
   
  selectorColores?.addEventListener("change", async (e) => {
@@ -278,7 +280,7 @@ const selectorTalles=document.getElementById("select-productSizes-update")
   const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
   console.log("ID del producto seleccionado:", productoIDSeleccionado);
 
-  const colorNombreSeleccionado = e.target.value;
+     colorNombreSeleccionado = e.target.value;
   console.log("Nombre del color seleccionado:", colorNombreSeleccionado);
 
   const productoEncontrado = productos.find(producto => producto.producto_id === productoIDSeleccionado);
@@ -375,7 +377,7 @@ selectorTalles?.addEventListener("change",async(e)=>{
   const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
   console.log("ID del producto seleccionado:", productoIDSeleccionado);
 
-  const TalleNombreSeleccionado = e.target.value;
+    TalleNombreSeleccionado = e.target.value;
   console.log("Nombre del color seleccionado:", TalleNombreSeleccionado);
 
   const productoEncontrado = productos.find(producto => producto.producto_id === productoIDSeleccionado);
@@ -972,31 +974,44 @@ botonEliminarStock?.addEventListener("click",async()=>{
 )
 
 
-botonEliminarColor?.addEventListener("click",async()=>{ 
+botonEliminarColor?.addEventListener("click",async()=>{  
+
+  let productoID=JSON.parse(localStorage.getItem('id'))
 
   const confirmar = confirm("¿Estás seguro de que querés eliminar el color del producto?");
-  if (!confirmar) return; // Si el usuario cancela, no hace nada 
 
+   if(!colorNombreSeleccionado){
+    return
+   } 
 
+   if (!confirmar) return; // Si el usuario cancela, no hace nada 
  
-  const colorID = JSON.parse(localStorage.getItem("color-id"));
-  await eliminarColorProducto(colorID) 
+
+  await eliminarColorProducto(productoID) 
 
   
 
 }) 
 
 
-botonEliminarTalle?.addEventListener("click",async()=>{ 
+botonEliminarTalle?.addEventListener("click",async()=>{  
 
-  const confirmar = confirm("¿Estás seguro de que querés eliminar el talle del producto?");
+  let productoID=JSON.parse(localStorage.getItem('id'))
+
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el talle del producto?"); 
+  
+   if(!TalleNombreSeleccionado){
+
+    return
+   } 
+
+   
   if (!confirmar) return; // Si el usuario cancela, no hace nada 
 
 
 
-  const talleID = JSON.parse(localStorage.getItem("talle-id"));
 
-  await eliminarTalleProducto(talleID) 
+  await eliminarTalleProducto(productoID) 
 
  
 
@@ -1066,7 +1081,9 @@ async function eliminarPrecioProducto(id) {
       console.error("Error al eliminar el precio del producto:", error);
   }
 }
-async function eliminarDetallesProducto(id,) {
+async function eliminarDetallesProducto(id) { 
+
+ 
   try {  
     const response = await fetch(`http://localhost:1200/delete-producto-detalles/${id}`, {
         method: "put",
@@ -1086,11 +1103,12 @@ async function eliminarDetallesProducto(id,) {
   }
 } 
 
-async function eliminarColorProducto(id) {  
+async function eliminarColorProducto(producto_id) {  
   try {  
-    const response = await fetch(`http://localhost:1200/delete-color-producto/${id}`, {
+    const response = await fetch(`http://localhost:1200/delete-color-producto/${idColorEncontrado}`, {
         method: "put",
         headers: { "Content-Type": "application/json" },
+        body:JSON.stringify({producto_id})
    
     }); 
 
@@ -1105,11 +1123,13 @@ async function eliminarColorProducto(id) {
       console.error("Error al eliminar el color del producto:", error);
   }
 }
-async function eliminarTalleProducto(id,) {
+async function eliminarTalleProducto(producto_id) { 
+  
   try {  
-    const response = await fetch(`http://localhost:1200/delete-talle-producto/${id}`, {
+    const response = await fetch(`http://localhost:1200/delete-talle-producto/${idTalleEncontrado}`, {
         method: "put",
         headers: { "Content-Type": "application/json" },
+        body:JSON.stringify({producto_id})
    
     }); 
 
@@ -1153,7 +1173,7 @@ async function eliminarDescripcionProducto(id) {
       console.error("Error al eliminar la descripción del producto:", error);
   }
 }
-async function eliminarStockProducto(id,) { 
+async function eliminarStockProducto(id) { 
 
   try {  
     const response = await fetch(`http://localhost:1200/delete-stock-producto/${id}`, {
