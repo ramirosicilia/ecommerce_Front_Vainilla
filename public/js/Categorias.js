@@ -262,3 +262,6 @@ export function eliminarCategoria(id, nombre, fila) {
         }
     });
 }
+
+
+

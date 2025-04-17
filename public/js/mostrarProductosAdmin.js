@@ -15,9 +15,9 @@ export async function mostrarProductosAdmin() {
 
   const selectCategorias = document.getElementById("categoria-select-products");  
   const tbody = document.querySelector("#cuerpo-productos");  
+ 
 
-  
-  
+
   console.log(selectCategorias); // Verifica si el elemento existe en la consola  
 
   let productosActivos = productos.filter(producto => producto?.activacion === true);  
@@ -49,7 +49,7 @@ export async function mostrarProductosAdmin() {
         
   
           // Calcular stock sumando todas las variantes  
-          let stockTotal= producto.productos_variantes?.map(variante => variante.stock) || [];
+    
          
   
           // Obtener la primera imagen del array de imágenes  
@@ -66,27 +66,55 @@ export async function mostrarProductosAdmin() {
               .join(", ") || ""; 
   
               let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
-              let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A";
+              let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A"; 
+             
+              let tallesArray=talles.split(", ") 
+              let coloresArray=colores.split(", ") 
+
+              console.log(tallesArray)
+              console.log(coloresArray) 
+
+              let tallesYColores = {}; // objeto vacío
+
+              for (let i = 0; i < tallesArray.length; i++) {
+                let talle = tallesArray[i];
+                let color = coloresArray[i];
+                
+                // Asignamos dinámicamente el talle como clave y el color como valor
+                tallesYColores[talle] = color;
+              } 
+
+              console.log(tallesYColores)
               
       
-          tbody.innerHTML+= `  
-             
-              <tr>    
-                  <td>
-                      <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
-                  </td>
-                  <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto===null? "":producto.nombre_producto}</div></td>
-                  <td><div class="contenido-celda">${producto.precio===null?"":"$"+" "+producto.precio}</div></td>
-                  <td><div class="contenido-celda">${categoriaProducto}</div></td>
-                  <td><div class="contenido-celda">${stockTotal===null?"0":stockTotal}</div></td>
-                  <td><div class="contenido-celda">${talles===null?"":talles}</div></td>
-                  <td><div class="contenido-celda">${colores===null?"":colores}</div></td>
-                  <td class="celda-botones">
-                      <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
-                      <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}"data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-trash"></i> Eliminar</button>
-                  </td>
-              </tr>
-          `;  
+                let tallesColoresHTML = producto.productos_variantes.map(variante => {
+                let talle = variante.talles?.insertar_talle || "N/A";
+                let color = variante.colores?.insertar_color || "N/A";
+                return `${talle}: ${color}`;
+              }).join("<br>");
+
+              let stockHTML = producto.productos_variantes.map(variante => {
+                return variante.stock ?? "0";
+              }).join("<br>");
+
+            
+            tbody.innerHTML+= `  
+            <tr>    
+                <td>
+                    <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
+                </td>
+                <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
+                <td><div class="contenido-celda">${producto.precio ? "$ " + producto.precio : ""}</div></td>
+                <td><div class="contenido-celda">${categoriaProducto}</div></td>
+                <td><div class="contenido-celda">${tallesColoresHTML}</div></td>
+                <td><div class="contenido-celda">${stockHTML}</div></td>
+                <td class="celda-botones">
+                    <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-trash"></i> Eliminar</button>
+                </td>
+            </tr>
+            `;
+            
       
       });   
   
@@ -207,9 +235,6 @@ const selectorTalles=document.getElementById("select-productSizes-update")
 
  
 
-
-
-
   async function seleccionarColor() {
     const productos = await obtenerProductos();
     const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
@@ -236,7 +261,9 @@ const selectorTalles=document.getElementById("select-productSizes-update")
   
     // Recorrer solo las variantes del producto encontrado
     productoEncontrado.productos_variantes?.forEach((variante) => {
-      const color = variante.colores; // Es un objeto individual
+      const color = variante.colores;
+      const stock = variante.stock;
+      const talla=variante.talles.insertar_talle
     
       if (color) {
         const nombreColor = color.insertar_color;
@@ -245,14 +272,9 @@ const selectorTalles=document.getElementById("select-productSizes-update")
         if (nombreColor && idColor) {
           const option = document.createElement("option");
           option.value = nombreColor;
-          option.textContent = nombreColor;
+          option.textContent = `${nombreColor} ${talla} (Stock: ${stock})`;
           selectorColores.appendChild(option);
-          console.log("Agregado color:", nombreColor);
-        } else {
-          console.warn("Color no válido:", color);
         }
-      } else {
-        console.warn("No hay color en variante:", variante);
       }
     });
     
@@ -341,7 +363,9 @@ async function seleccionartalles() {
 
   // Recorrer solo las variantes del producto encontrado
   productoEncontrado.productos_variantes?.forEach((variante) => {
-    const talle = variante.talles; // Es un objeto individual
+    const talle = variante.talles;
+    const stock = variante.stock;
+    const color=variante.colores.insertar_color
   
     if (talle) {
       const nombreTalle = talle.insertar_talle;
@@ -350,16 +374,12 @@ async function seleccionartalles() {
       if (nombreTalle && idTalle) {
         const option = document.createElement("option");
         option.value = nombreTalle;
-        option.textContent = nombreTalle;
+        option.textContent = `${nombreTalle} ${color} (Stock: ${stock})`;
         selectorTalles.appendChild(option);
-        console.log("Agregado color:", nombreTalle);
-      } else {
-        console.warn("Color no válido:", talle);
       }
-    } else {
-      console.warn("No hay color en variante:", variante);
     }
   });
+  
   
   
 }
@@ -406,10 +426,81 @@ selectorTalles?.addEventListener("change",async(e)=>{
     console.warn("No se encontró una variante con el color:", TalleNombreSeleccionado);
   }
 
+}) 
 
 
-})
+let stock = null; 
+let stockId = null; // ← para guardar el ID del stock
 
+
+const selectCombinaciones = document.getElementById("select-stock-combinaciones");
+
+// Este objeto nos servirá para mapear cada combinación a su stock
+const combinacionesStock = {};
+
+async function renderizarCombinacionesStock() {
+  const productos = await obtenerProductos();
+  const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
+
+  if (!selectCombinaciones) {
+    console.error("El select de combinaciones no está en el DOM");
+    return;
+  }
+
+  // Limpiar el select antes de agregar nuevas opciones
+  selectCombinaciones.innerHTML = '<option disabled selected>Seleccioná una combinación</option>';
+
+  const producto = productos.find(p => p.producto_id === productoIDSeleccionado);
+
+  if (!producto || !producto.productos_variantes) {
+    console.warn("Producto no encontrado o sin variantes.");
+    return;
+  }
+
+  producto.productos_variantes.forEach(variacion => {
+    const talle = variacion.talles?.insertar_talle;
+    const color = variacion.colores?.insertar_color;
+    const stockVariante = variacion.stock;
+    const stockVarianteId = variacion.variante_id;
+
+    if (talle && color) {
+      const clave = `${talle}-${color}`;
+
+      // Guardamos el stock en el mapa
+      combinacionesStock[clave] = {
+        stock: stockVariante,
+        stock_id: stockVarianteId
+      }; 
+
+
+      const option = document.createElement("option");
+      option.value = clave;
+      option.textContent = `${talle} - ${color} (Stock: ${stockVariante})`;
+      selectCombinaciones.appendChild(option);
+    }
+  });
+}
+
+renderizarCombinacionesStock();
+
+// 🎯 Evento cuando cambia el select
+selectCombinaciones.addEventListener("change", () => {
+  const valorSeleccionado = selectCombinaciones.value; // Ej: "S-rojo"
+
+  if (combinacionesStock[valorSeleccionado] !== undefined) {
+    stock = combinacionesStock[valorSeleccionado];
+    stockId = combinacionesStock[valorSeleccionado].stock_id;
+    console.log("Stock para la combinación seleccionada:", stock);
+    console.log("Stock ID:", stockId);
+    // Acá podés mostrarlo en el DOM o hacer lo que necesites 
+
+    localStorage.setItem("stock-id", JSON.stringify(stockId)); 
+
+  } else {
+    stock = null;
+    console.warn("No se encontró el stock para la combinación seleccionada.");
+  }
+});
 
 
 
@@ -426,6 +517,7 @@ selectorTalles?.addEventListener("change",async(e)=>{
       const id = JSON.parse(localStorage.getItem("id"));
      await updatePrecioProducto(id)
     }) 
+
    
      actualizarDescripcion?.addEventListener("click",async()=>{ 
       const id = JSON.parse(localStorage.getItem("id"));
@@ -433,8 +525,13 @@ selectorTalles?.addEventListener("change",async(e)=>{
       }) 
    
       actualizarStock?.addEventListener("click",async()=>{ 
-        const id = JSON.parse(localStorage.getItem("id"));
-      await updateStockProducto(id)
+   
+        const productoID=JSON.parse(localStorage.getItem("id"));
+        const stockID=JSON.parse(localStorage.getItem("stock-id"))
+      
+         
+         
+      await updateStockProducto(productoID,stockID)
    
       })  
    
@@ -468,6 +565,8 @@ selectorTalles?.addEventListener("change",async(e)=>{
    
       actualizarNombreDetalle?.addEventListener("click",async()=>{ 
         const id = JSON.parse(localStorage.getItem("id"));
+
+
        await updateDetallesProducto(id)
        
       }) 
@@ -717,16 +816,15 @@ async function updateTalleProducto(talle_id,producto_id) {
 
 
 
-
-
-
-
-
-async function updateStockProducto(id) { 
+async function updateStockProducto(producto_id,stockAnterior) { 
 
      const input=document.getElementById("productStock-update")
      const stockInput=document.getElementById("productStock-update").value.trim(); 
      let stock=Number(stockInput) 
+     let variante_id=stockAnterior
+    
+     console.log(stockAnterior) 
+
 
       if (stockInput === "" || !/^\d+$/.test(stockInput)) {
             // Mostrar el mensaje de error si el campo está vacío o no es un número entero
@@ -736,10 +834,10 @@ async function updateStockProducto(id) {
 
 
     try {
-        const response = await fetch(`http://localhost:1200/update-stock-producto/${id}`, {
+        const response = await fetch(`http://localhost:1200/update-stock-producto/${variante_id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ stock})
+            body: JSON.stringify({stock,producto_id})
         }); 
 
          let data= await response.json(); 
@@ -958,21 +1056,6 @@ botonEliminarDescripcion?.addEventListener("click",async()=>{
   }) 
 
 
-botonEliminarStock?.addEventListener("click",async()=>{
-   
-  const confirmar = confirm("¿Estás seguro de que querés eliminar el stock del producto?");
-  if (!confirmar) return; // Si el usuario cancela, no hace nada 
-
-
-  const id = JSON.parse(localStorage.getItem("id"));
-  await eliminarStockProducto(id) 
-
-
-} 
-
-
-)
-
 
 botonEliminarColor?.addEventListener("click",async()=>{  
 
@@ -1008,15 +1091,26 @@ botonEliminarTalle?.addEventListener("click",async()=>{
    
   if (!confirmar) return; // Si el usuario cancela, no hace nada 
 
-
-
-
   await eliminarTalleProducto(productoID) 
 
- 
-
 })
+ 
+botonEliminarStock?.addEventListener("click",async()=>{ 
 
+  let productoID=JSON.parse(localStorage.getItem('id'))
+   
+  const confirmar = confirm("¿Estás seguro de que querés eliminar el stock del producto?");
+  if (!confirmar) return; // Si el usuario cancela, no hace nada 
+
+
+  const id = JSON.parse(localStorage.getItem("id"));
+  await eliminarStockProducto(productoID) 
+
+
+} 
+
+
+)
 
 botonEliminarNombreDetalle?.addEventListener("click",async()=>{ 
 
@@ -1045,8 +1139,7 @@ async function eliminarNombreProducto(id) {
 
     let data= await response.json(); 
 
-       input.value="" 
-
+  
         setTimeout(() => { 
           window.location.reload()
           
@@ -1070,9 +1163,6 @@ async function eliminarPrecioProducto(id) {
     }); 
 
     let data= await response.json(); 
-    input.value="" 
-
-   
 
     localStorage.removeItem("id");
     localStorage.removeItem("color-id");
@@ -1092,9 +1182,7 @@ async function eliminarDetallesProducto(id) {
     }); 
 
     let data= await response.json(); 
-    input.value="" 
 
-  
     localStorage.removeItem("id");
     localStorage.removeItem("color-id");
     localStorage.removeItem("talle-id"); 
@@ -1113,8 +1201,6 @@ async function eliminarColorProducto(producto_id) {
     }); 
 
     let data= await response.json(); 
-    input.value="" 
-
  
     localStorage.removeItem("id");
     localStorage.removeItem("color-id");
@@ -1122,7 +1208,8 @@ async function eliminarColorProducto(producto_id) {
 } catch (error) {
       console.error("Error al eliminar el color del producto:", error);
   }
-}
+} 
+
 async function eliminarTalleProducto(producto_id) { 
   
   try {  
@@ -1134,7 +1221,7 @@ async function eliminarTalleProducto(producto_id) {
     }); 
 
     let data= await response.json(); 
-    input.value="" 
+
 
    setTimeout(() => { 
       window.location.reload()
@@ -1159,7 +1246,7 @@ async function eliminarDescripcionProducto(id) {
     }); 
 
     let data= await response.json(); 
-    input.value="" 
+
 
    setTimeout(() => { 
       window.location.reload()
@@ -1173,18 +1260,20 @@ async function eliminarDescripcionProducto(id) {
       console.error("Error al eliminar la descripción del producto:", error);
   }
 }
-async function eliminarStockProducto(id) { 
+async function eliminarStockProducto(producto_id) { 
 
   try {  
-    const response = await fetch(`http://localhost:1200/delete-stock-producto/${id}`, {
+    const response = await fetch(`http://localhost:1200/delete-stock-producto/${stockId}`, {
         method: "put",
         headers: { "Content-Type": "application/json" },
+        body:JSON.stringify({producto_id})
    
     }); 
 
-    let data= await response.json(); 
-    input.value="" 
+    console.log(stockId,'33')
 
+    let data= await response.json(); 
+  
    setTimeout(() => { 
       window.location.reload()
       

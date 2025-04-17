@@ -77,7 +77,9 @@
 #selectProduct-nombre {
  overflow: scroll;
  
-}
+} 
+
+
 
 
 
@@ -262,8 +264,10 @@
     border: none;
     border-radius: 15px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  }
+  } 
 
+
+ 
   .table img {
     width: 50px;
     height: 50px;
