@@ -87,47 +87,61 @@ export async function mostrarProductosAdmin() {
               console.log(tallesYColores)
               
       
-                let tallesColoresHTML = producto.productos_variantes.map(variante => {
-                let talle = variante.talles?.insertar_talle || "N/A";
-                let color = variante.colores?.insertar_color || "N/A";
-                return `${talle}: ${color}`;
-              }).join("<br>");
-
-              let stockHTML = producto.productos_variantes.map(variante => {
-                return variante.stock ?? "0";
-              }).join("<br>");
-
+               
             
-            tbody.innerHTML+= `  
-            <tr>    
-                <td>
-                    <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
-                </td>
-                <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
-                <td><div class="contenido-celda">${producto.precio ? "$ " + producto.precio : ""}</div></td>
-                <td><div class="contenido-celda">${categoriaProducto}</div></td>
-                <td><div class="contenido-celda">${tallesColoresHTML}</div></td>
-                <td><div class="contenido-celda">${stockHTML}</div></td>
+              tbody.innerHTML += `  
+              <tr>    
+                  <td>
+                      <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
+                  </td>
+                  <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
+                  <td><div class="contenido-celda">${producto.precio ? "$ " + producto.precio : ""}</div></td>
+                  <td><div class="contenido-celda">${categoriaProducto}</div></td>
+            
+                  <!-- ✅ Celda combinada con estilos flex y scroll -->
+                  <td colspan="2">
+                      <div style="
+                          max-height: 80px; 
+                          overflow-y: auto; 
+                          font-family: monospace;
+                          
+                      ">
+                          ${
+                            producto.productos_variantes.map(variacion => {
+                              const talle = variacion.talles?.insertar_talle || '';
+                              const color = variacion.colores?.insertar_color || '';
+                              const stock = variacion.stock || 0;
+                              return `<div style="display: flex; gap: 20px;">
+                                        <div>${talle}</div>
+                                        <div>${color}</div>
+                                        <div style="margin-left:auto; position: relative; right: 2rem">${stock}</div>
+                                      </div>`;
+                            }).join('')
+                          }
+                      </div>
+                  </td>
+            
                 <td class="celda-botones">
-                    <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
-                    <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-trash"></i> Eliminar</button>
+                         <div style="display: flex; justify-content:center; align-items: center; ">
+                          <button class="btn btn-primary btn-sm btn-editar" style="margin-left: 20px" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal"><i class="fas fa-edit"></i> Editar</button>
+                          <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-trash"></i> Eliminar</button>
+                         </div>
                 </td>
-            </tr>
+
+              </tr>
             `;
             
+          
       
       });   
   
       // Seleccionar los elementos de la tabla que contienen los ID de talles y colores
       
-  
-      const botonesEditar = [...document.querySelectorAll(".btn-editar")];  
-      const botonesEliminar = [...document.querySelectorAll(".btn-eliminar")];   
       const checkBox = [...document.querySelectorAll(".check")];  
       
   
       desactivadoLogicoProductos(checkBox);  
-      activarBotones(botonesEditar, botonesEliminar);  
+   
   
       return;
   }  
@@ -140,7 +154,6 @@ export async function mostrarProductosAdmin() {
 }   
 
 
-mostrarProductosAdmin();
 
 
 
@@ -155,7 +168,13 @@ document.getElementById("openImageModal")?.addEventListener("click", function ()
 
 export let productoID=null  
 
-export function activarBotones(botonesEdit,botonesElim){ 
+export async function activarBotones(){  
+
+  await mostrarProductosAdmin();
+
+  const botonesEdit=document.querySelectorAll('.btn-editar')
+  const botonesElim=document.querySelectorAll('.btn-eliminar')
+
 
   botonesEdit.forEach((boton)=>{ 
 
@@ -188,16 +207,14 @@ export function activarBotones(botonesEdit,botonesElim){
       let dataTalleID=boton.getAttribute("data-talle-id") 
      await eliminarProductoSinVentas(productoID,dataColorID,dataTalleID) 
 
-     localStorage.setItem("id",JSON.stringify(productoID)) 
-     localStorage.setItem("color-id",JSON.stringify(dataColorID))
-     localStorage.setItem("talle-id",JSON.stringify(dataTalleID))
-
-
+  
     })
 
   })  
 
- }  
+ }   
+
+ activarBotones()
 
 // Capturar cada input en una variable distinta
 
@@ -240,12 +257,10 @@ const selectorTalles=document.getElementById("select-productSizes-update")
     const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
 
 
-    if (!selectorColores) {
-      console.error("selectorColores no está en el DOM");
-      return;
-    }
+   
   
     // Limpiar opciones anteriores
+   if(selectorColores){ 
     selectorColores.innerHTML = '<option value="">Seleccioná un color existente</option>';
   
     // Buscar el producto que coincide con el ID seleccionado
@@ -277,6 +292,8 @@ const selectorTalles=document.getElementById("select-productSizes-update")
         }
       }
     });
+
+   }
     
     
   }
@@ -342,11 +359,8 @@ async function seleccionartalles() {
   const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
 
 
-  if (!selectorTalles) {
-    console.error("selectorColores no está en el DOM");
-    return;
-  }
-
+  if(selectorTalles){ 
+    
   // Limpiar opciones anteriores
   selectorTalles.innerHTML = '<option value="">Seleccioná un color existente</option>';
 
@@ -379,6 +393,9 @@ async function seleccionartalles() {
       }
     }
   });
+
+  }
+
   
   
   
@@ -442,12 +459,9 @@ async function renderizarCombinacionesStock() {
   const productos = await obtenerProductos();
   const productoIDSeleccionado = JSON.parse(localStorage.getItem("id"));
 
-  if (!selectCombinaciones) {
-    console.error("El select de combinaciones no está en el DOM");
-    return;
-  }
+   if(selectCombinaciones){ 
 
-  // Limpiar el select antes de agregar nuevas opciones
+     // Limpiar el select antes de agregar nuevas opciones
   selectCombinaciones.innerHTML = '<option disabled selected>Seleccioná una combinación</option>';
 
   const producto = productos.find(p => p.producto_id === productoIDSeleccionado);
@@ -479,12 +493,15 @@ async function renderizarCombinacionesStock() {
       selectCombinaciones.appendChild(option);
     }
   });
+
+   }
+ 
 }
 
 renderizarCombinacionesStock();
 
 // 🎯 Evento cuando cambia el select
-selectCombinaciones.addEventListener("change", () => {
+selectCombinaciones?.addEventListener("change", () => {
   const valorSeleccionado = selectCombinaciones.value; // Ej: "S-rojo"
 
   if (combinacionesStock[valorSeleccionado] !== undefined) {
@@ -944,12 +961,18 @@ export async function  eliminarProductoSinVentas(id,color_id,talle_id) {
 
 
  const botonConfirmacion=document.getElementById("boton-confirmacion-borrar") 
- console.log(botonConfirmacion)
+ console.log(botonConfirmacion) 
+ console.log('se confirmooo el:', id)  
+ console.log(talle_id,'talle id')
+ console.log(color_id,' color id')
+
 
      botonConfirmacion.addEventListener('click',async()=>{   
     
-
+      let productosGuardados = JSON.parse(localStorage.getItem('productos'));
        console.log('se confirmooo el:', id)  
+       console.log(talle_id,'talle id')
+       console.log(color_id,' color id')
 
        try {  
 
@@ -964,7 +987,10 @@ export async function  eliminarProductoSinVentas(id,color_id,talle_id) {
      
          if (!response.ok) {
            throw new Error("Error al enviar los datos");
-         }
+         } 
+
+         localStorage.removeItem("productos");
+        
    
          Swal.fire({
            title: "Éxito",
@@ -978,18 +1004,22 @@ export async function  eliminarProductoSinVentas(id,color_id,talle_id) {
            modalInstance.hide();
          });
 
-         setTimeout(() => { 
-           window.location.reload()
-           
-         }, 2000);
-   
+        
  
           const datos=response.json() 
-          console.log(datos.eliminado) 
+          console.log(datos.data) 
 
+ 
+         
+        
+
+        setTimeout(() => { 
+          window.location.reload()
           
-   
-    
+        }, 2000); 
+
+        
+           console.log(datos.eliminado) 
        } catch (err) {
          Swal.fire({
            title: "Error",
@@ -1286,4 +1316,10 @@ async function eliminarStockProducto(producto_id) {
       console.error("Error al eliminar el stock del producto:", error);
   }
 } 
+
+
+
+
+
+
 

@@ -437,14 +437,17 @@ async function subirCaracteristicasYStock(insertar_talle, insertar_color, stock)
             botonesAccion.forEach((boton) => (boton.style.opacity = desactivado ? "0.4" : "1"));
 
             estadosGuardados[dataID] = "desactivado";
-          } else {
+          } else { 
+           
             filaProducto.classList.remove("desactivado");
             celdasContenido.forEach((celda) => (celda.style.opacity = "1"));
-            delete estadosGuardados[dataID];
+            delete estadosGuardados[dataID]; 
+            botonesAccion.forEach((boton) => (boton.style.opacity = "1"));
+            localStorage.setItem("productosEstado", JSON.stringify(estadosGuardados));
+  
           }
   
-          localStorage.setItem("productosEstado", JSON.stringify(estadosGuardados));
-  
+      
           Swal.fire({
             title: desactivado
               ? "Producto desactivado correctamente"

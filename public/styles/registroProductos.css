@@ -81,8 +81,6 @@
 
 
 
-
-
 .modal-update-imagenes-custom {
   width: 100%;
 
@@ -138,6 +136,17 @@
 }  
 .modal-delete-imagenes-custom {
   width: 100%;
+} 
+
+.container-update-btn{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  justify-content:start;
+  align-item:end;
+  
+  
+
 }
 
 .modal-dialog-delete-imagenes-custom {
@@ -160,7 +169,7 @@
 
 .modal-content {
   border-radius: 10px;
-}
+} 
 
 .modal-body-images-delete {
   width: 100%;
@@ -265,6 +274,11 @@
     border-radius: 15px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   } 
+
+  .th__acciones{
+    text-align:center;
+  
+  }
 
 
  

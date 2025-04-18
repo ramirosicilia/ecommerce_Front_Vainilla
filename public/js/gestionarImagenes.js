@@ -184,12 +184,14 @@ export const renderImages = async () => {
 
             div.innerHTML = `
                 ${imagesHTML}
-                <input type="file" class="input-imagen-update" name="images" 
-                  data-index="0">
-                <button type="submit" class="input-submit-update" 
-                    style="padding: 5px 20px; background-color: #0056b3; border-radius: 10px; color: white; font-weight: 600; font-size: 11px; border: none;">
-                    Actualizar Imágenes
-                </button>
+                <div class="container-update-btn">
+                        <input type="file" class="input-imagen-update" name="images" 
+                          data-index="0">
+                        <button type="submit" class="input-submit-update" 
+                            style="padding: 5px 20px; background-color: #0056b3; border-radius: 10px; color: white; font-weight: 600; font-size: 11px; border: none;">
+                            Actualizar Imágenes
+                        </button>
+                <div>
             `;
 
             modalImage.appendChild(div);
