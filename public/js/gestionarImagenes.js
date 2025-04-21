@@ -142,8 +142,10 @@ export const agregarImagenesArray = async () => {
 
 
 
+
    
 export const renderImages = async () => { 
+    
     const modalImage = document.getElementById("modal-images-update");
 
     // Variables globales para que los eventos puedan acceder a ellas

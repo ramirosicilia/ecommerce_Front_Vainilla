@@ -13,9 +13,9 @@ let summary=document.getElementById("sumary")
         productosEncarrito.forEach(producto => { 
             carritoItem.innerHTML += ` 
                 <div class="item">
-                    <img src="${producto.imagenes}" alt="">
+                    <img src="${producto.urls}" alt="">
                     <div class="info">
-                        <p class="name">${producto.nombre_producto}</p>
+                        <p class="name">${producto.nombre}</p>
                         <div class="actions">
                             <span class="delete">Eliminar</span>
                             <span class="buy-now">Agregar</span>
@@ -26,11 +26,12 @@ let summary=document.getElementById("sumary")
                             <button class="boton_agregar" data-id="${producto.producto_id}">+</button>
                         </div>
                         <p class="stock cantidad-texto" data-id="${producto.producto_id}">Cantidad: ${producto.cantidad}</p>
-                        <p class="stock">Stock: ${producto.stock}</p>
+                        <p class="stock">Stock: ${producto.variante.stock}</p>
                         <p class="price">Precio: $${producto.precio}</p>
                     </div>
                 </div>`; 
-                checkout()
+                checkout() 
+                
         }); 
 
         
@@ -96,6 +97,7 @@ function iconoProductosSumados() {
 
 function agregarProductoAlCarrito(e) { 
     const idBoton = e.target.dataset.id; 
+    console.log(idBoton)
     let primerProducto = productosEncarrito.find(producto => producto.producto_id === idBoton); 
 
     if (primerProducto) {
@@ -129,7 +131,9 @@ function agregarProductoAlCarrito(e) {
   } 
 
   function eliminarDelCarrito(botonID) { 
-    let primerProducto = productosEncarrito.find(producto => producto.producto_id === botonID);
+    let primerProducto = productosEncarrito?.find(producto => producto.producto_id === botonID);
+    console.log(primerProducto)
+
 
     if (primerProducto.cantidad > 0) { 
         primerProducto.cantidad--; 

@@ -10,11 +10,13 @@ import { renderImages } from "./gestionarImagenes.js";
 
 
 export async function mostrarProductosAdmin() { 
+  
   let productos = await obtenerProductos();  
   let categorias = await obtenerCategorys();  
 
   const selectCategorias = document.getElementById("categoria-select-products");  
   const tbody = document.querySelector("#cuerpo-productos");  
+
  
 
 
@@ -46,12 +48,10 @@ export async function mostrarProductosAdmin() {
       productosActivosFiltrados.forEach((producto) => {  
           let categoriaProducto = categoriasFiltradas.find(c => c.categoria_id === producto.categoria_id)?.nombre_categoria;  
     
-        
-  
+      
           // Calcular stock sumando todas las variantes  
     
-         
-  
+        
           // Obtener la primera imagen del array de imágenes  
           let imagenUrl = producto.imagenes[0]?.urls?.[0];  
   
@@ -138,9 +138,12 @@ export async function mostrarProductosAdmin() {
       // Seleccionar los elementos de la tabla que contienen los ID de talles y colores
       
       const checkBox = [...document.querySelectorAll(".check")];  
+      const botonesEdit=document.querySelectorAll('.btn-editar')
+      const botonesElim=document.querySelectorAll('.btn-eliminar')
       
   
       desactivadoLogicoProductos(checkBox);  
+      activarBotones(botonesEdit,botonesElim);
    
   
       return;
@@ -154,7 +157,7 @@ export async function mostrarProductosAdmin() {
 }   
 
 
-
+ mostrarProductosAdmin();
 
 
 //Update productos  
@@ -168,14 +171,11 @@ document.getElementById("openImageModal")?.addEventListener("click", function ()
 
 export let productoID=null  
 
-export async function activarBotones(){  
-
-  await mostrarProductosAdmin();
-
-  const botonesEdit=document.querySelectorAll('.btn-editar')
-  const botonesElim=document.querySelectorAll('.btn-eliminar')
+export async function activarBotones(botonesEdit,botonesElim){  
 
 
+
+  
   botonesEdit.forEach((boton)=>{ 
 
     boton.addEventListener('click',async(e)=>{  
@@ -214,7 +214,7 @@ export async function activarBotones(){
 
  }   
 
- activarBotones()
+
 
 // Capturar cada input en una variable distinta
 

@@ -185,14 +185,16 @@ formularioLogin.addEventListener("submit", async (e) => {
         // Procesamiento de la respuesta del servidor
         let datos = await peticion.json();
    
-
+       console.log(datos.userName)
 
         
-       if(datos.token ||datos.usuario){
+       if(datos.token ||datos.usuario || datos.userName){
         localStorage.setItem('token',datos.token) 
-        localStorage.setItem('dni',datos.usuario)
+        localStorage.setItem('dni',JSON.stringify(datos.usuario))
+        localStorage.setItem('usuario',JSON.stringify(datos.userName))
+        } 
 
-        }
+
         
 
         if(datos){  

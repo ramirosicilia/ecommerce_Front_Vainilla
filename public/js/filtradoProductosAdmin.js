@@ -44,6 +44,7 @@ const tbody = document.querySelector("#cuerpo-productos");
 
 
 selector.addEventListener("change", async (e) => {
+   
     const categoriaSeleccionada = e.target.value;
     const productos = await obtenerProductos();
     const categorias = await obtenerCategorys();
