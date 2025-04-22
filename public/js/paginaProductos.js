@@ -1,6 +1,6 @@
 import { obtenerCategorys, obtenerUsuarios } from "./api/productos.js";
 import { obtenerProductos } from "./api/productos.js";
-import { reendedizarDetallesProducto } from "./detallesProductos.js";
+
 
 
 let categoriasFiltrada = [];
@@ -175,13 +175,18 @@ selector.addEventListener("change", async (e) => {
    
         let imagenId = e.currentTarget.getAttribute('data-imagen-producto')
         let talleId= e.currentTarget.getAttribute('data-talle')
-        let colorId= e.currentTarget.getAttribute('data-color')
+        let colorId= e.currentTarget.getAttribute('data-color') 
+
+        localStorage.setItem('id-imagen', JSON.stringify(imagenId))
+        localStorage.setItem('id-talle', JSON.stringify(talleId))
+        localStorage.setItem('id-color', JSON.stringify(colorId))
+        
       
         
         console.log(imagenId)  
         console.log(talleId)
         console.log(colorId)
-       reendedizarDetallesProducto(imagenId, talleId, colorId)
+    
         setTimeout(() => {
          
           window.location.href ="./descripcionProducto.html";

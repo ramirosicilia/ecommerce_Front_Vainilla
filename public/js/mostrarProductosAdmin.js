@@ -51,7 +51,7 @@ export async function mostrarProductosAdmin() {
       
           // Calcular stock sumando todas las variantes  
     
-        
+    
           // Obtener la primera imagen del array de imágenes  
           let imagenUrl = producto.imagenes[0]?.urls?.[0];  
   
@@ -240,11 +240,12 @@ const selectorTalles=document.getElementById("select-productSizes-update")
 
     let categorias = await obtenerCategorys(); 
     console.log(categorias);
+    let categoriasFiltras= categorias.filter(categorys => categorys?.activo != false);
   
-    categorias.forEach((categoria) => { 
-      selectCategorias.innerHTML += `<option value="${categoria.nombre_categoria}">${categoria.nombre_categoria}</option>`;
-    });
-  }
+    categoriasFiltras.forEach((categoria) => { 
+          selectCategorias.innerHTML += `<option value="${categoria.nombre_categoria}">${categoria.nombre_categoria}</option>`;
+        });
+      }
   
   }    
   

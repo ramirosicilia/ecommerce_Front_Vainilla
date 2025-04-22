@@ -83,7 +83,9 @@ const categoriasInsetar=async()=>{
 
  let categorias = await obtenerCategorys(); 
 
-  categorias.forEach((categoria) => { 
+ let categoriasFiltradas=categorias.filter(categoria=>categoria.activo!=false)
+
+categoriasFiltradas.forEach((categoria) => { 
     if(selector){
       selector.innerHTML += `<option value="${categoria.nombre_categoria}">${categoria.nombre_categoria}</option>`;
     }
