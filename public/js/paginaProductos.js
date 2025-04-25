@@ -262,13 +262,15 @@ selector.addEventListener("change", async (e) => {
 
  document.querySelector('.modal')
 
-    let sizesTexto=""
-    let colorTexto=""
+   
   
  let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
 
 
  async function opcionesProducto(producto_ID,id_color,id_talle,imagen) { 
+
+    let sizesTexto=""
+    let colorTexto=""
 
 
     const usuarios=await obtenerUsuarios()
@@ -332,7 +334,7 @@ selector.addEventListener("change", async (e) => {
               div.innerHTML=`
 
     <div id="modal" style="position: fixed; top: 50%; left: 50%; width: 600px; height:auto; display: flex; flex-direction:column; gap:1rem;  transform: translate(-50%, -50%); z-index: 9999; width: 500px; background: white; border-radius: 12px; padding: 24px; margin: 50px auto; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);">
-      <div class="modal-header" style="font-weight: bold; opacity:1; z-index: 9999; font-size: 16px; color: #444; display: flex; gap:1rem; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="modal-header" style="font-weight: bold; opacity:1; font-size: 16px; color: #444; display: flex; gap:1rem; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <span style="opacity:1;"  >Selecciona tus opciones para agregar el producto al carro</span>
         <span class="close" id="close" style="cursor: pointer; font-size: 20px;">&times;</span>
       </div>
@@ -460,11 +462,11 @@ selector.addEventListener("change", async (e) => {
 
 
       
-   
+          let primerProductoCarrito=carritoCompras.find(producto=>producto.producto_id===producto_ID)
 
-     if(carritoCompras.some(producto=>producto.producto_id===producto_ID)){
-      let index=carritoCompras.findIndex(producto=>producto.producto_id===producto_ID)
-      carritoCompras[index].cantidad++
+     if(primerProductoCarrito){
+      
+       primerProductoCarrito.cantidad++
 
      }
 
@@ -486,6 +488,11 @@ selector.addEventListener("change", async (e) => {
 
   } 
 
+
+
+
+  
+
    async function manejarCantidades(productoID){  
 
     const productos=await obtenerProductos() 
@@ -503,12 +510,12 @@ selector.addEventListener("change", async (e) => {
  
 
     div.innerHTML=` 
-    <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 999999999999999;" class="modal-2">
+    <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
   <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
     <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
       <span style="color: green; font-size: 24px; margin-right: 10px;" class="icon-check">✔</span>Producto agregado a tu Carro
     </h2>
-    <button style="font-size: 24px; cursor: pointer; border: none;z-index: 999999999999999999 background: none;" id="close-x" class="modal-close">×</button>
+    <button type="button" style="font-size: 24px; cursor: pointer; border: none;background: none;" id="close-x" class="modal_close">x</button>
   </div>
   <div style="display: flex; padding: 16px;" class="modal-content">
     <img style="width: 80px; height: auto; margin-right: 16px;" src="${primerProducto.imagen}" alt="Producto" />
@@ -518,9 +525,9 @@ selector.addEventListener("change", async (e) => {
       <span style="color: red;">${primerProducto.talle}</span>
       <div style="font-size: 18px; font-weight: bold;" class="product-price">$${primerProducto.precio_producto}</div>
       <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
-        <button style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-        <span style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
-        <button style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
+        <button  class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
+        <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
+        <button  class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
 
       </div>
     </div>
@@ -535,26 +542,72 @@ selector.addEventListener("change", async (e) => {
     `
          console.log(div)
      document.body.append(div) 
+     const cantidadSpan = div.querySelector(".quantity-selector span"); // referencia al <span>
+
     
      const btnSeguirCompra=document.querySelector(".seguir_comprando")
 
-     btnSeguirCompra.addEventListener("click",()=>{
-       
-      window.location.reload()
+     btnSeguirCompra.addEventListener("click",(e)=>{ 
+
+   
+        if (e.target.matches(".seguir_comprando")) {
+          window.location.reload();
+        }
+ 
+    
      }) 
 
+     const cerrar=document.querySelector(".modal_close")
+     console.log(cerrar)
      const Modal=document.querySelector(".modal-2")
      console.log(Modal)
   
-    Modal.addEventListener("click",()=>{ 
+      cerrar.addEventListener("click",()=>{ 
       Modal.remove()
   
      })
-  
-  
+   
+     const botonAgregar=document.getElementById("btn-agregar")  
+     const botonEliminar=document.getElementById("btn-eliminar")  
+     
+     console.log(botonAgregar)
+
+     botonAgregar.addEventListener("click",(e)=>{
+      e.preventDefault() 
+      console.log('opcionado') 
+      console.log(primerProducto)
+
+       if(primerProducto.cantidad<stock){
+        primerProducto.cantidad++
+        cantidadSpan.textContent=primerProducto.cantidad 
+
+        localStorage.setItem('productos', JSON.stringify(carritoCompras));
+
+       }
+     
+     }) 
+
+
+     botonEliminar.addEventListener("click",(e)=>{
+      e.preventDefault() 
+      console.log('opcionado') 
+      console.log(primerProducto)
+
+       if(primerProducto.cantidad>0){
+        primerProducto.cantidad--
+        cantidadSpan.textContent=primerProducto.cantidad 
+
+        localStorage.setItem('productos', JSON.stringify(carritoCompras));
+
+       }
+     
+     }) 
+
 
 
    } 
+
+
 
   
 
