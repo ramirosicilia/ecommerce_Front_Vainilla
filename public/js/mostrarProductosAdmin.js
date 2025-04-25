@@ -106,6 +106,11 @@ export async function mostrarProductosAdmin() {
                           font-family: monospace;
                           
                       ">
+
+
+
+
+                      
                           ${
                             producto.productos_variantes.map(variacion => {
                               const talle = variacion.talles?.insertar_talle || '';

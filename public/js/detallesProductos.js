@@ -43,9 +43,12 @@ async function reendedizarDetallesProductos() {
         varianteSeleccionada = variante;
         return true;
       }
-      return false;
-    });
+     return false;
+    }
   
+  );
+  
+
     if (!productoSeleccionado || !varianteSeleccionada) {
       console.error("Producto o variante no encontrados.");
       return;
@@ -103,8 +106,8 @@ async function reendedizarDetallesProductos() {
           <h1 style="font-size: 2rem; font-weight: bold; color: #333;">${nombre}</h1>
           <p>${detalle}</p>
           <p>
-            <span style="color: red; font-size: 24px; font-weight: bold;">S/ ${precio}</span>
-            <span style="text-decoration: line-through; color: gray; margin-left: 10px;">S/ ${precioOriginal}</span>
+            <span style="color: red; font-size: 24px; font-weight: bold;">$/ ${precio}</span>
+            <span style="text-decoration: line-through; color: gray; margin-left: 10px;">$/ ${precioOriginal}</span>
             <span style="background-color: red; color: white; padding: 2px 5px; border-radius: 3px; font-size: 14px;">-${descuento}%</span>
           </p>
   

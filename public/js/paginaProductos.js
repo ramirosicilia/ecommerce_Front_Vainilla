@@ -1,9 +1,10 @@
-import { obtenerCategorys, obtenerUsuarios } from "./api/productos.js";
-import { obtenerProductos } from "./api/productos.js";
+import { obtenerCategorys, obtenerProductos, obtenerUsuarios } from "./api/productos.js";
+
 
 
 
 let categoriasFiltrada = [];
+let filtradoCategoryYProduct=[]
 
 const selector = document.getElementById("categorySelector");
 const listaProductos = document.getElementById("productos_lista");
@@ -90,7 +91,6 @@ selector.addEventListener("change", async (e) => {
             <div class="card-body">
               <h5 class="card-title">${producto.nombre_producto || ""}</h5>
               <p class="card-text">$${producto.precio || 0}</p>
-              <p class="card-text">Stock: ${stock}</p>
               <button class="btn btn-agregar btn-primary add-to-cart" data-img="${imagen}" data-productos="${producto.producto_id}">
                 Agregar al carrito
               </button>
@@ -124,7 +124,7 @@ selector.addEventListener("change", async (e) => {
   
     const productosFiltrados = productos.filter(p => p.activacion === true);
   
-    const filtradoCategoryYProduct = productosFiltrados.filter(producto => 
+     filtradoCategoryYProduct = productosFiltrados.filter(producto => 
       categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
     );
   
@@ -145,8 +145,7 @@ selector.addEventListener("change", async (e) => {
               <div class="card-body">
                 <h5 class="card-title">${producto.nombre_producto}</h5>
                 <p class="card-text">$${producto.precio}</p>
-                <p class="card-text">Stock: ${stock}</p>
-                <button class="btn btn-agregar btn-primary add-to-cart" data-img="${imagen}" data-productos="${producto.producto_id}">
+                <button class="btn btn-agregar btn-primary add-to-cart" data-img="${imagen}" data-talle="${tallesID}" data-color="${colorID}"  data-productos="${producto.producto_id}">
                   Agregar al carrito
                 </button>
               </div>
@@ -230,7 +229,7 @@ selector.addEventListener("change", async (e) => {
   
 // Llamar a la función al cargar la página
 
-  restaurarCarrito();
+  /*restaurarCarrito();*/
   stockAgotado();
 
 
@@ -244,10 +243,14 @@ selector.addEventListener("change", async (e) => {
 
     btn.addEventListener('click',async()=>{ 
    
-      let imagenId=btn.getAttribute('data-productos') 
+      let producto_ID=btn.getAttribute('data-productos') 
       let imagenURL = btn.getAttribute('data-img'); // ✅ imagen del botón
+      let idColor= btn.getAttribute('data-color'); 
+      let idTalle= btn.getAttribute('data-talle'); 
       
-      agregarProducto(imagenId,imagenURL)
+      opcionesProducto(producto_ID,idColor,idTalle,imagenURL)
+      console.log(idColor)
+      console.log(idTalle)
 
 
     })
@@ -255,131 +258,318 @@ selector.addEventListener("change", async (e) => {
 
  } 
 
- let carritoStorage=localStorage.getItem('productos') 
  
- let carritoCompras=carritoStorage?JSON.parse(carritoStorage):[]
 
+ document.querySelector('.modal')
 
-
- async function agregarProducto(imgID,imagen) { 
-
-  const productos = await obtenerProductos(); 
-  const usuarios=await obtenerUsuarios()
-  console.log('user:',usuarios)
-  console.log(productos); // Debería ser un array
-  console.log(imgID);
-
-
-
-  // 🔍 Buscar en todos los productos la variante que coincida con el producto_id
-  let primerProducto;
-  let nombre_producto = ''; // Inicializamos el nombre del producto 
-  let precio=""
-  let producto_id=""
+    let sizesTexto=""
+    let colorTexto=""
   
-  const usuario=usuarios.user.find(user=>user.usuario===usuarioNombre)  
+ let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
 
 
+ async function opcionesProducto(producto_ID,id_color,id_talle,imagen) { 
 
-  console.log(usuario,'usuario') 
 
-  const userData={
-     usuario_id:usuario.usuario_id,
-      usuario:usuarioNombre,
-      
-  } 
-  console.log(userData,'userData')
+    const usuarios=await obtenerUsuarios()
+    console.log('user:',usuarios)
+    console.log(productos); // Debería ser un array
+    console.log( producto_ID); 
 
-  for (let producto of productos) {
-    primerProducto = producto.productos_variantes.find(v => v.producto_id === imgID);
-    if (primerProducto) { 
-      nombre_producto = producto.nombre_producto; // Guardamos el nombre
-      precio=producto.precio; // Guardamos el precio
-      producto_id=producto.producto_id // Guardamos el id del producto
-      break; // Salimos del bucle si ya encontramos la variante
-    }
-  }
+    const obtenerUSer=usuarios.user?.find(user=>user.usuario===usuarioNombre)
+            const {usuario,usuario_id}=obtenerUSer
 
-  console.log(primerProducto, '44');
-
-  // ✅ Validación segura por si no existe o no tiene stock
-  if (!primerProducto || primerProducto.stock === 0) {
-    return;
-  }
-
-  // ✅ Buscar en el carrito si ya está
-  let primerProductoStorage = carritoCompras.find(item => item.variante.producto_id === imgID);
-  console.log(primerProductoStorage, '55'); 
-   console.log(imagen)
-
-  if (primerProductoStorage) {
-    primerProductoStorage.cantidad++;
-    primerProductoStorage.usuario_id = userData.usuario_id;
-    primerProductoStorage.usuario = userData.usuario;
-  }
   
-  else {
-    primerProductoStorage = {
-      variante: primerProducto,
-      nombre:nombre_producto,
-      precio: precio,
-      producto_id: producto_id,
-      cantidad: 1,
-      usuario_id: userData.usuario_id,
-      usuario: userData.usuario,
-      urls:imagen // 
+    console.log(filtradoCategoryYProduct) 
+
+    let imagenSeleccionada
+
+    const varianteSeleccionada=filtradoCategoryYProduct.find(producto=>{
+
+      let variantesIDS=producto.productos_variantes.find(variante=>variante.producto_id===producto_ID && variante.colores.color_id===id_color && variante.talles.talle_id===id_talle) 
+      if(variantesIDS){ 
+        imagenSeleccionada=producto.imagenes.find(variante=>variante.producto_id===producto_ID) 
+        return true
+
+    } 
+
+       return false
+    }) 
+
+  console.log(varianteSeleccionada)  
+
+   const nombre=filtradoCategoryYProduct.find(producto=>producto.producto_id===producto_ID)?.nombre_producto 
+   const detalles=filtradoCategoryYProduct.find(producto=>producto.producto_id===producto_ID)?.detalles
+   const precio=filtradoCategoryYProduct.find(producto=>producto.producto_id===producto_ID)?.precio
+   const imagenOpciones=imagenSeleccionada.urls[0] 
+
+
+   const talles=varianteSeleccionada.productos_variantes.map(talles=>{
+    const varianteTalle=talles.talles.insertar_talle 
+    return `  
+     <button class="sizes-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle}</button>
+     
+    `
+    })
+  console.log(talles)  
+
+   
+  const colores=varianteSeleccionada.productos_variantes.map(colores=>{
+    const varianteColor=colores.colores.insertar_color 
+    return `   
+     <button class="colors-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor}</button>
+  
+    `
+  })
+  console.log(colores)
+
+
+
+ const div=document.createElement("div")
+ 
+
+
+              div.innerHTML=`
+
+    <div id="modal" style="position: fixed; top: 50%; left: 50%; width: 600px; height:auto; display: flex; flex-direction:column; gap:1rem;  transform: translate(-50%, -50%); z-index: 9999; width: 500px; background: white; border-radius: 12px; padding: 24px; margin: 50px auto; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);">
+      <div class="modal-header" style="font-weight: bold; opacity:1; z-index: 9999; font-size: 16px; color: #444; display: flex; gap:1rem; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="opacity:1;"  >Selecciona tus opciones para agregar el producto al carro</span>
+        <span class="close" id="close" style="cursor: pointer; font-size: 20px;">&times;</span>
+      </div>
+      <div class="product-info" style="display: flex; align-items: center; gap: 10px;">
+        <img src="${imagenOpciones}" alt="Botín Mujer Negro" style="width: 90px; height: auto;">
+        <div class="details" style="font-size: 14px; color: #333;  display: flex;flex-direction:column; gap:10px;">
+          <div>Nombre:${nombre}</div>
+          <div>Detalles:${detalles}</div>
+          <div class="price" style="font-size: 18px; font-weight: bold; color: #333;">Precio:$${precio}</div>
+        </div>
+      </div>
+      <div class="section" style="margin-bottom: 16px;">
+        <label for="talla" style="display: block;  font-weight: bold;">Talla:</label>
+        <div class="sizes" style="display: flex; flex-wrap: wrap; gap: 10px;"> 
+        ${talles}
+         
+        </div>
+      </div>
+      <div class="section" style="margin-bottom: 16px;">
+        <label for="color" style="display: block; margin-bottom: 8px; font-weight: bold;">Color:</label>
+        <div class="colors" style="display: flex; flex-wrap: wrap; gap: 10px;"> 
+        ${colores}
+          
+        </div>
+      </div>
+      <div class="footer" style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button class="close-btn btn-cerrar" style="padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #e0e0e0;">Cerrar</button>
+        <button type="button" class="select-btn btn__opciones" style="padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #444; color: white;">Elige tus opciones</button>
+      </div>
+    </div>
+
+ `
+
+  
+    console.log(div)
+   document.body.append(div) 
+
+   document.getElementById("close").addEventListener("click", () => {
+    document.getElementById("modal").remove();
+  });
+
+  document.querySelector(".btn-cerrar").addEventListener("click", () => {
+    document.getElementById("modal").remove();
+  }); 
+
+
+    const sizes=document.querySelectorAll('.sizes-box') 
+    const colors=document.querySelectorAll('.colors-box') 
+    const btnOpciones=document.querySelector(".btn__opciones")
+
+
+  sizes.forEach(size=>{
+   
+    size.addEventListener('click',(e)=>{  
+
+
+      sizes.forEach(s => s.classList.remove("seleccion_opciones_talles"));
+
+      size.classList.add("seleccion_opciones_talles") 
+
+      if(size.classList.contains("seleccion_opciones_talles")){ 
+        
+      btnOpciones.textContent="Comprar"
+      btnOpciones.disabled=false
+      sizesTexto=size.textContent  
+
+       
+      }
     
-    };
-    carritoCompras.push(primerProductoStorage);
+    })  
+
+    
+  }) 
+
+ 
+   colors.forEach(color=>{
+   
+    color.addEventListener('click',(e)=>{   
+
+
+
+      colors.forEach(c => c.classList.remove("seleccion_opciones_colores"));
+
+      color.classList.add("seleccion_opciones_colores") 
+
+      if(color.classList.contains("seleccion_opciones_colores")){ 
+        
+      btnOpciones.textContent="Comprar"
+      btnOpciones.disabled=false
+      colorTexto=color.textContent 
+    
+      console.log(colorTexto)
+
+      }
+   
+       
+    }) 
+    
+  })  
+
+  console.log(btnOpciones)
+
+
+
+    btnOpciones.addEventListener("click",()=>{   
+
+ 
+
+
+      let objectoStorage={
+        user:usuario,
+        user_id:usuario_id,
+        producto_id:producto_ID,
+        nombre_producto:nombre,
+        precio_producto:precio,
+        cantidad:1,
+        detalles:detalles,
+        imagen:imagenOpciones,
+        color:colorTexto || "",
+        talle:sizesTexto || ""
+      
+       } 
+     
+       console.log(objectoStorage) 
+
+
+      
+   
+
+     if(carritoCompras.some(producto=>producto.producto_id===producto_ID)){
+      let index=carritoCompras.findIndex(producto=>producto.producto_id===producto_ID)
+      carritoCompras[index].cantidad++
+
+     }
+
+      else{ 
+        
+       carritoCompras.push(objectoStorage) 
+
+      }
+    
+
+
+       localStorage.setItem("productos",JSON.stringify(carritoCompras)) 
+
+        manejarCantidades(producto_ID)
+     
+      
+
+    })
+
   } 
 
+   async function manejarCantidades(productoID){  
 
-  let carritoComprasStock = carritoCompras.filter(producto => 
-    producto.variante?.stock > 0 &&
-    producto.nombre &&
-    producto.usuario_id === userData.usuario_id &&
-    producto.usuario === userData.usuario
-  );
+    const productos=await obtenerProductos() 
+
+     const stock=productos.flatMap(productos=>productos.productos_variantes).find(v=>v.producto_id===productoID).stock || null
+     console.log(stock)
+
+    document.getElementById("modal").remove(); 
+
+    let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
+
+         const primerProducto=carritoCompras.find(p=>p.producto_id===productoID)
+
+        const div=document.createElement("div") 
+ 
+
+    div.innerHTML=` 
+    <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 999999999999999;" class="modal-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
+    <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
+      <span style="color: green; font-size: 24px; margin-right: 10px;" class="icon-check">✔</span>Producto agregado a tu Carro
+    </h2>
+    <button style="font-size: 24px; cursor: pointer; border: none;z-index: 999999999999999999 background: none;" id="close-x" class="modal-close">×</button>
+  </div>
+  <div style="display: flex; padding: 16px;" class="modal-content">
+    <img style="width: 80px; height: auto; margin-right: 16px;" src="${primerProducto.imagen}" alt="Producto" />
+    <div style="flex-grow: 1;" class="product-info">
+      <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${primerProducto.nombre_producto}</h3>
+      <strong style="display: block; margin: 4px 0;">${primerProducto.detalles}</strong>
+      <span style="color: red;">${primerProducto.talle}</span>
+      <div style="font-size: 18px; font-weight: bold;" class="product-price">$${primerProducto.precio_producto}</div>
+      <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
+        <button style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
+        <span style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
+        <button style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
+
+      </div>
+    </div>
+  </div>
+  <div style="padding: 16px; display: flex; justify-content: space-between; border-top: 1px solid #ddd;" class="modal-footer">
+    <a style="text-decoration: none; font-weight: bold; color: #0046be;" class="seguir_comprando" href="#">Seguir comprando</a>
+    <button style="background: #3a3f4c; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</button>
+  </div>
+</div>
+
+       
+    `
+         console.log(div)
+     document.body.append(div) 
+    
+     const btnSeguirCompra=document.querySelector(".seguir_comprando")
+
+     btnSeguirCompra.addEventListener("click",()=>{
+       
+      window.location.reload()
+     }) 
+
+     const Modal=document.querySelector(".modal-2")
+     console.log(Modal)
+  
+    Modal.addEventListener("click",()=>{ 
+      Modal.remove()
+  
+     })
   
   
-  console.log(carritoCompras);
-  console.log('El carrito de compras', carritoComprasStock);
-  sumarCarrito(carritoComprasStock);
-
-  if (carritoComprasStock.length > 0) {
-    Toastify({
-      text: "Producto agregado",
-      duration: 3000,
-      close: true,
-      gravity: "top",
-      position: "right",
-      stopOnFocus: true,
-      style: {
-        background: "linear-gradient(to right, #4b33a8, #785ce9)",
-        borderRadius: "2rem",
-        textTransform: "uppercase",
-        fontSize: ".75rem"
-      },
-      offset: {
-        x: '1.5rem',
-        y: '1.5rem'
-      },
-      onClick: function () {}
-    }).showToast();
-
-    localStorage.setItem('productos', JSON.stringify(carritoComprasStock));
-  }
-}
 
 
-function sumarCarrito(carrito) { 
+   } 
+
+  
+
+  
+
+/*sumarCarrito()
+
+function sumarCarrito() { 
  
 
   let iconCart = document.getElementById("cart-count");
   iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0);
-}
+}*/
  
-function restaurarCarrito() {
+/*function restaurarCarrito() {
   let carritoStorage = localStorage.getItem('productos');
   let carritoCompras = carritoStorage ? JSON.parse(carritoStorage) : [];
 
@@ -388,4 +578,4 @@ function restaurarCarrito() {
 }
 
 // Ejecutar la función al cargar la página
-document.addEventListener("DOMContentLoaded", restaurarCarrito);
+ restaurarCarrito()*/

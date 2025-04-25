@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal Producto</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }  
+
+    
+
+
+    /*modal 2 */
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 640px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      left: 0;
+      top: 0; /*centalo en el nmiod con transform hazlo tu */ 
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid #ddd;
+    }
+    .modal-header .icon-check {
+      color: green;
+      font-size: 24px;
+      margin-right: 10px;
+    }
+    .modal-header h2 {
+      font-size: 18px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    .modal-close {
+      font-size: 24px;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+    .modal-content {
+      display: flex;
+      padding: 16px;
+    }
+    .modal-content img {
+      width: 80px;
+      height: auto;
+      margin-right: 16px;
+    }
+    .product-info {
+      flex-grow: 1;
+    }
+    .product-info h3 {
+      font-size: 14px;
+      margin: 0;
+      font-weight: normal;
+    }
+    .product-info strong {
+      display: block;
+      margin: 4px 0;
+    }
+    .product-price {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .quantity-selector button {
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+    }
+    .quantity-selector span {
+      width: 30px;
+      text-align: center;
+    }
+    .modal-footer {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #ddd;
+    }
+    .modal-footer a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #0046be;
+    }
+    .btn-carro {
+      background: #3a3f4c;
+      color: white;
+      padding: 8px 24px;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+
+    } 
+
+    .modal-visible-carrito{
+      opacity: 1;;
+
+    } 
+
+
+  </style>
+</head>
+<body> 
+
+ 
+<!-- modal 2  -->
+ 
+
+  <div class="modal-visible-carrito"> 
+
+    <div class="modal">
+      <div class="modal-header">
+        <h2><span class="icon-check">✔</span>Producto agregado a tu Carro</h2>
+        <button class="modal-close">×</button>
+      </div>
+      <div class="modal-content">
+        <img src="./images/Botin para mujer elasticado con taco Café-3.jpeg" alt="Producto" />
+        <div class="product-info">
+          <h3>SKECHERS</h3>
+          <strong>Botín Mujer Negro Skechers</strong>
+          <span>37.5</span>
+          <div class="product-price">$57.990</div>
+          <div class="quantity-selector">
+            <button>-</button>
+            <span>1</span>
+            <button>+</button>
+            <small style="margin-left: 8px; font-size: 12px; color: #666">Máximo 50 unidades.</small>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#">Seguir comprando</a>
+        <button class="btn-carro">Ir al Carro</button>
+      </div>
+    </div> 
+
+  </div>
+</body>
+</html>
