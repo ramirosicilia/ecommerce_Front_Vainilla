@@ -185,16 +185,21 @@ formularioLogin.addEventListener("submit", async (e) => {
         // Procesamiento de la respuesta del servidor
         let datos = await peticion.json();
    
-       console.log(datos.userName)
+       console.log(datos.userName) 
+
+       const Users=JSON.parse(localStorage.getItem("productos"))?JSON.parse(localStorage.getItem("productos")):[]  
+       if(datos.userName){
+        Users.push(datos.userName)
+
+       }
 
         
        if(datos.token ||datos.usuario || datos.userName){
         localStorage.setItem('token',datos.token) 
-        localStorage.setItem('dni',JSON.stringify(datos.usuario))
-        localStorage.setItem('usuario',JSON.stringify(datos.userName))
+        localStorage.setItem('usuario',JSON.stringify(Users))
         } 
 
-
+        
         
 
         if(datos){  

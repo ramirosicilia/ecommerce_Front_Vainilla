@@ -1,66 +1,102 @@
+
+
 let productosEncarrito = JSON.parse(localStorage.getItem('productos')) || []; 
 let summary=document.getElementById("sumary") 
 
+   
 
 
-  function mostrarProductosCarrito() { 
-    let carritoItem = document.getElementById("carrito-items"); 
+     
+
+     mostrarProductosCarrito();
+
+
+  async function mostrarProductosCarrito() {  
+
+   // Obtener el último número para re-renderizar
+    let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
+    
+    console.log(stockGuardados,"el stock"); // Usar este para renderizar la tarjeta
+    
+   
+
+
+    let carritoItem = document?.getElementById("carrito-items"); 
+
+  
+  
+  if(carritoItem) { 
+
     carritoItem.innerHTML = "";
     summary.innerHTML="" 
-    let cantidad=0
+
 
     if (productosEncarrito.length > 0) { 
-        productosEncarrito.forEach(producto => { 
-            carritoItem.innerHTML += ` 
-                <div class="item">
-                    <img src="${producto.urls}" alt="">
-                    <div class="info">
-                        <p class="name">${producto.nombre}</p>
-                        <div class="actions">
-                            <span class="delete">Eliminar</span>
-                            <span class="buy-now">Agregar</span>
-                        </div>
-                        <div class="quantity">
-                            <button class="boton_eliminar" data-id="${producto.producto_id}">-</button>
-                            <span class="cantidad" data-id="${producto.producto_id}">${producto.cantidad}</span>
-                            <button class="boton_agregar" data-id="${producto.producto_id}">+</button>
-                        </div>
-                        <p class="stock cantidad-texto" data-id="${producto.producto_id}">Cantidad: ${producto.cantidad}</p>
-                        <p class="stock">Stock: ${producto.variante.stock}</p>
-                        <p class="price">Precio: $${producto.precio}</p>
-                    </div>
-                </div>`; 
-                checkout() 
-                
-        }); 
-
+      productosEncarrito.forEach((producto,index )=> {  
         
-        let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
-        let botonesEliminar = [...document.querySelectorAll(".boton_eliminar")];
 
-        console.log(botonesAgregar, botonesEliminar); 
+      
+          carritoItem.innerHTML += ` 
+              <div class="item">
+                  <img src="${producto.imagen}" alt="">
+                  <div class="info">
+                      <p class="name">${producto.nombre_producto}</p>
+                      <div class="actions">
+                          <span class="delete">Eliminar</span>
+                          <span class="buy-now">Agregar</span>
+                      </div>
+                      <div class="quantity">
+                          <button class="boton_eliminar" data-id="${producto.producto_id}">-</button>
+                          <span class="cantidad" data-id="${producto.producto_id}">${producto.cantidad}</span>
+                          <button class="boton_agregar" data-id="${producto.producto_id}">+</button>
+                      </div>
+                      <div class="detalles">
+                       <p class="talle">Talle:${producto.talle} </p>
+                       <p class="color">Color:${producto.color}  </p>
+                       <p class="stock cantidad-texto" data-id="${producto.producto_id}">Cantidad: ${producto.cantidad}</p>
+                      </div>
+                      <span class="stock">maximo permitido: ${stockGuardados[index]} unidades </span>
+                      <span class="price">Precio: $${producto.precio_producto}</span>
+                     
+                  </div>
+              </div>`; 
+              checkout() 
+              
+      }); 
 
-        activarBotonAgregar(botonesAgregar);
+      
+      let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
+      let botonesEliminar = [...document.querySelectorAll(".boton_eliminar")];
 
-        activarBotonEliminar(botonesEliminar)   
-    } 
+      console.log(botonesAgregar, botonesEliminar); 
 
-    else{ 
-      summary.innerHTML=` 
-      <h3>Resumen de compra</h3>
-             <p>Productos (${cantidad}) <span>$${cantidad.toFixed(2)}</span></p>
-             <p class="shipping">Calcular costo de envío</p>
-             <hr>
-             <p>Total <span class="total-price">${cantidad.toFixed(2)}</span></p>
-             <button class="checkout">Continuar compra</button>
-             <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
-             <a class="boton_vaciar" id="boton-vaciar">Vaciar Carrito</a>
-      `
+      activarBotonAgregar(botonesAgregar);
 
-    }
+
+      activarBotonEliminar(botonesEliminar)   
+  } 
+
+  else{ 
+
+    summary.innerHTML=` 
+    <h3>Resumen de compra</h3>
+           <p>Productos (${cantidad}) <span>$${cantidad.toFixed(2)}</span></p>
+           <p class="shipping">Calcular costo de envío</p>
+           <hr>
+           <p>Total <span class="total-price"></span></p>
+           <button class="checkout">Continuar compra</button>
+           <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
+          <button type="button" class="boton_vaciar btn" id="boton-vaciado">Vaciar Carrito</button>
+    `
+
+  }
+
+  }
+
+   
 } 
 
-mostrarProductosCarrito();
+
 
 function activarBotonAgregar(botones) { 
     botones.forEach(boton => {
@@ -72,9 +108,11 @@ function checkout() {
 
   
   let cantidadTotal = productosEncarrito.length; // Contar productos únicos
-  let total = productosEncarrito.reduce((acc, prod) => acc + (prod.cantidad * prod.precio), 0);
+  let total = productosEncarrito.reduce((acc, prod) => acc + (prod.cantidad * prod.precio_producto), 0);
   let tieneRepetidos = productosEncarrito.some(prod => prod.cantidad > 1);
-
+     console.log(summary) 
+      const button=document.createElement("button")
+      button.id="boton-vaciado"
   summary.innerHTML = ` 
       <h3>Resumen de compra</h3>
       <p>Productos totales (${cantidadTotal}) ${tieneRepetidos ? "" : ""} <span>$ ${total.toFixed(2)}</span></p>
@@ -83,10 +121,61 @@ function checkout() {
       <p>Total <span class="total-price">$${total.toFixed(2)}</span></p>
       <button class="checkout">Continuar compra</button>
       <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
-      <a class="boton_vaciar" id="boton-vaciar">Vaciar Carrito</a>
-  `;
+      <button type="button" class="boton_vaciar btn" 
+      id="boton-vaciado">Vaciar Carrito</button>
+  `; 
+  
+  let botonVaciar=document.querySelector("#boton-vaciado")
+
+  vaciarCarrito(botonVaciar)
+
 }
 
+
+ function vaciarCarrito(botonVaciar){
+  
+console.log(botonVaciar)
+
+
+botonVaciar.addEventListener('click',() => { 
+    
+        
+    if (productosEncarrito.length === 0) return;
+     
+    const confirmar = confirm('¿Estás seguro de que deseas vaciar el carrito?');
+
+
+    if (confirmar) {
+        localStorage.removeItem('productos'); // Borra solo 'productos' del localStorage
+        productosEncarrito = []; // Vacía el array correctamente 
+       
+        Swal.fire({
+            title: `Fue Vaciado con exicto el carrito`,
+            showClass: {
+              popup: `
+                animate__animated
+                animate__fadeInUp
+                animate__faster
+              `
+            },
+            hideClass: {
+              popup: `
+                animate__animated
+                animate__fadeOutDown
+                animate__faster
+              `
+            }
+          }); 
+
+    } 
+
+    setTimeout(() => { 
+        window.location.reload()
+        
+    }, 1500);
+})
+
+ }
 
 
 
@@ -160,44 +249,5 @@ function agregarProductoAlCarrito(e) {
 }
 
 
-let botonVaciar=document.getElementById("boton-vaciar") 
 
-
-botonVaciar.addEventListener('click', () => { 
-    
-        
-    if (productosEncarrito.length === 0) return;
-     
-    const confirmar = confirm('¿Estás seguro de que deseas vaciar el carrito?');
-
-
-    if (confirmar) {
-        localStorage.removeItem('productos'); // Borra solo 'productos' del localStorage
-        productosEncarrito = []; // Vacía el array correctamente 
-       
-        Swal.fire({
-            title: `Fue Vaciado con exicto el carrito`,
-            showClass: {
-              popup: `
-                animate__animated
-                animate__fadeInUp
-                animate__faster
-              `
-            },
-            hideClass: {
-              popup: `
-                animate__animated
-                animate__fadeOutDown
-                animate__faster
-              `
-            }
-          }); 
-
-    } 
-
-    setTimeout(() => { 
-        window.location.reload()
-        
-    }, 1500);
-});
 
