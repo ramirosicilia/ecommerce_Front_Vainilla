@@ -18,7 +18,7 @@ let summary=document.getElementById("sumary")
     
     console.log(stockGuardados,"el stock"); // Usar este para renderizar la tarjeta
     
-   
+    let cantidad=0
 
 
     let carritoItem = document?.getElementById("carrito-items"); 
@@ -80,7 +80,7 @@ let summary=document.getElementById("sumary")
 
     summary.innerHTML=` 
     <h3>Resumen de compra</h3>
-           <p>Productos (${cantidad}) <span>$${cantidad.toFixed(2)}</span></p>
+           <p>Productos (${cantidad})<span>$${cantidad.toFixed(2)}</span></p>
            <p class="shipping">Calcular costo de envío</p>
            <hr>
            <p>Total <span class="total-price"></span></p>

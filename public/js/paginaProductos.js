@@ -12,20 +12,20 @@ const selector = document.getElementById("categorySelector");
 const listaProductos = document.getElementById("productos_lista");
 const userIngresado=document.querySelector('.user__ingresado') 
 
-const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))?JSON.parse(localStorage.getItem('usuario')):[]
-    console.log(usuarioNombre) 
+  const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))?JSON.parse(localStorage.getItem('usuario')):[]
+      console.log(usuarioNombre) 
 
 
 
-usuarios()
+      usuarios()
 
 
- async function usuarios() { 
-  const usuario=await obtenerUsuarios() 
+   async function usuarios() { 
+    const usuario=await obtenerUsuarios() 
 
-  reendedizarUsuario(usuario)
-  
- }  
+    reendedizarUsuario(usuario)
+
+   }  
 
 
 
@@ -479,7 +479,7 @@ selector.addEventListener("change", async (e) => {
 
       if(color.classList.contains("seleccion_opciones_colores")){ 
         
-      btnOpciones.textContent="Comprar"
+      btnOpciones.textContent="Agregar al Carrito"
       btnOpciones.disabled=false
       colorTexto=color.textContent 
     
@@ -527,7 +527,7 @@ selector.addEventListener("change", async (e) => {
 
       /* BUSCAMOS QUE LAS VARIANTES COINCIDAN CON LOS TALLES Y COLORES SELECCIONADOS GRACIAS A LAS VARIANTES */
 
-      
+
        const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
         console.log('Comparando:');
         console.log('Talle del botón seleccionado:', sizesTexto);
