@@ -12,7 +12,7 @@ const selector = document.getElementById("categorySelector");
 const listaProductos = document.getElementById("productos_lista");
 const userIngresado=document.querySelector('.user__ingresado') 
 
-  const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))?JSON.parse(localStorage.getItem('usuario')):[]
+  const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))||[]
       console.log(usuarioNombre) 
 
 
@@ -313,11 +313,13 @@ selector.addEventListener("change", async (e) => {
 
    
   
- let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
+
  
 
 
  async function opcionesProducto(producto_ID) { 
+  
+  let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
 
     let sizesTexto=""
     let colorTexto=""
@@ -365,7 +367,7 @@ selector.addEventListener("change", async (e) => {
      <button class="sizes-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle}</button>
      
     `
-    })
+    }).join("")
   console.log(talles)  
 
    
@@ -375,7 +377,7 @@ selector.addEventListener("change", async (e) => {
      <button class="colors-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor}</button>
   
     `
-  })
+  }).join("")
   console.log(colores)
 
 
@@ -556,32 +558,27 @@ selector.addEventListener("change", async (e) => {
 
 
        let primerProductoCarrito = carritoCompras.find(producto => 
-        producto.producto_id === producto_ID &&
+        
         producto.color === colorTexto &&
         producto.talle === sizesTexto
       );
       
 
-     if(primerProductoCarrito){
-      
-       primerProductoCarrito.cantidad++
-    
-
-     }
-
-      else{ 
+      if (primerProductoCarrito) {
+        console.log('Coincidencia encontrada:', primerProductoCarrito);
+        primerProductoCarrito.cantidad++;
         
-       carritoCompras.push(objectoStorage) 
-       
-
+      } else {
+        console.log('No encontrado, se agrega nuevo:', objectoStorage);
+        carritoCompras.push(objectoStorage);
       }
-    
+      
 
 
        localStorage.setItem("productos",JSON.stringify(carritoCompras))  
 
        
-       await manejarCantidades(producto_ID,sizesTexto,colorTexto,)
+       await manejarCantidades(producto_ID,sizesTexto,colorTexto)
         actualizarCarrito()
       
 
@@ -648,14 +645,16 @@ selector.addEventListener("change", async (e) => {
     let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
 
          const primerProducto=carritoCompras.find(p=>p.producto_id===productoID) 
-
+        
+         
+         document.querySelector('.modal-2')?.remove()
 
         const div=document.createElement("div") 
 
 
-    div.innerHTML=` 
-
-    <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
+    // Crear el contenido del modal
+div.innerHTML = `
+<div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
   <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
     <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
       <span style="color: green; font-size: 24px; margin-right: 10px;" class="icon-check">✔</span>Producto agregado a tu Carro
@@ -668,14 +667,13 @@ selector.addEventListener("change", async (e) => {
       <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${primerProducto.nombre_producto}</h3>
       <strong style="display: block; margin: 4px 0;">${primerProducto.detalles}</strong>
       <p style="color: red;">talle:${sizes}</p>
-       <p style="color: red;">color:${color}</p>
+      <p style="color: red;">color:${color}</p>
       <p style="color: red;">el maximo permitido:${stock}  unidades</p>
       <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${primerProducto.precio_producto}</div>
       <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
         <button  class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-         <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
+        <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
         <button  class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
-
       </div>
     </div>
   </div>
@@ -684,86 +682,53 @@ selector.addEventListener("change", async (e) => {
     <a id="carrito" href="./carrito.html" style="background: #3a3f4c; text-decoration:none; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</a>
   </div>
 </div>
+`;
 
-       
-    ` 
+let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+stockStorage.push(stock);
+localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
-    let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-    stockStorage.push(stock);
-    localStorage.setItem('stocks', JSON.stringify(stockStorage));
+console.log(div);
+document.body.append(div);
 
-   
+// Delegación de eventos
+div.addEventListener('click', (e) => {
+const cantidadSpan = div.querySelector(".quantity-selector span"); // referencia al <span>
 
-         console.log(div)
-     document.body.append(div) 
-     const cantidadSpan = div.querySelector(".quantity-selector span"); // referencia al <span>
+// Cerrar el modal
+if (e.target.matches(".modal_close")) {
+  const modal = div.querySelector(".modal-2");
+  modal.remove();
+}
 
-    
-     const btnSeguirCompra=document.querySelector(".seguir_comprando")
+// Seguir comprando (recargar la página)
+if (e.target.matches(".seguir_comprando")) {
+  window.location.reload();
+}
 
-     btnSeguirCompra.addEventListener("click",(e)=>{ 
+// Botón de agregar cantidad
+if (e.target.matches(".boton-agregar")) {
+  e.preventDefault();
+  if (primerProducto.cantidad < stock) {
+    primerProducto.cantidad++;
+    cantidadSpan.textContent = primerProducto.cantidad;
+    localStorage.setItem('productos', JSON.stringify(carritoCompras));
+  }
+}
 
-   
-        if (e.target.matches(".seguir_comprando")) {
-          window.location.reload();
-        }
- 
-    
-     }) 
+// Botón de eliminar cantidad
+if (e.target.matches(".boton-eliminar")) {
+  e.preventDefault();
+  if (primerProducto.cantidad > 0) {
+    primerProducto.cantidad--;
+    cantidadSpan.textContent = primerProducto.cantidad || 0;
+    localStorage.setItem('productos', JSON.stringify(carritoCompras));
+  }
+}
+});
 
-     const cerrar=document.querySelector(".modal_close")
-     console.log(cerrar)
-     const Modal=document.querySelector(".modal-2")
-     console.log(Modal)
-  
-      cerrar.addEventListener("click",()=>{ 
-      Modal.remove()
-  
-     })
-   
-     const botonAgregar=document.getElementById("btn-agregar")  
-     const botonEliminar=document.getElementById("btn-eliminar")  
-     
-     console.log(botonAgregar)
+actualizarCarrito();
 
-     botonAgregar.addEventListener("click",(e)=>{
-      e.preventDefault() 
-      console.log('opcionado') 
-      console.log(primerProducto)
-
-       if(primerProducto.cantidad<stock){
-    
-        primerProducto.cantidad++
-        cantidadSpan.textContent=primerProducto.cantidad
-        
-
-        localStorage.setItem('productos', JSON.stringify(carritoCompras));
-
-       } 
-
-     
-     }) 
-
-
-     botonEliminar.addEventListener("click",(e)=>{ 
-      cantidadSpan.textContent=""
-      e.preventDefault() 
-      console.log('opcionado') 
-      console.log(primerProducto)
-
-       if(primerProducto.cantidad>0){
-        primerProducto.cantidad--
-        cantidadSpan.textContent=primerProducto.cantidad || 0
-    
-
-        localStorage.setItem('productos', JSON.stringify(carritoCompras));
-
-       } 
-
-
-     
-     }) 
-     actualizarCarrito()
   
    } 
 
