@@ -1,4 +1,5 @@
 import { obtenerCategorys, obtenerProductos, obtenerUsuarios } from "./api/productos.js";
+import { actualizarCarrito } from "./paginaProductos.js";
 
 
   let categorias=[]
@@ -253,6 +254,7 @@ async function reendedizarDetallesProductos() {
    
 
    async function recibirDescripcion(producto_ID) { 
+
     const usuarioNombre = JSON.parse(localStorage.getItem('usuario')) || [];
   
     let sizesTexto = "";
@@ -416,8 +418,10 @@ async function reendedizarDetallesProductos() {
       
       if (existeProducto) {
         existeProducto.cantidad ++;
+        actualizarCarrito()
       } else {
         carritoCompras.push({...objectoStorage});
+        actualizarCarrito()
       }
       
   
@@ -589,6 +593,7 @@ async function reendedizarDetallesProductos() {
                    cantidadSpan.textContent = primerProducto.cantidad;
              
                    localStorage.setItem("productos", JSON.stringify(carritoCompras));
+                   actualizarCarrito()
                  }
                }
              
@@ -621,12 +626,14 @@ async function reendedizarDetallesProductos() {
                  }
              
                  localStorage.setItem("productos", JSON.stringify(carritoCompras));
+                 actualizarCarrito()
                }
              });
              
              if (carritoCompras.length === 0) { 
             
               localStorage.removeItem("productos"); // Limpia si ya no hay nada
+              actualizarCarrito()
             } 
 
             
@@ -778,32 +785,36 @@ async function reendedizarDetallesProductos() {
             console.log(carritoCompras)
       
            let primerProducto = carritoCompras.find(producto => 
-            producto.producto_id===productoID&&
-            producto.color === color&&
-            producto.talle === sizes
+            producto.producto_id.toString().trim()===productoID.toString().trim()&&
+            producto.color.toString().trim() === color.toString().trim()&&
+            producto.talle.toString().trim() === sizes.toString().trim()
           );
                  console.log(primerProducto) 
 
                  
   
-                  if(primerProducto){ 
+                  if(primerProducto){  
+                 
                     primerProducto.cantidad++
+                    actualizarCarrito()
   
                   }
   
-     else{ 
-      carritoCompras.push({...objectoStorage}) 
-  
-     }
+                 else{ 
+                  carritoCompras.push({...objectoStorage}) 
+                  actualizarCarrito()
+                
+                 }
       
         
-     localStorage.setItem("productos", JSON.stringify(carritoCompras));
+
   
   
          let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
          stockStorage.push(stock);
          localStorage.setItem('stocks', JSON.stringify(stockStorage)); 
          localStorage.setItem('productos', JSON.stringify(carritoCompras));
+      
      
          document.querySelector('.nuevo-modal')?.remove()
      
@@ -860,25 +871,44 @@ async function reendedizarDetallesProductos() {
            if (modal) modal.remove();
          }
        
-         // BOTÓN AGREGAR
          if (e.target.matches(".boton-agregar")) {
-           e.preventDefault();
-           if (objectoStorage.cantidad < stock) {
-             objectoStorage.cantidad++;
-             cantidadSpan.textContent = objectoStorage.cantidad ;
-             localStorage.setItem("productos", JSON.stringify(carritoCompras));
-           }
-         }
+          e.preventDefault();
+        
+          // Recalcular el producto actual desde el carrito
+          let productoActual = carritoCompras.find(producto => 
+            producto.producto_id.toString().trim() === productoID.toString().trim() &&
+            producto.color.toString().trim() === color.toString().trim() &&
+            producto.talle.toString().trim() === sizes.toString().trim()
+          );
+        
+          if (productoActual) {
+            if (productoActual.cantidad < stock) {
+              productoActual.cantidad++;
+              cantidadSpan.textContent = productoActual.cantidad;
+              actualizarCarrito()
+            }
+          } else {
+            if (objectoStorage.cantidad < stock) {
+              carritoCompras.push({...objectoStorage});
+              cantidadSpan.textContent = objectoStorage.cantidad;
+              actualizarCarrito()
+            }
+          }
+        
+          localStorage.setItem("productos", JSON.stringify(carritoCompras));
+        
+        }
+        
        
          // BOTÓN ELIMINAR
          if (e.target.matches(".boton-eliminar")) {
            e.preventDefault();
-           if (objectoStorage.cantidad > 0) {
-             objectoStorage.cantidad--;
-             cantidadSpan.textContent = objectoStorage.cantidad || 0;
+           if (primerProducto.cantidad > 0) {
+           primerProducto.cantidad--;
+             cantidadSpan.textContent = primerProducto.cantidad || 0;
            }
        
-           if (objectoStorage.cantidad === 0) {
+           if (primerProducto.cantidad === 0) {
              const index = carritoCompras.findIndex(
                (producto) =>
                  producto.producto_id.toString() === productoID.toString() &&
@@ -897,7 +927,10 @@ async function reendedizarDetallesProductos() {
            }
        
            localStorage.setItem("productos", JSON.stringify(carritoCompras));
-         }
+           actualizarCarrito()
+         } 
+
+
        });
        
        

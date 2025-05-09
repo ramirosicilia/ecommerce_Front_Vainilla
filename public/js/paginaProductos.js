@@ -95,7 +95,8 @@ async function selectorCategorys() {
   let categoria = await obtenerCategorys();
   categoriasFiltrada = categoria.filter(category => category.activo === true);
 
-  // Asegurar que el selector tenga una opción "Todas"
+  if(selector){
+    // Asegurar que el selector tenga una opción "Todas"
   selector.innerHTML = `<option value="todas">Todas</option>`;
   console.log(categoriasFiltrada);
 
@@ -110,59 +111,66 @@ async function selectorCategorys() {
   }
 }
 
-
-
-selector.addEventListener("change", async (e) => {
-  const categoriaSeleccionada = e.target.value;
-  listaProductos.innerHTML = ""; // Limpiar lista
-
-  let productos = await obtenerProductos();
-  let productosActivos = productos.filter(p => p.activacion === true);
-
-  let productosMostrados = categoriaSeleccionada !== "todas"
-    ? productosActivos.filter(producto =>
-        categoriasFiltrada.some(cat =>
-          cat.nombre_categoria === categoriaSeleccionada &&
-          cat.categoria_id === producto.categoria_id
+ if(selector){
+  selector.addEventListener("change", async (e) => {
+    const categoriaSeleccionada = e.target.value;
+    listaProductos.innerHTML = ""; // Limpiar lista
+  
+    let productos = await obtenerProductos();
+    let productosActivos = productos.filter(p => p.activacion === true);
+  
+    let productosMostrados = categoriaSeleccionada !== "todas"
+      ? productosActivos.filter(producto =>
+          categoriasFiltrada.some(cat =>
+            cat.nombre_categoria === categoriaSeleccionada &&
+            cat.categoria_id === producto.categoria_id
+          )
         )
-      )
-    : productosActivos;
-
-  if (productosMostrados.length > 0) {
-    listaProductos.innerHTML = productosMostrados.map(producto => {
-    const imagen = Array.isArray(producto.imagenes?.[0]?.urls)
-  ? producto.imagenes[0].urls[0]
-  : producto.imagenes?.[0]?.urls || "img/default.png";
-
-      const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
-
-      return `
-        <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
-          <div class="card">
-            <img src="${imagen}" class="card-img-top" alt="">
-            <div class="card-body">
-              <h5 class="card-title">${producto.nombre_producto || ""}</h5>
-              <p class="card-text">$${producto.precio || 0}</p>
-              <button class="btn btn-agregar btn-primary add-to-cart" data-img="${imagen}" data-productos="${producto.producto_id}">
-                Agregar al carrito
-              </button>
+      : productosActivos;
+  
+    if (productosMostrados.length > 0) {
+      listaProductos.innerHTML = productosMostrados.map(producto => {
+      const imagen = Array.isArray(producto.imagenes?.[0]?.urls)
+    ? producto.imagenes[0].urls[0]
+    : producto.imagenes?.[0]?.urls || "img/default.png";
+  
+        const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+  
+        return `
+          <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
+            <div class="card">
+              <img src="${imagen}" class="card-img-top" alt="">
+              <div class="card-body">
+                <h5 class="card-title">${producto.nombre_producto || ""}</h5>
+                <p class="card-text">$${producto.precio || 0}</p>
+                <button class="btn btn-agregar btn-primary add-to-cart" data-img="${imagen}" data-productos="${producto.producto_id}">
+                  Agregar al carrito
+                </button>
+              </div>
             </div>
-          </div>
-        </section>
-      `;
-    }).join("");
+          </section>
+        `;
+      }).join("");
+  
+      productosMostrados.forEach(producto => {
+        const stock = producto.productos_variantes?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
+        stockAgotado(stock, producto.producto_id);
+      });
+  
+      agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
+    } else {
+      listaProductos.innerHTML = `<p>No hay productos en esta categoría.</p>`;
+    }
+  });
+  
+  
 
-    productosMostrados.forEach(producto => {
-      const stock = producto.productos_variantes?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
-      stockAgotado(stock, producto.producto_id);
-    });
+ }
 
-    agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
-  } else {
-    listaProductos.innerHTML = `<p>No hay productos en esta categoría.</p>`;
+
   }
-});
 
+  
 
 
   
@@ -171,49 +179,54 @@ selector.addEventListener("change", async (e) => {
     const productos = await obtenerProductos();
     const listaProductos = document.getElementById("productos_lista"); 
 
-    
-
-    listaProductos.innerHTML = "";
-  
+    if(listaProductos){
+      listaProductos.innerHTML = ""; 
+      
     const productosFiltrados = productos.filter(p => p.activacion === true);
   
-     filtradoCategoryYProduct = productosFiltrados.filter(producto => 
-      categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
-    );
-  
-    if (filtradoCategoryYProduct.length > 0) {
-      filtradoCategoryYProduct.forEach(producto => {
-        const imagen = producto.imagenes?.[0]?.urls?.[0] || "img/default.png";
-        console.log(imagen)
-        const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+    filtradoCategoryYProduct = productosFiltrados.filter(producto => 
+     categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
+   );
+ 
+   if (filtradoCategoryYProduct.length > 0) {
+     filtradoCategoryYProduct.forEach(producto => {
+       const imagen = producto.imagenes?.[0]?.urls?.[0] || "img/default.png";
+       console.log(imagen)
+       const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+     
+          
       
-           
-       
-        listaProductos.insertAdjacentHTML("beforeend", `
-          <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
-            <div class="card">
-              <img src="${imagen}"data-imagen-producto="${producto.producto_id}" " class="card-img-top imagen" alt="">
-              <div class="card-body">
-                <h5 class="card-title">${producto.nombre_producto}</h5>
-                <p class="card-text">$${producto.precio}</p>
-                <button class="btn btn-agregar btn-primary add-to-cart"data-productos="${producto.producto_id}">
-                  Agregar al carrito
-                </button>
-              </div>
-            </div>
-          </section>
-        `);
-        let imagenDom=document.querySelectorAll(".imagen")
-      
-        stockAgotado(stock, producto.producto_id);
-        recuperarImagenes( imagenDom)
+       listaProductos.insertAdjacentHTML("beforeend", `
+         <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
+           <div class="card">
+             <img src="${imagen}"data-imagen-producto="${producto.producto_id}" " class="card-img-top imagen" alt="">
+             <div class="card-body">
+               <h5 class="card-title">${producto.nombre_producto}</h5>
+               <p class="card-text">$${producto.precio}</p>
+               <button class="btn btn-agregar btn-primary add-to-cart"data-productos="${producto.producto_id}">
+                 Agregar al carrito
+               </button>
+             </div>
+           </div>
+         </section>
+       `);
+       let imagenDom=document.querySelectorAll(".imagen")
+     
+       stockAgotado(stock, producto.producto_id);
+       recuperarImagenes( imagenDom)
 
-      });
-  
-      agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
-    } else {
-      listaProductos.innerHTML = `<p>No hay productos disponibles para mostrar.</p>`;
+     });
+ 
+     agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]); 
+
+   }  
+     else {
+     listaProductos.innerHTML = `<p>No hay productos disponibles para mostrar.</p>`;
+   }
     }
+
+
+  
   } 
 
     
@@ -644,7 +657,24 @@ selector.addEventListener("change", async (e) => {
 
     let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
 
-         const primerProducto=carritoCompras.find(p=>p.producto_id===productoID) 
+         const primerProducto=carritoCompras.find(p=>p.producto_id.toString().trim()===productoID.toString().trim()&&
+               p.color.toString().trim()===color && p.talle.toString().trim()===sizes.toString().trim()) 
+
+               if (!primerProducto) {
+                const nuevoProducto = {
+                  producto_id: productoID,
+                  talle: sizes,
+                  color: color,
+                  cantidad: 1,
+                  imagen: productoSeleccionado.imagen,
+                  nombre_producto: productoSeleccionado.nombre_producto,
+                  detalles: productoSeleccionado.detalles,
+                  precio_producto: productoSeleccionado.precio_producto
+                };
+                carritoCompras.push(nuevoProducto);
+                localStorage.setItem('productos', JSON.stringify(carritoCompras));
+              }
+              
         
          
          document.querySelector('.modal-2')?.remove()
@@ -653,114 +683,150 @@ selector.addEventListener("change", async (e) => {
 
 
     // Crear el contenido del modal
-div.innerHTML = `
-<div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
-  <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
-    <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
-      <span style="color: green; font-size: 24px; margin-right: 10px;" class="icon-check">✔</span>Producto agregado a tu Carro
-    </h2>
-    <button type="button" style="font-size: 24px; cursor: pointer; border: none;background: none;" id="close-x" class="modal_close">x</button>
-  </div>
-  <div style="display: flex; padding: 16px;" class="modal-content">
-    <img style="width: 80px; height: auto; margin-right: 16px;" src="${primerProducto.imagen}" alt="Producto" />
-    <div style="flex-grow: 1;" class="product-info">
-      <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${primerProducto.nombre_producto}</h3>
-      <strong style="display: block; margin: 4px 0;">${primerProducto.detalles}</strong>
-      <p style="color: red;">talle:${sizes}</p>
-      <p style="color: red;">color:${color}</p>
-      <p style="color: red;">el maximo permitido:${stock}  unidades</p>
-      <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${primerProducto.precio_producto}</div>
-      <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
-        <button  class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-        <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
-        <button  class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
+  div.innerHTML = `
+  <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
+      <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
+        <span style="color: green; font-size: 24px; margin-right: 10px;" class="icon-check">✔</span>Producto agregado a tu Carro
+      </h2>
+      <button type="button" style="font-size: 24px; cursor: pointer; border: none;background: none;" id="close-x" class="modal_close">x</button>
+    </div>
+    <div style="display: flex; padding: 16px;" class="modal-content">
+      <img style="width: 80px; height: auto; margin-right: 16px;" src="${primerProducto.imagen}" alt="Producto" />
+      <div style="flex-grow: 1;" class="product-info">
+        <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${primerProducto.nombre_producto}</h3>
+        <strong style="display: block; margin: 4px 0;">${primerProducto.detalles}</strong>
+        <p style="color: red;">talle:${sizes}</p>
+        <p style="color: red;">color:${color}</p>
+        <p style="color: red;">el maximo permitido:${stock}  unidades</p>
+        <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${primerProducto.precio_producto}</div>
+        <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
+          <button  class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
+          <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
+          <button  class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
+        </div>
       </div>
     </div>
+    <div style="padding: 16px; display: flex; justify-content: space-between; border-top: 1px solid #ddd;" class="modal-footer">
+      <a style=" font-weight: bold; color: #0046be;" class="seguir_comprando" href="#">Seguir comprando</a>
+      <a id="carrito" href="./carrito.html" style="background: #3a3f4c; text-decoration:none; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</a>
+    </div>
   </div>
-  <div style="padding: 16px; display: flex; justify-content: space-between; border-top: 1px solid #ddd;" class="modal-footer">
-    <a style=" font-weight: bold; color: #0046be;" class="seguir_comprando" href="#">Seguir comprando</a>
-    <a id="carrito" href="./carrito.html" style="background: #3a3f4c; text-decoration:none; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</a>
-  </div>
-</div>
-`;
+  `;
 
-let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-stockStorage.push(stock);
-localStorage.setItem('stocks', JSON.stringify(stockStorage));
+  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+  stockStorage.push(stock);
+  localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
-console.log(div);
-document.body.append(div);
+  console.log(div); 
+  if(!document.body.contains(div)){
+    document.body.append(div);
 
-// Delegación de eventos
-div.addEventListener('click', (e) => {
-const cantidadSpan = div.querySelector(".quantity-selector span"); // referencia al <span>
-
-// Cerrar el modal
-if (e.target.matches(".modal_close")) {
-  const modal = div.querySelector(".modal-2");
-  modal.remove();
-}
-
-// Seguir comprando (recargar la página)
-if (e.target.matches(".seguir_comprando")) {
-  window.location.reload();
-}
-
-// Botón de agregar cantidad
-if (e.target.matches(".boton-agregar")) {
-  e.preventDefault();
-  if (primerProducto.cantidad < stock) {
-    primerProducto.cantidad++;
-    cantidadSpan.textContent = primerProducto.cantidad;
-    localStorage.setItem('productos', JSON.stringify(carritoCompras));
   }
-}
 
-// Botón de eliminar cantidad
-if (e.target.matches(".boton-eliminar")) {
+
+  // Delegación de eventos
+  div.addEventListener('click', (e) => {
+  const cantidadSpan = div.querySelector(".quantity-selector span"); // referencia al <span>
+
+  // Cerrar el modal
+  if (e.target.matches(".modal_close")) {
+    const modal = div.querySelector(".modal-2");
+    modal.remove();
+  }
+
+  // Seguir comprando (recargar la página)
+  if (e.target.matches(".seguir_comprando")) {
+    window.location.reload();
+  }
+
+  // Botón de agregar cantidad
+  if (e.target.matches(".boton-agregar")) {
+    e.preventDefault();
+    if (primerProducto.cantidad < stock) {
+      primerProducto.cantidad++;
+      cantidadSpan.textContent = primerProducto.cantidad;
+      localStorage.setItem('productos', JSON.stringify(carritoCompras));
+    } 
+    actualizarCarrito()
+  }
+
+  // Botón de eliminar cantidad
+ if (e.target.matches(".boton-eliminar")) {
   e.preventDefault();
+
   if (primerProducto.cantidad > 0) {
     primerProducto.cantidad--;
-    cantidadSpan.textContent = primerProducto.cantidad || 0;
-    localStorage.setItem('productos', JSON.stringify(carritoCompras));
+    cantidadSpan.textContent = primerProducto.cantidad || 0; 
   }
-}
-});
 
-actualizarCarrito();
+  if (primerProducto.cantidad === 0) {
+    const index = carritoCompras.findIndex(
+      (producto) =>
+        producto.producto_id.toString() === productoID.toString() &&
+        producto.color.toString().trim() === color.toString().trim() &&
+        producto.talle.toString().trim() === sizes.toString().trim()
+    );
+
+    if (index !== -1) {
+      carritoCompras.splice(index, 1);
+    }
+
+    const modal = document.querySelector('.modal-2');
+    if (modal) {
+      modal.remove();
+    }
+  }
+
+  localStorage.setItem("productos", JSON.stringify(carritoCompras));
+  actualizarCarrito()
+}
+
+  });
+
+
+
+
+     } 
+
+
+
+
+  export function actualizarCarrito() { 
+  
+    const carrito=JSON.parse(localStorage.getItem("productos"))||[]
+    console.log(carrito)
+
+    let iconCart = document.getElementById("cart-count");
+    console.log(iconCart) 
+
+    if(iconCart){
+      
+    iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0);
+
+    }
+
+
+  }
+
+
+
 
   
-   } 
+  function restaurarCarrito() {
+    let carritoStorage = localStorage.getItem('productos');
+    let carritoCompras = carritoStorage ? JSON.parse(carritoStorage) : [];
 
+    let iconCart = document.getElementById("cart-count");
+    if(iconCart){
+      iconCart.innerHTML = carritoCompras.reduce((acc, producto) => acc + producto.cantidad, 0);
 
+    }
     
+  }
 
-function actualizarCarrito() { 
- 
-  const carrito=JSON.parse(localStorage.getItem("productos"))?JSON.parse(localStorage.getItem("productos")):[]
-  console.log(carrito)
-
-  let iconCart = document.getElementById("cart-count");
-  console.log(iconCart)
-
-  iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0);
-
-}
-
-
-
-
- 
-function restaurarCarrito() {
-  let carritoStorage = localStorage.getItem('productos');
-  let carritoCompras = carritoStorage ? JSON.parse(carritoStorage) : [];
-
-  let iconCart = document.getElementById("cart-count");
-  iconCart.innerHTML = carritoCompras.reduce((acc, producto) => acc + producto.cantidad, 0);
-}
-
-// Ejecutar la función al cargar la página
- restaurarCarrito()
+  // Ejecutar la función al cargar la página
+   restaurarCarrito()
 
 
 
