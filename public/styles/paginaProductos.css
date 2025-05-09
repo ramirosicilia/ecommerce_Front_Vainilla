@@ -174,79 +174,7 @@ footer {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
-body.dark-mode .form-select {
-  background-color:#868080;
-  color: #ffffff;
 
-} 
-
-
-.dark-mode #categorias{ 
-  background-color:#000 !important;
-  color: #ffffff !important;
-
-} 
-
-.dark-mode #nav{
-  background-color:#000 !important;
-  color: #ffffff !important;
-
-
-} 
-
-
-.dark-mode .nav-link{
-  color: #ffff;
-} 
-
-.dark-mode #contacto{
-  background-color: #ffff !important;
-  color: #000000 !important;
-} 
-
-span{
-  color: #e0e0e0;
-}
-
-.watshapp{
-  color: #e0e0e0;
-}  
-
-.dark-mode span { 
-  color: #000000;
-} 
-
-.dark-mode .watshapp { 
-  color: #000000;
-}
-
-.dark-mode .derechos-reservados { 
-  color: #000000;
-}
-
-.agotado::after {
-    content: "AGOTADO";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(45deg, rgba(255, 0, 0, 0.8), rgba(255, 100, 100, 0.6));
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-transform: uppercase;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    z-index: 10;
-
-}
-
-.agotado {
-    position: relative; /* Necesario para que ::after funcione bien */
-    filter: grayscale(80%); /* Opcional: desaturar imagen */
-    opacity: 0.7; /* Opcional: dar efecto de desactivado */
-} 
 
 .modal-class {
   position: fixed;
@@ -379,21 +307,6 @@ span{
 
 
 
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  border-bottom: 1px solid #ddd;
-}
-
-.modal-header h2 {
-  font-size: 18px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
-
 .icon-check {
   color: green;
   font-size: 24px;
@@ -523,4 +436,85 @@ span{
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 10px 2px rgba(0, 123, 255, 0.5);
+} 
+
+
+body.dark-mode .form-select {
+  background-color:#868080;
+  color: #ffffff;
+
+} 
+
+
+.dark-mode #categorias{ 
+  background-color:#000 !important;
+  color: #ffffff !important;
+
+} 
+
+.dark-mode #nav{
+  background-color:#000 !important;
+  color: #ffffff !important;
+
+
+} 
+
+
+.dark-mode .nav-link{
+  color: #ffff;
+} 
+
+.dark-mode #contacto{
+  background-color: #ffff !important;
+  color: #000000 !important;
+} 
+
+span{
+  color: #e0e0e0;
+}
+
+.watshapp{
+  color: #e0e0e0;
+}  
+
+.dark-mode span { 
+  color: #000000;
+} 
+
+.dark-mode .watshapp { 
+  color: #000000;
+}
+
+.dark-mode .derechos-reservados { 
+  color: #000000;
+}
+
+.agotado::after {
+    content: "AGOTADO";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.8), rgba(255, 100, 100, 0.6));
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+
+}
+
+.agotado {
+    position: relative; /* Necesario para que ::after funcione bien */
+    filter: grayscale(80%); /* Opcional: desaturar imagen */
+    opacity: 0.7; /* Opcional: dar efecto de desactivado */
+} 
+.modal-header{
+   color: #000; /* negro sólido */
+  font-weight: bold;
+  font-size: 18px; /* ajusta el tamaño si es necesario */
+  opacity: 1; /* asegúrate de que no tenga opacidad baja */
 }

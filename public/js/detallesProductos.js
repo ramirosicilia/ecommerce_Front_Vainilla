@@ -62,7 +62,7 @@ async function reendedizarDetallesProductos() {
    // Miniaturas (excluye la imagen principal)
     const todasLasImagenes = imagenSeleccionada?.urls || [];
     const miniaturas = todasLasImagenes.slice(1).map(url => `
-      <img src="${url}" style="width: 70px; height: 70px; border-radius: 5px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);"
+      <img src="${url}" class="url" style="width: 70px; height: 70px; border-radius: 5px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);"
            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)';"   
            onclick="document.querySelector('#imagen-principal').src='${url}'">
     `).join('');
@@ -97,7 +97,7 @@ async function reendedizarDetallesProductos() {
     container.innerHTML = `
       <div style="max-width: 1200px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap;">
         <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px;">
-          <img src="${imagenPrincipal}" alt="${nombre}"
+          <img src="${imagenPrincipal}" id="imagen-principal" alt="${nombre}"
                style="width: 300px; height: auto; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); animation: rotate 5s infinite linear; transition: transform 0.3s ease;">
           
           <div style="display: flex; justify-content: center; gap: 2rem;">
@@ -139,7 +139,32 @@ async function reendedizarDetallesProductos() {
        const tallesDescripcion=document.querySelectorAll(".insertar_talle") 
        const botonDescripcion=document.getElementById("boton-descripcion") 
        const botoAgregarCarrito=document.getElementById("boton-agregar-carrito")
-       console.log(coloresDescripcion,tallesDescripcion) 
+       console.log(coloresDescripcion,tallesDescripcion)  
+
+
+       setTimeout(() => {
+        const miniaturas = document.querySelectorAll('.url');
+        const imagenPrincipal = document.querySelector('#imagen-principal');
+      
+        // Guardamos el src original de la imagen principal (para que siempre exista)
+        let srcPrincipalActual = imagenPrincipal.src;
+      
+        miniaturas.forEach(miniatura => {
+          miniatura.addEventListener('mouseenter', () => {
+            // Guardamos el src actual de la miniatura
+            const srcMini = miniatura.src;
+      
+            // Intercambiamos: la miniatura recibe el actual de la principal,
+            // la principal recibe el de la miniatura
+            miniatura.src = srcPrincipalActual;
+            imagenPrincipal.src = srcMini;
+      
+            // Actualizamos el src actual de la principal para el próximo cambio
+            srcPrincipalActual = srcMini;
+          });
+        });
+      }, 50);
+      
 
 
        let seleccion={

@@ -393,51 +393,107 @@ async function selectorCategorys() {
   }).join("")
   console.log(colores)
 
-
+ document.querySelector("#modal")?.remove()
 
 
  const div=document.createElement("div")
  
+div.innerHTML = `
+  <div id="modal" style="
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%; max-width: 500px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    font-family: 'Segoe UI', sans-serif;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  ">
+    <div class="modal-header" style="
+      display: flex; justify-content: space-between; align-items: center;
+      font-weight: 600; font-size: 18px; color: #333;
+      border-bottom: 1px solid #eee; padding-bottom: 12px;
+    ">
+  <span style="color: #000; font-weight: bold; font-size: 15px; opacity: 1; background-color: #fff; padding: 10px; border-radius: 5px; display: inline-block;">
+    Selecciona tus opciones para agregar el producto al carro
+  </span>
 
+      <span class="close" id="close" style="
+        cursor: pointer; font-size: 24px; color: #000;opacity:1;
+        transition: color 0.3s;
+      " onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#000'">&times;</span>
+    </div>
 
-              div.innerHTML=`
-
-    <div id="modal" style="position: fixed; top: 50%; left: 50%; width: 600px; height:auto; display: flex; flex-direction:column; gap:1rem;  transform: translate(-50%, -50%); z-index: 9999; width: 500px; background: white; border-radius: 12px; padding: 24px; margin: 50px auto; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);">
-      <div class="modal-header" style="font-weight: bold; opacity:1; font-size: 16px; color: #444; display: flex; gap:1rem; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <span style="opacity:1;"  >Selecciona tus opciones para agregar el producto al carro</span>
-        <span class="close" id="close" style="cursor: pointer; font-size: 20px;">&times;</span>
-      </div>
-      <div class="product-info" style="display: flex; align-items: center; gap: 10px;">
-        <img src="${imagenOpciones}" alt="Botín Mujer Negro" style="width: 90px; height: auto;">
-        <div class="details" style="font-size: 14px; color: #333;  display: flex;flex-direction:column; gap:10px;">
-          <div>Nombre:${nombre}</div>
-          <div>Detalles:${detalles}</div>
-          <div class="price" style="font-size: 18px; font-weight: bold; color: #333;">Precio:$${precio}</div>
-        </div>
-      </div>
-      <div class="section" style="margin-bottom: 16px;">
-        <label for="talla" style="display: block;  font-weight: bold;">Talla:</label>
-        <div class="sizes" style="display: flex; flex-wrap: wrap; gap: 10px;"> 
-        ${talles} 
-
-        </div>
-
-        
-      </div>
-      <div class="section" style="margin-bottom: 16px;">
-        <label for="color" style="display: block; margin-bottom: 8px; font-weight: bold;">Color:</label>
-        <div class="colors" style="display: flex; flex-wrap: wrap; gap: 10px;"> 
-        ${colores}
-          
-        </div>
-      </div>
-      <div class="footer" style="display: flex; justify-content: space-between; margin-top: 20px;">
-        <button class="close-btn btn-cerrar" style="padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #e0e0e0;">Cerrar</button>
-        <button type="button" class="select-btn btn__opciones" style="padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #444; color: white;">Elige tus opciones</button>
+    <div class="product-info" style="
+      display: flex; gap: 16px; align-items: center;
+    ">
+      <img src="${imagenOpciones}" alt="Producto" style="
+        width: 100px; height: auto; border-radius: 8px; border: 1px solid #ddd;
+      ">
+      <div class="details" style="
+        display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #444;
+      ">
+        <div><strong>Nombre:</strong> ${nombre}</div>
+        <div><strong>Detalles:</strong> ${detalles}</div>
+        <div class="price" style="
+          font-size: 18px; font-weight: bold; color: #2c3e50;
+        ">Precio: $${precio}</div>
       </div>
     </div>
 
- `
+    <div class="section" style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="talla" style="font-weight: 600;">Talla:</label>
+      <div class="sizes" style="
+        display: flex; flex-wrap: wrap; gap: 10px;
+      ">
+        ${talles}
+      </div>
+    </div>
+
+    <div class="section" style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="color" style="font-weight: 600;">Color:</label>
+      <div class="colors" style="
+        display: flex; flex-wrap: wrap; gap: 10px;
+      ">
+        ${colores}
+      </div>
+    </div>
+
+    <div class="footer" style="
+      display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;
+    ">
+      <button class="close-btn btn-cerrar" style="
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        background: #f2f2f2;
+        color: #333;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s;
+      " onmouseover="this.style.background='#ddd'" onmouseout="this.style.background='#f2f2f2'">
+        Cerrar
+      </button>
+      <button type="button" class="select-btn btn__opciones" style="
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        background:rgb(5, 41, 65);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+      " onmouseover="this.style.background=' #0046be'" onmouseout="this.style.background=' #0046be'">
+        Elige tus opciones
+      </button>
+    </div>
+  </div>
+`;
+
 
   
     console.log(div)
@@ -469,7 +525,7 @@ async function selectorCategorys() {
 
       if(size.classList.contains("seleccion_opciones_talles")){ 
         
-      btnOpciones.textContent="Comprar"
+      btnOpciones.textContent="Agregar al carro"
       btnOpciones.disabled=false
       sizesTexto=size.textContent  
 
