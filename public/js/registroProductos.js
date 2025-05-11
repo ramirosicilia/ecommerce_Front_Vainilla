@@ -394,9 +394,12 @@ async function subirCaracteristicasYStock(insertar_talle, insertar_color, stock)
 
 
 
+
    // Desactivar productos lógicamente
   export function desactivadoLogicoProductos(check) {
     const estadosGuardados = JSON.parse(localStorage.getItem("productosEstado")) || {};
+
+    console.log(estadosGuardados,'lo voy a descubrir')
   
     check.forEach((ck) => {
       const dataID = ck.getAttribute("data-id");
@@ -438,13 +441,17 @@ async function subirCaracteristicasYStock(insertar_talle, insertar_color, stock)
             celdasContenido.forEach((celda) => (celda.style.opacity = "0.4"));
             botonesAccion.forEach((boton) => (boton.style.opacity = desactivado ? "0.4" : "1"));
 
-            estadosGuardados[dataID] = "desactivado";
+            estadosGuardados[dataID] = "desactivado"; 
+            console.log(estadosGuardados,'if')
+            localStorage.setItem("productosEstado", JSON.stringify(estadosGuardados));
+  
           } else { 
            
             filaProducto.classList.remove("desactivado");
             celdasContenido.forEach((celda) => (celda.style.opacity = "1"));
             delete estadosGuardados[dataID]; 
             botonesAccion.forEach((boton) => (boton.style.opacity = "1"));
+            console.log(estadosGuardados,"else")
             localStorage.setItem("productosEstado", JSON.stringify(estadosGuardados));
   
           }

@@ -44,7 +44,6 @@ const tbody = document.querySelector("#cuerpo-productos");
 
 
 selector.addEventListener("change", async (e) => {
-   
     const categoriaSeleccionada = e.target.value;
     const productos = await obtenerProductos();
     const categorias = await obtenerCategorys();
@@ -56,55 +55,82 @@ selector.addEventListener("change", async (e) => {
         categoriasActivas.some(cat => cat.categoria_id === producto.categoria_id)
     );
 
-    // Si no hay categoría seleccionada, mostrar todos
+    if (!tbody) return;
+
     if (categoriaSeleccionada === "") {
         tbody.innerHTML = "";
 
-        productosFiltrados.forEach(producto => {
-            const categoriaProducto = categoriasActivas.find(cat => cat.categoria_id === producto.categoria_id);
-            const nombreCategoria = categoriaProducto?.nombre_categoria || "Sin categoría";
+        productosFiltrados.forEach((producto) => {
+            let categoriaProducto = categoriasActivas.find(c => c.categoria_id === producto.categoria_id)?.nombre_categoria;
 
-            const stockTotal = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
-            const imagenUrl = producto.imagenes[0]?.urls?.[0];
+            let imagenUrl = producto.imagenes[0]?.urls?.[0];
 
-            const talles = producto.productos_variantes
-                .map(v => v.talles?.insertar_talle)
+            let talles = producto.productos_variantes
+                .map(v => v.talles ? v.talles.insertar_talle : null)
                 .filter(Boolean)
                 .join(", ") || "";
 
-            const colores = producto.productos_variantes
-                .map(v => v.colores?.insertar_color)
+            let colores = producto.productos_variantes
+                .map(v => v.colores ? v.colores.insertar_color : null)
                 .filter(Boolean)
                 .join(", ") || "";
 
-            const talleIds = producto.productos_variantes
-                .map(v => v.talles?.talle_id)
-                .filter(Boolean)
-                .join(", ") || "N/A";
+            let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
+            let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A";
 
-            const colorIds = producto.productos_variantes
-                .map(v => v.colores?.color_id)
-                .filter(Boolean)
-                .join(", ") || "N/A";
+            let tallesArray = talles.split(", ");
+            let coloresArray = colores.split(", ");
+
+            console.log(tallesArray);
+            console.log(coloresArray);
+
+            let tallesYColores = {};
+
+            for (let i = 0; i < tallesArray.length; i++) {
+                let talle = tallesArray[i];
+                let color = coloresArray[i];
+                tallesYColores[talle] = color;
+            }
+
+            console.log(tallesYColores);
 
             tbody.innerHTML += `
-                <tr>    
+                <tr>
                     <td>
                         <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
                     </td>
                     <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
-                    <td><div class="contenido-celda">${producto.precio === null ? "" : "$ " + producto.precio}</div></td>
-                    <td><div class="contenido-celda">${nombreCategoria}</div></td>
-                    <td><div class="contenido-celda">${stockTotal}</div></td>
-                    <td><div class="contenido-celda">${talles}</div></td>
-                    <td><div class="contenido-celda">${colores}</div></td>
+                    <td><div class="contenido-celda">${producto.precio ? "$ " + producto.precio : ""}</div></td>
+                    <td><div class="contenido-celda">${categoriaProducto}</div></td>
+                    <td colspan="2">
+                        <div style="
+                            max-height: 80px; 
+                            overflow-y: auto; 
+                            font-family: monospace;
+                        ">
+                            ${
+                                producto.productos_variantes.map(variacion => {
+                                    const talle = variacion.talles?.insertar_talle || '';
+                                    const color = variacion.colores?.insertar_color || '';
+                                    const stock = variacion.stock || 0;
+                                    return `<div style="display: flex; gap: 20px;">
+                                                <div>${talle}</div>
+                                                <div>${color}</div>
+                                                <div style="margin-left:auto; position: relative; right: 2rem">${stock}</div>
+                                            </div>`;
+                                }).join('')
+                            }
+                        </div>
+                    </td>
                     <td class="celda-botones">
-                        <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
+                        <div style="display: flex; justify-content:center; align-items: center;">
+                            <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -121,54 +147,74 @@ selector.addEventListener("change", async (e) => {
 
     tbody.innerHTML = "";
 
-    // Buscar categoría seleccionada
     const categoriaObj = categoriasActivas.find(cat => cat.nombre_categoria === categoriaSeleccionada);
 
     if (categoriaObj) {
         let productosCategoria = productosFiltrados.filter(prod => prod.categoria_id === categoriaObj.categoria_id);
 
-        productosCategoria.forEach(producto => {
-            const stockTotal = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
-            const imagenUrl = producto.imagenes[0]?.urls?.[0];
+        productosCategoria.forEach((producto) => {
+            let imagenUrl = producto.imagenes[0]?.urls?.[0];
 
-            const talles = producto.productos_variantes
-                .map(v => v.talles?.insertar_talle)
+            let talles = producto.productos_variantes
+                .map(v => v.talles ? v.talles.insertar_talle : null)
                 .filter(Boolean)
                 .join(", ") || "";
 
-            const colores = producto.productos_variantes
-                .map(v => v.colores?.insertar_color)
+            let colores = producto.productos_variantes
+                .map(v => v.colores ? v.colores.insertar_color : null)
                 .filter(Boolean)
                 .join(", ") || "";
 
-            const talleIds = producto.productos_variantes
-                .map(v => v.talles?.talle_id)
-                .filter(Boolean)
-                .join(", ") || "N/A";
+            let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
+            let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A";
 
-            const colorIds = producto.productos_variantes
-                .map(v => v.colores?.color_id)
-                .filter(Boolean)
-                .join(", ") || "N/A";
+            let tallesArray = talles.split(", ");
+            let coloresArray = colores.split(", ");
+
+            let tallesYColores = {};
+            for (let i = 0; i < tallesArray.length; i++) {
+                let talle = tallesArray[i];
+                let color = coloresArray[i];
+                tallesYColores[talle] = color;
+            }
 
             tbody.innerHTML += `
-                <tr>    
+                <tr>
                     <td>
                         <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
                     </td>
                     <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
-                    <td><div class="contenido-celda">${producto.precio === null ? "" : "$ " + producto.precio}</div></td>
+                    <td><div class="contenido-celda">${producto.precio ? "$ " + producto.precio : ""}</div></td>
                     <td><div class="contenido-celda">${categoriaSeleccionada}</div></td>
-                    <td><div class="contenido-celda">${stockTotal}</div></td>
-                    <td><div class="contenido-celda">${talles}</div></td>
-                    <td><div class="contenido-celda">${colores}</div></td>
+                    <td colspan="2">
+                        <div style="
+                            max-height: 80px; 
+                            overflow-y: auto; 
+                            font-family: monospace;
+                        ">
+                            ${
+                                producto.productos_variantes.map(variacion => {
+                                    const talle = variacion.talles?.insertar_talle || '';
+                                    const color = variacion.colores?.insertar_color || '';
+                                    const stock = variacion.stock || 0;
+                                    return `<div style="display: flex; gap: 20px;">
+                                                <div>${talle}</div>
+                                                <div>${color}</div>
+                                                <div style="margin-left:auto; position: relative; right: 2rem">${stock}</div>
+                                            </div>`;
+                                }).join('')
+                            }
+                        </div>
+                    </td>
                     <td class="celda-botones">
-                        <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
+                        <div style="display: flex; justify-content:center; align-items: center;">
+                            <button class="btn btn-primary btn-sm btn-editar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-eliminar" data-id="${producto.producto_id}" data-talle-id="${talleIds}" data-color-id="${colorIds}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;

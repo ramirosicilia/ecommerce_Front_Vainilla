@@ -26,7 +26,8 @@ export function validarFormularioProducto() {
   // Expresiones regulares para validación
   const nombreValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ0-9\s\-\']+$/;
   const precioValidado = /^\d+(\.\d{1,2})?$/;
-  const detalleNombreValidado = /^(\S+\s*){1,10}$/;
+  const detalleNombreValidado = /^[\p{L}\p{N}\s.,\-_'"/()!¡¿?&%$#@*+°|\\[\]{}<>…♥❤★☆•ºª~´`^=;:∞✓✔🖤💖💫✨👛👜🎀👠]*$/u;
+
   const categoriaValidado = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
 
   // Validaciones
@@ -79,7 +80,7 @@ export function validarFormularioVariantes(talle,color,stock) {
   };
 
  
-    const tallaValidada=/^[A-Za-zÁÉÍÓÚáéíóúñÑ\d\s\/\.½¾¼-]+$/;
+    const tallaValidada=/^[A-Za-zÁÉÍÓÚáéíóúñÑ\d\s\/\.\-½¾¼]+$/;
 
    
     const colorValidado = /^(?!\s*$)[a-zA-Z\s]+$/;
