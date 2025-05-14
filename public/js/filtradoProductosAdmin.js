@@ -155,28 +155,11 @@ selector.addEventListener("change", async (e) => {
         productosCategoria.forEach((producto) => {
             let imagenUrl = producto.imagenes[0]?.urls?.[0];
 
-            let talles = producto.productos_variantes
-                .map(v => v.talles ? v.talles.insertar_talle : null)
-                .filter(Boolean)
-                .join(", ") || "";
-
-            let colores = producto.productos_variantes
-                .map(v => v.colores ? v.colores.insertar_color : null)
-                .filter(Boolean)
-                .join(", ") || "";
-
+           
             let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
             let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A";
 
-            let tallesArray = talles.split(", ");
-            let coloresArray = colores.split(", ");
-
-            let tallesYColores = {};
-            for (let i = 0; i < tallesArray.length; i++) {
-                let talle = tallesArray[i];
-                let color = coloresArray[i];
-                tallesYColores[talle] = color;
-            }
+       
 
             tbody.innerHTML += `
                 <tr>

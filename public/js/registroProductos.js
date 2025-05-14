@@ -440,7 +440,6 @@ async function subirCaracteristicasYStock(insertar_talle, insertar_color, stock)
             filaProducto.classList.add("desactivado");
             celdasContenido.forEach((celda) => (celda.style.opacity = "0.4"));
             botonesAccion.forEach((boton) => (boton.style.opacity = desactivado ? "0.4" : "1"));
-
             estadosGuardados[dataID] = "desactivado"; 
             console.log(estadosGuardados,'if')
             localStorage.setItem("productosEstado", JSON.stringify(estadosGuardados));

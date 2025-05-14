@@ -34,28 +34,12 @@ async function productosInactivos() {
         let categoriaProducto = categoriasActivas.find(c => c.categoria_id === producto.categoria_id)?.nombre_categoria;
         let imagenUrl = producto.imagenes[0]?.urls?.[0];
 
-        let talles = producto.productos_variantes
-            .map(v => v.talles ? v.talles.insertar_talle : null)
-            .filter(Boolean)
-            .join(", ") || "";
-
-        let colores = producto.productos_variantes
-            .map(v => v.colores ? v.colores.insertar_color : null)
-            .filter(Boolean)
-            .join(", ") || "";
+       
 
         let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
         let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A";
 
-        let tallesArray = talles.split(", ");
-        let coloresArray = colores.split(", ");
-
-        let tallesYColores = {};
-        for (let j = 0; j < tallesArray.length; j++) {
-            let talle = tallesArray[j];
-            let color = coloresArray[j];
-            tallesYColores[talle] = color;
-        }
+       
 
         tbody.innerHTML += `
             <tr>

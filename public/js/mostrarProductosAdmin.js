@@ -55,39 +55,11 @@ export async function mostrarProductosAdmin() {
           // Obtener la primera imagen del array de imágenes  
           let imagenUrl = producto.imagenes[0]?.urls?.[0];  
   
-          let talles = producto.productos_variantes
-          .map(variante => variante.talles ? variante.talles.insertar_talle : null)  // Accedemos directamente a insertar_talle si es un objeto
-          .filter(Boolean)
-          .join(", ") || "";
           
-          let colores = producto.productos_variantes
-              .map(variante => variante.colores ? variante.colores.insertar_color : null)  // Accedemos directamente a insertar_color si es un objeto
-              .filter(Boolean)
-              .join(", ") || ""; 
   
               let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
               let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A"; 
-             
-              let tallesArray=talles.split(", ") 
-              let coloresArray=colores.split(", ") 
-
-              console.log(tallesArray)
-              console.log(coloresArray) 
-
-              let tallesYColores = {}; // objeto vacío
-
-              for (let i = 0; i < tallesArray.length; i++) {
-                let talle = tallesArray[i];
-                let color = coloresArray[i];
-                
-                // Asignamos dinámicamente el talle como clave y el color como valor
-                tallesYColores[talle] = color;
-              } 
-
-              console.log(tallesYColores)
-              
-      
-               
+    
             
               tbody.innerHTML += `  
               <tr>    
@@ -107,10 +79,6 @@ export async function mostrarProductosAdmin() {
                           
                       ">
 
-
-
-
-                      
                           ${
                             producto.productos_variantes.map(variacion => {
                               const talle = variacion.talles?.insertar_talle || '';

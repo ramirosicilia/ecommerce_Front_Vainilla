@@ -1,10 +1,6 @@
 import { obtenerCategorys, obtenerProductos, obtenerUsuarios } from "./api/productos.js";
 
 
-
-
-
-
 let categoriasFiltrada = [];
 let filtradoCategoryYProduct=[]
 
@@ -34,7 +30,8 @@ const userIngresado=document.querySelector('.user__ingresado')
 
   
    if(obtenerUSer){ 
-    userIngresado.innerHTML = `
+    if(userIngresado){ 
+       userIngresado.innerHTML = `
     Ingreso: 
     <span style="
       margin-left: 10px;
@@ -50,6 +47,10 @@ const userIngresado=document.querySelector('.user__ingresado')
         .usuario}
     </span>
   `;
+
+    }
+
+   
     return
 
 
@@ -58,8 +59,10 @@ const userIngresado=document.querySelector('.user__ingresado')
 
    localStorage.setItem('usuario', obtenerUSer.usuario);
 
-   // Mostramos el nuevo usuario
-   userIngresado.innerHTML = `
+   // Mostramos el nuevo usuario 
+
+   if(userIngresado){
+     userIngresado.innerHTML = `
      Ingreso: 
      <span style="
        margin-left: 10px;
@@ -75,6 +78,9 @@ const userIngresado=document.querySelector('.user__ingresado')
      </span>
    `;
 
+   }
+  
+
   
  }
 
@@ -83,11 +89,6 @@ const userIngresado=document.querySelector('.user__ingresado')
   await mostrarProductosVenta(); // Llamar a la función para mostrar los productos
 })();
 
-
-
-
-
-    
 
 
 async function selectorCategorys() { 
@@ -134,12 +135,12 @@ async function selectorCategorys() {
     ? producto.imagenes[0].urls[0]
     : producto.imagenes?.[0]?.urls || "img/default.png";
   
-        const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
+      
   
         return `
           <section class="col-md-3 product-card lista" data-productos="${producto.producto_id}">
             <div class="card">
-              <img src="${imagen}" class="card-img-top" alt="">
+              <img src="${imagen}"data-imagen-producto="${producto.producto_id}" class="card-img-top imagen-selector" alt="">
               <div class="card-body">
                 <h5 class="card-title">${producto.nombre_producto || ""}</h5>
                 <p class="card-text">$${producto.precio || 0}</p>
@@ -150,19 +151,26 @@ async function selectorCategorys() {
             </div>
           </section>
         `;
+        
       }).join("");
-  
-      productosMostrados.forEach(producto => {
-        const stock = producto.productos_variantes?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
-        stockAgotado(stock, producto.producto_id);
+          let imagenDom=document.querySelectorAll(".imagen-selector") 
+       
+          
+           recuperarImagenes( imagenDom) 
+           
+      productosMostrados.forEach(producto => { 
+         let section = document.querySelector(`[data-productos="${producto.producto_id}"]`);
+        let stock= producto.productos_variantes.map(variante=>variante?.stock)
+    
+        stockAgotado(stock,section, producto.producto_id);
       });
   
       agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
+     
     } else {
       listaProductos.innerHTML = `<p>No hay productos en esta categoría.</p>`;
     }
   });
-  
   
 
  }
@@ -171,7 +179,6 @@ async function selectorCategorys() {
   }
 
   
-
 
   
   async function mostrarProductosVenta() {
@@ -182,7 +189,8 @@ async function selectorCategorys() {
     if(listaProductos){
       listaProductos.innerHTML = ""; 
       
-    const productosFiltrados = productos.filter(p => p.activacion === true);
+    const productosFiltrados = productos.filter(p => p.activacion === true); 
+    console.log(productosFiltrados)
   
     filtradoCategoryYProduct = productosFiltrados.filter(producto => 
      categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
@@ -192,8 +200,12 @@ async function selectorCategorys() {
      filtradoCategoryYProduct.forEach(producto => {
        const imagen = producto.imagenes?.[0]?.urls?.[0] || "img/default.png";
        console.log(imagen)
-       const stock = producto.productos_variantes?.reduce((acc, variante) => acc + (variante.stock || 0), 0) || 0;
-     
+      
+       let stock=producto.productos_variantes.map(variante=>variante?.stock)
+
+    
+        console.log(stock)
+
           
       
        listaProductos.insertAdjacentHTML("beforeend", `
@@ -211,9 +223,14 @@ async function selectorCategorys() {
          </section>
        `);
        let imagenDom=document.querySelectorAll(".imagen")
+     let section = document.querySelector(`[data-productos="${producto.producto_id}"]`);
+ 
+    
+
      
-       stockAgotado(stock, producto.producto_id);
-       recuperarImagenes( imagenDom)
+       stockAgotado(stock,section, producto.producto_id);
+       recuperarImagenes( imagenDom) 
+ 
 
      });
  
@@ -224,58 +241,26 @@ async function selectorCategorys() {
      listaProductos.innerHTML = `<p>No hay productos disponibles para mostrar.</p>`;
    }
     }
-
-
-  
-  } 
-
-    
-
-   function recuperarImagenes(imagen, ) {  
-
-    imagen.forEach((img) => {
-      img.addEventListener('click', async (e) => { 
-   
-        let imagenId = e.currentTarget.getAttribute('data-imagen-producto')
-        let talleId= e.currentTarget.getAttribute('data-talle')
-        let colorId= e.currentTarget.getAttribute('data-color') 
-
-        localStorage.setItem('id-imagen', JSON.stringify(imagenId))
-        localStorage.setItem('id-talle', JSON.stringify(talleId))
-        localStorage.setItem('id-color', JSON.stringify(colorId))
-        
-      
-        
-        console.log(imagenId)  
-        console.log(talleId)
-        console.log(colorId)
-    
-        setTimeout(() => {
-         
-          window.location.href ="./descripcionProducto.html";
-        }, 1000);
-       
-      })
-    })
-
-   
-    
-    
-    
-   } 
+ 
+  }   
 
 
 
-    function stockAgotado(stock, idAgotado) { 
+    function stockAgotado(stock,lista, idAgotado) { 
       let producto = document.querySelector(`[data-productos="${idAgotado}"]`);
+  
       
-      
-      if (stock === 0 && producto) { 
-          producto.classList.add("agotado");
+      console.log(producto,'el producto') 
+
+      stock.forEach(stock=>{ 
+         if (stock === 0) { 
+   
+         lista.classList.add("agotado");
   
           // Quita el botón "Agregar al carrito"
           let botonAgregar = producto.querySelector(".btn-agregar");
           if (botonAgregar) {
+            console.log("$$$")
               botonAgregar.remove();
           }
   
@@ -287,31 +272,67 @@ async function selectorCategorys() {
           }
       } 
 
+
+      })
+       
+     
       
   } 
+
+
+
+   function recuperarImagenes(imagen ) {  
+
+    imagen.forEach((img) => {
+      img.addEventListener('click', async (e) => { 
+   
+        let imagenId = e.currentTarget.getAttribute('data-imagen-producto') 
+     
+       
+        localStorage.setItem('id-imagen', JSON.stringify(imagenId)) 
+
+        let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || []; 
+
+        if(productosAgotados.includes(imagenId)){ 
+          return
+
+        }
+       
+        console.log(imagenId)  
+      
+  
+        setTimeout(() => {
+         
+          window.location.href ="./descripcionProducto.html";
+        }, 1000);
+       
+      })
+    })
+
+  
+   } 
+
+   
 
   
 // Llamar a la función al cargar la página
 
   /*restaurarCarrito();*/
-  stockAgotado();
+
 
 
 
  function agregarBotonesAlCarrito(botones){ 
 
 
-  botones.forEach((btn)=>{
+  botones.forEach((btn)=>{ 
 
-   console.log(btn,'btn')
 
     btn.addEventListener('click',async()=>{ 
    
       let producto_ID=btn.getAttribute('data-productos') 
      
 
-
-      
       opcionesProducto(producto_ID)
       
 
@@ -320,15 +341,9 @@ async function selectorCategorys() {
 
  } 
 
- 
-
- document.querySelector('.modal')
+ let modal=document.querySelector('.modal')
 
    
-  
-
- 
-
 
  async function opcionesProducto(producto_ID) { 
   
@@ -543,7 +558,6 @@ div.innerHTML = `
     color.addEventListener('click',(e)=>{   
 
 
-
       colors.forEach(c => c.classList.remove("seleccion_opciones_colores"));
 
       color.classList.add("seleccion_opciones_colores") 
@@ -711,7 +725,7 @@ div.innerHTML = `
   
     document.getElementById("modal").remove(); 
 
-    let carritoCompras=JSON.parse(localStorage.getItem('productos'))?JSON.parse(localStorage.getItem('productos')):[]
+    let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
 
          const primerProducto=carritoCompras.find(p=>p.producto_id.toString().trim()===productoID.toString().trim()&&
                p.color.toString().trim()===color && p.talle.toString().trim()===sizes.toString().trim()) 

@@ -6,11 +6,7 @@ let summary=document.getElementById("sumary")
    
 
 
-     
-
-     mostrarProductosCarrito();
-
-
+    
   async function mostrarProductosCarrito() {  
 
    // Obtener el último número para re-renderizar
@@ -84,7 +80,7 @@ let summary=document.getElementById("sumary")
            <p class="shipping">Calcular costo de envío</p>
            <hr>
            <p>Total <span class="total-price"></span></p>
-           <button class="checkout">Continuar compra</button>
+           <button class="checkout" id="comprar">Continuar compra</button>
            <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
           <button type="button" class="boton_vaciar btn" id="boton-vaciado">Vaciar Carrito</button>
     `
@@ -95,6 +91,12 @@ let summary=document.getElementById("sumary")
 
    
 } 
+
+(async()=>{ 
+    await mostrarProductosCarrito();
+
+})()
+
 
 
 
@@ -119,7 +121,7 @@ function checkout() {
       <p class="shipping">Calcular costo de envío</p>
       <hr>
       <p>Total <span class="total-price">$${total.toFixed(2)}</span></p>
-      <button class="checkout">Continuar compra</button>
+      <button class="checkout" id="comprar">Continuar compra</button>
       <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
       <button type="button" class="boton_vaciar btn" 
       id="boton-vaciado">Vaciar Carrito</button>
@@ -246,7 +248,33 @@ function agregarProductoAlCarrito(e) {
 
         iconoProductosSumados();
     }
-}
+} 
+
+ const botonComprar=document.getElementById("comprar") 
+
+ botonComprar.addEventListener("click",()=>{
+  
+  let carroMapeado=productosEncarrito.map(elemento=>elemento.nombre_producto) 
+
+  let carroTexto=carroMapeado.join(" , ") 
+
+  if(!carroTexto){
+     alert(`no hay productos`) 
+
+   
+
+  } 
+
+  else{ 
+     alert(`Nombre de productos comprados: ${carroTexto}`)
+
+  }
+
+ 
+
+  
+
+ })
 
 
 

@@ -16,6 +16,7 @@ import { actualizarCarrito } from "./paginaProductos.js";
 
 const imgID= JSON.parse(localStorage.getItem("id-imagen"));
 
+
 async function reendedizarDetallesProductos() {
     await obtenerDatos();
   
@@ -119,9 +120,14 @@ async function reendedizarDetallesProductos() {
   
           <h3>Colores:</h3>
           <div>${coloresHTML}</div>
+          
+          <div style="overflow-y: auto; height: 200px">
+ 
   
           <h3>Descripción del producto</h3>
-          <p>${descripcion}</p>
+          <p style="line-height: 25px">${descripcion}</p>
+
+          </div>
   
           <h3>Opciones de entrega:</h3>
           <p>✔ Llega mañana | ✔ Retira mañana</p>
@@ -238,7 +244,7 @@ async function reendedizarDetallesProductos() {
 
     const btnDescripcion=document.getElementById("boton-descripcion") 
 
-   btnDescripcion.addEventListener("click",(e)=>{ 
+   btnDescripcion?.addEventListener("click",(e)=>{ 
     e.stopPropagation()
 
   
