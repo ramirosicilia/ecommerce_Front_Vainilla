@@ -157,7 +157,7 @@ async function selectorCategorys() {
        
           
            recuperarImagenes( imagenDom) 
-           
+
       productosMostrados.forEach(producto => { 
          let section = document.querySelector(`[data-productos="${producto.producto_id}"]`);
         let stock= producto.productos_variantes.map(variante=>variante?.stock)
@@ -223,7 +223,7 @@ async function selectorCategorys() {
          </section>
        `);
        let imagenDom=document.querySelectorAll(".imagen")
-     let section = document.querySelector(`[data-productos="${producto.producto_id}"]`);
+       let section = document.querySelector(`[data-productos="${producto.producto_id}"]`);
  
     
 
@@ -243,7 +243,6 @@ async function selectorCategorys() {
     }
  
   }   
-
 
 
     function stockAgotado(stock,lista, idAgotado) { 

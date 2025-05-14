@@ -16,10 +16,9 @@ export async function mostrarProductosAdmin() {
 
   const selectCategorias = document.getElementById("categoria-select-products");  
   const tbody = document.querySelector("#cuerpo-productos");  
+  let stocker=[]
 
  
-
-
   console.log(selectCategorias); // Verifica si el elemento existe en la consola  
 
   let productosActivos = productos.filter(producto => producto?.activacion === true);  
@@ -59,10 +58,16 @@ export async function mostrarProductosAdmin() {
   
               let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
               let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A"; 
-    
+              let stock=producto.productos_variantes.map(variante=>variante?.stock)
+            
+              if(stock.length>0){ 
+              stocker.push(stock)
+
+              }
+      
             
               tbody.innerHTML += `  
-              <tr>    
+              <tr class="tabla" >    
                   <td>
                       <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
                   </td>
@@ -77,7 +82,9 @@ export async function mostrarProductosAdmin() {
                           overflow-y: auto; 
                           font-family: monospace;
                           
-                      ">
+                      ">  
+
+
 
                           ${
                             producto.productos_variantes.map(variacion => {
@@ -85,9 +92,9 @@ export async function mostrarProductosAdmin() {
                               const color = variacion.colores?.insertar_color || '';
                               const stock = variacion.stock || 0;
                               return `<div style="display: flex; gap: 20px;">
-                                        <div>${talle}</div>
-                                        <div>${color}</div>
-                                        <div style="margin-left:auto; position: relative; right: 2rem">${stock}</div>
+                                        <div data-size="${producto.producto_id}">${talle}</div>
+                                        <div data-colour="${producto.producto_id}">${color}</div>
+                                        <div class="stocker"data-stocker="${producto.producto_id}" style="margin-left:auto; position: relative; right: 2rem">${stock}</div>
                                       </div>`;
                             }).join('')
                           }
@@ -102,13 +109,46 @@ export async function mostrarProductosAdmin() {
                 </td>
 
               </tr>
-            `;
-            
-          
+            `;  
+
+            stockerFuncion(producto.producto_id)
+
+           
       
-      });   
-  
-      // Seleccionar los elementos de la tabla que contienen los ID de talles y colores
+      });  
+
+      function stockerFuncion(id) {
+        const stockAgotadoList = document.querySelectorAll(`[data-stocker="${id}"]`);
+           // Obtiene todos los divs con data-* igual al id del producto
+              const talleAgotadoList = document.querySelectorAll(`[data-size="${id}"]`);
+              const colorAgotadoList = document.querySelectorAll(`[data-colour="${id}"]`);
+
+              // Lee los productos agotados del localStorage
+              let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+
+              stockAgotadoList.forEach((stockEl, index) => {
+                const stock = parseInt(stockEl.textContent.trim(), 10);
+              
+                if (stock === 0) {
+                  if (productosAgotados.includes(id)) {
+                    stockEl.style.opacity = "0.4";
+                  
+                    // También aplicar opacidad al talle y color correspondientes
+                    if (talleAgotadoList[index]) {
+                      talleAgotadoList[index].style.opacity = "0.2";
+                    }
+                  
+                    if (colorAgotadoList[index]) {
+                      colorAgotadoList[index].style.opacity = "0.2";
+                    }
+                  }
+                }
+              });
+      }
+
+
+
+
       
       const checkBox = [...document.querySelectorAll(".check")];  
       const botonesEdit=document.querySelectorAll('.btn-editar')
