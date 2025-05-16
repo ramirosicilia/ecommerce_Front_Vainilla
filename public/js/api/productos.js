@@ -121,6 +121,24 @@ export const obtenerUsuarios=async()=>{
   }
 
 
-} 
+}  
+
+
+ export async function recibirPublicKey(){
+
+  try { 
+    const response=await fetch("http://localhost:1600/public-key") 
+    const data= await response.json() 
+    console.log(response) 
+
+    return data
+
+    
+  } catch (error) { 
+    console.log("hubo un error y no se obtuvo la solicitud",error)
+    
+  } 
+  
+ }
 
 

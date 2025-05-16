@@ -1,7 +1,10 @@
+import { enviarCompra } from "./comprar.js"; 
+
+
 
 
 let productosEncarrito = JSON.parse(localStorage.getItem('productos')) || []; 
-let summary=document.getElementById("sumary") 
+let summary=document.getElementById("summary") 
 
    
 
@@ -82,7 +85,9 @@ let summary=document.getElementById("sumary")
            <p>Total <span class="total-price"></span></p>
            <button class="checkout" id="comprar">Continuar compra</button>
            <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
-          <button type="button" class="boton_vaciar btn" id="boton-vaciado">Vaciar Carrito</button>
+          <button type="button" class="boton_vaciar btn" id="boton-vaciado">Vaciar Carrito</button> 
+
+              
     `
 
   }
@@ -93,9 +98,10 @@ let summary=document.getElementById("sumary")
 } 
 
 (async()=>{ 
-    await mostrarProductosCarrito();
+     await mostrarProductosCarrito();
+   
 
-})()
+})() 
 
 
 
@@ -250,29 +256,21 @@ function agregarProductoAlCarrito(e) {
     }
 } 
 
+
+
+
  const botonComprar=document.getElementById("comprar") 
 
- botonComprar.addEventListener("click",()=>{
-  
-  let carroMapeado=productosEncarrito.map(elemento=>elemento.nombre_producto) 
-
-  let carroTexto=carroMapeado.join(" , ") 
-
-  if(!carroTexto){
-     alert(`no hay productos`) 
-
-   
-
-  } 
-
-  else{ 
-     alert(`Nombre de productos comprados: ${carroTexto}`)
-
-  }
-
  
+ botonComprar.addEventListener("click",async(e)=>{ 
+  e.target.style.opacity="0" 
 
+  setTimeout(() => { 
+      enviarCompra(e.target)
+    
+  }, 500);
   
+
 
  })
 

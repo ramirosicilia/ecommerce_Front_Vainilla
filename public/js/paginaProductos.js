@@ -259,7 +259,6 @@ async function selectorCategorys() {
           // Quita el botón "Agregar al carrito"
           let botonAgregar = producto.querySelector(".btn-agregar");
           if (botonAgregar) {
-            console.log("$$$")
               botonAgregar.remove();
           }
   
